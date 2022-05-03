@@ -6,7 +6,30 @@ class Esteban extends THREE.Object3D {
     // Se crea la parte de la interfaz que corresponde a la caja
     // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
     this.createGUI(gui,titleGui);
-    var material = new THREE.MeshPhongMaterial({color: 0xCF0000, flatShading:true});
+    
+    const textureLoader = new THREE.TextureLoader();
+    const texturaCabeza = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezaxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezaxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezaypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezayneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezazpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cabezazneg.png"),
+      }),
+    ];
+    
+    var material = new THREE.MeshPhongMaterial({flatShading:true});
 
     //alert(PM.PIXELES_ESTANDAR);
     //alert(PM.PIXELES_ESTANDAR)
@@ -15,7 +38,7 @@ class Esteban extends THREE.Object3D {
 
     //geometriaCabeza.translate(0, 4/PM.PIXELES_ESTANDAR, 0);
 
-    var cabeza = new THREE.Mesh(geometriaCabeza,material);
+    var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
 
     cabeza.position.y=4/PM.PIXELES_ESTANDAR;
 
@@ -35,13 +58,58 @@ class Esteban extends THREE.Object3D {
     this.add(this.cabezaW1);
 
     //BRAZOS Y PIERNAS
+
+    const texturabrazoR = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoyneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazozpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazozneg.png"),
+      }),
+    ];
+
+
+    const texturabrazoL = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoyneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazozposR.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/brazoznegR.png"),
+      }),
+
+    ];
+
     var geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,12/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
-    var brazoL = new THREE.Mesh(geometriaExtremidad, material);
+    var brazoL = new THREE.Mesh(geometriaExtremidad, texturabrazoL);
 
     //brazo izquierdo
     brazoL.position.y = -4/PM.PIXELES_ESTANDAR;
     var brazoR = brazoL.clone();
-
+    brazoR.material = texturabrazoR;
     this.brazoLeft = new THREE.Object3D();
     this.brazoLeft.add(brazoL);
     this.brazoLeft.rotation.x = 0.3;
@@ -67,9 +135,50 @@ class Esteban extends THREE.Object3D {
 
     //Piernas
 
+    const texturaPiernaR = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernayneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernazpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernazneg.png"),
+      }),
+    ];
+
+    const texturaPiernaL = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernaypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernayneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernazpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/piernazneg.png"),
+      }),
+    ];
     //Izquierda
-    var piernaL=new THREE.Mesh(geometriaExtremidad, material);
-    var piernaR=piernaL.clone();
+    var piernaL=new THREE.Mesh(geometriaExtremidad, texturaPiernaL);
+    var piernaR=new THREE.Mesh(geometriaExtremidad, texturaPiernaR);
 
     piernaL.position.y=-6/PM.PIXELES_ESTANDAR;
     piernaR.position.y=-6/PM.PIXELES_ESTANDAR;
@@ -89,14 +198,35 @@ class Esteban extends THREE.Object3D {
     this.add(this.piernaLW1);
     this.add(this.piernaRW1);
 
-
+    const texturaCuerpo = [
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpoxpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpoxneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpoypos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpoyneg.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpozpos.png"),
+      }),
+      new THREE.MeshStandardMaterial({
+        map: textureLoader.load("./texturas/esteban/cuerpozneg.png"),
+      }),
+    ];
     //TORSO
     var geometriaTorso=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
 
-    var torso=new THREE.Mesh(geometriaTorso, material);
+    var torso=new THREE.Mesh(geometriaTorso, texturaCuerpo);
     torso.position.y = 18/PM.PIXELES_ESTANDAR;
 
     this.add(torso);
+
+
   }
 
   createGUI (gui,titleGui) {
