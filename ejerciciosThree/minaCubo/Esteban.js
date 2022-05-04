@@ -6,6 +6,7 @@ class Esteban extends THREE.Object3D {
   }
   constructor(gui,titleGui) {
     super();
+    this.clock=new THREE.Clock();
     this.cambiarAnimacion=false;
     this.maxMovimientoExt=this.degToRad(60);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -13,15 +14,7 @@ class Esteban extends THREE.Object3D {
     // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
     this.createGUI(gui,titleGui);
 
-    //this.add(this.camara3rdPerson);
-
-    //this.camara3rdPerson.position.set(0, 5, -5);
-
     this.target=new THREE.Vector3(10, -5, 0);
-
-    //this.camara3rdPerson.getWorldPosition(target);
-
-    //this.camara3rdPerson.lookAt(target);
 
     const textureLoader = new THREE.TextureLoader();
     const texturaCabeza = [
@@ -45,14 +38,8 @@ class Esteban extends THREE.Object3D {
       }),
     ];
     
-    var material = new THREE.MeshPhongMaterial({flatShading:true});
-
-    //alert(PM.PIXELES_ESTANDAR);
-    //alert(PM.PIXELES_ESTANDAR)
     //CABESA
     var geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
-
-    //geometriaCabeza.translate(0, 4/PM.PIXELES_ESTANDAR, 0);
 
     var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
 
@@ -61,17 +48,9 @@ class Esteban extends THREE.Object3D {
     this.cabezaW1=new THREE.Object3D();
     this.cabezaW1.add(cabeza);
 
-    //cabezaW1.rotation.y=this.guiControls.cabezaY;
-    //cabezaW1.rotation.x=this.guiControls.cabezaX;
-
-    //this.cabezaW1.rotation.x=0.5;
-    //this.cabezaW1.rotation.y=0.5;
     this.cabezaW1.position.y=24/PM.PIXELES_ESTANDAR;
-    //cabeza.position.y=4/PM.PIXELES_ESTANDAR;
 
-
-
-    this.add(this.cabezaW1);
+    //this.add(this.cabezaW1);
 
     //BRAZOS Y PIERNAS
 
@@ -145,9 +124,8 @@ class Esteban extends THREE.Object3D {
     this.brazoRightW1.add(this.brazoRight);
 
 
-    this.add(this.brazoLeftW1);
-    this.add(this.brazoRightW1);
-  //  this.add(extremidad);
+    //this.add(this.brazoLeftW1);
+    //this.add(this.brazoRightW1);
 
     //Piernas
 
@@ -205,14 +183,11 @@ class Esteban extends THREE.Object3D {
     this.piernaLW1.add(piernaL);
     this.piernaRW1.add(piernaR);
 
-    //this.piernaLW1.rotation.x=0.5;    //
-    //this.piernaRW1.rotation.x=-0.5;   //
-
     this.piernaLW1.position.set(2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
     this.piernaRW1.position.set(-2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
 
-    this.add(this.piernaLW1);
-    this.add(this.piernaRW1);
+    //this.add(this.piernaLW1);
+    //this.add(this.piernaRW1);
 
     const texturaCuerpo = [
       new THREE.MeshStandardMaterial({
@@ -239,10 +214,20 @@ class Esteban extends THREE.Object3D {
 
     var torso=new THREE.Mesh(geometriaTorso, texturaCuerpo);
     torso.position.y = 18/PM.PIXELES_ESTANDAR;
+    //this.add(torso);
 
-    this.add(torso);
 
+    //ESTO ES NECESARIO PARA QUE FUNCIONE LA ANIMACION DE STRAFE
+    this.wrapperFinal=new THREE.Object3D();
 
+    this.wrapperFinal.add(this.cabezaW1)
+    this.wrapperFinal.add(this.brazoLeftW1)
+    this.wrapperFinal.add(this.brazoRightW1)
+    this.wrapperFinal.add(this.piernaLW1)
+    this.wrapperFinal.add(this.piernaRW1)
+    this.wrapperFinal.add(torso)
+    
+    this.add(this.wrapperFinal);
   }
 
   createGUI (gui,titleGui) {
@@ -289,10 +274,11 @@ class Esteban extends THREE.Object3D {
   }
 
   resetPosicion(){
-    this.piernaLW1.rotation.x=0
-    this.piernaRW1.rotation.x=0
-    this.brazoLeft.rotation.x=0
-    this.brazoRight.rotation.x=0
+    this.piernaLW1.rotation.x=0;
+    this.piernaRW1.rotation.x=0;
+    this.brazoLeft.rotation.x=0;
+    this.brazoRight.rotation.x=0;
+    this.wrapperFinal.rotation.y=0;
   }
 
   update (movimiento) {
@@ -358,32 +344,177 @@ class Esteban extends THREE.Object3D {
       }
 
       case "strafeL":{
+        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
+          this.wrapperFinal.rotation.y+=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), 0.1);
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1          
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }          
+        }       
         break;
       }
 
       case "strafeR":{
+        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
+          this.wrapperFinal.rotation.y-=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), 0.1);
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1          
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }          
+        }             
         break;
       }
       
       case "upLeft":{
+        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
+          this.wrapperFinal.rotation.y+=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), 0.1);
+
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1          
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }          
+        }        
         break;
       }
       
       case "upRight":{
+        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
+          this.wrapperFinal.rotation.y-=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), 0.1);
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1          
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }          
+        }         
         break;
       }
       
       case "downLeft":{
+        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
+          this.wrapperFinal.rotation.y-=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), 0.1);
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1          
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }       
+        }           
         break;
       }
       
       case "downRight":{
+        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
+          this.wrapperFinal.rotation.y+=0.08;
+        }
         this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), 0.1);
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1          
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }       
+        }          
         break;
       }    
 
@@ -400,8 +531,11 @@ class Esteban extends THREE.Object3D {
     this.target.x=this.position.x;
     this.target.y=this.position.y;
     this.target.z=this.position.z;
-    this.rotation.y=this.guiControls.giroY;
+    //this.rotation.y=this.guiControls.giroY;
 
+
+    //console.log(this.clock.getDelta()*this.clock.getDelta())
+    //this.position.y-=0.981*this.clock.getDelta()//*this.clock.getDelta()
 
     //Parte de animacion
     /*
