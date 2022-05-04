@@ -20,6 +20,13 @@ class MyScene extends THREE.Scene {
   constructor (myCanvas) {
     super();
 
+    this.mapTeclas={
+      "W":false,
+      "A":false,
+      "D":false,
+      "S":false
+    };
+ 
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
     this.renderer = this.createRenderer(myCanvas);
 
@@ -35,7 +42,6 @@ class MyScene extends THREE.Scene {
     this.createLights ();
 
     // Tendremos una cámara con un control de movimiento con el ratón
-    this.createCamera ();
 
     // Un suelo
     //this.createGround ();
@@ -49,6 +55,9 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.model = new Esteban(this.gui, "Controles de la Caja");
+
+    this.createCamera ();
+
     this.add (this.model);
   }
 
@@ -75,10 +84,11 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (20, 10, 20);
+    this.camera.position.set (this.model.position.x, this.model.position.y+5, this.model.position.z-10);
     // Y hacia dónde mira
-    var look = new THREE.Vector3 (0,0,0);
-    this.camera.lookAt(look);
+    ////var look = new THREE.Vector3 (10,0,-5);
+    this.look = new THREE.Vector3 (this.model.position.x,this.model.position.y,this.model.position.z);
+    this.camera.lookAt(this.look);
     this.add (this.camera);
 
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
@@ -88,7 +98,7 @@ class MyScene extends THREE.Scene {
     this.cameraControl.zoomSpeed = -2;
     this.cameraControl.panSpeed = 0.5;
     // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = look;
+    this.cameraControl.target = new THREE.Vector3(0,0, 0);//this.model.target;
   }
 
   createGround () {
@@ -215,8 +225,12 @@ class MyScene extends THREE.Scene {
     // Se actualizan los elementos de la escena para cada frame
 
     // Se actualiza la posición de la cámara según su controlador
+    //this.cameraControl.goTo(this.model.position);
     this.cameraControl.update();
+    //this.cameraControl.target.z-=0.01;
+    //this.camera.position.set (this.model.position.x, this.model.position.y+5, this.model.position.z-10);
 
+    //this.look.x+=0.01;
     // Se actualiza el resto del modelo
     this.model.update();
 
@@ -238,7 +252,47 @@ $(function () {
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
+  
+  window.addEventListener("keydown", (event) => {
+    let tecla=event.key.toUpperCase();
 
+    scene.mapTeclas[tecla]=true;
+
+    if(scene.mapTeclas.W && scene.mapTeclas.A){
+      scene.model.update("upLeft");
+    }
+    else if(scene.mapTeclas.W && scene.mapTeclas.D){
+      scene.model.update("upRight");
+    }
+    else if(scene.mapTeclas.S && scene.mapTeclas.A){
+      scene.model.update("downLeft");
+    }
+    else if(scene.mapTeclas.S && scene.mapTeclas.D){
+      scene.model.update("downRight");
+    }
+    else if(scene.mapTeclas.W){
+      scene.model.update("adelante");
+    }
+    else if(scene.mapTeclas.A){
+      scene.model.update("strafeL");
+    }
+    else if(scene.mapTeclas.S){
+      scene.model.update("atras");
+    }
+    else if(scene.mapTeclas.D){
+      scene.model.update("strafeR");
+    }    
+    console.log(scene.mapTeclas);
+
+    //Ahora toca la combinacion de teclas
+
+  } );
+
+  
+  window.addEventListener("keyup", (event) => {
+    scene.mapTeclas[event.key.toUpperCase()]=false;
+    console.log(scene.mapTeclas);
+  } );
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });

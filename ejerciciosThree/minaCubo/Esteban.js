@@ -3,10 +3,22 @@ import * as PM from './ParametrosMundo.js'
 class Esteban extends THREE.Object3D {
   constructor(gui,titleGui) {
     super();
+
+    //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // Se crea la parte de la interfaz que corresponde a la caja
     // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
     this.createGUI(gui,titleGui);
-    
+
+    //this.add(this.camara3rdPerson);
+
+    //this.camara3rdPerson.position.set(0, 5, -5);
+
+    this.target=new THREE.Vector3(10, -5, 0);
+
+    //this.camara3rdPerson.getWorldPosition(target);
+
+    //this.camara3rdPerson.lookAt(target);
+
     const textureLoader = new THREE.TextureLoader();
     const texturaCabeza = [
       new THREE.MeshStandardMaterial({
@@ -272,7 +284,57 @@ class Esteban extends THREE.Object3D {
     folder.add (this.guiControls, 'reset').name ('[ Reset ]');
   }
 
-  update () {
+  update (movimiento) {
+    
+    switch(movimiento){
+      case "adelante":{
+        this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), 0.1);
+        //this.camara3rdPerson.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), 0.1);
+        break;
+      }
+
+      case "atras":{
+        this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), 0.1);
+        break;
+      }
+
+      case "strafeL":{
+        this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), 0.1);
+        break;
+      }
+
+      case "strafeR":{
+        this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), 0.1);
+        break;
+      }
+      
+      case "upLeft":{
+        this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), 0.1);
+        break;
+      }
+      
+      case "upRight":{
+        this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), 0.1);
+        break;
+      }
+      
+      case "downLeft":{
+        this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), 0.1);
+        break;
+      }
+      
+      case "downRight":{
+        this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), 0.1);
+        break;
+      }      
+    }
+
+    this.target.x=this.position.x;
+    this.target.y=this.position.y;
+    this.target.z=this.position.z;
+
+
+    //Parte de animacion
     this.cabezaW1.rotation.y=this.guiControls.cabezaY;
     this.cabezaW1.rotation.x=this.guiControls.cabezaX;
 
