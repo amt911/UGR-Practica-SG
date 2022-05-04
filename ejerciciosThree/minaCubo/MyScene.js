@@ -20,11 +20,13 @@ class MyScene extends THREE.Scene {
   constructor (myCanvas) {
     super();
 
+    this.movt="parado";
     this.mapTeclas={
-      "W":false,
-      "A":false,
-      "D":false,
-      "S":false
+      "W": false,
+      "A": false,
+      "D": false,
+      "S": false,
+      " ": false
     };
  
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
@@ -232,7 +234,7 @@ class MyScene extends THREE.Scene {
 
     //this.look.x+=0.01;
     // Se actualiza el resto del modelo
-    this.model.update();
+    this.model.update(this.movt);
 
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
@@ -241,6 +243,45 @@ class MyScene extends THREE.Scene {
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
+  }
+}
+
+function checkKeys(scene){
+  if(scene.mapTeclas.W && scene.mapTeclas.A){
+    //scene.model.update("upLeft");
+    scene.movt="upLeft";
+  }
+  else if(scene.mapTeclas.W && scene.mapTeclas.D){
+    //scene.model.update("upRight");
+    scene.movt="upRight";
+  }
+  else if(scene.mapTeclas.S && scene.mapTeclas.A){
+    //scene.model.update("downLeft");
+    scene.movt="downLeft";
+  }
+  else if(scene.mapTeclas.S && scene.mapTeclas.D){
+    //scene.model.update("downRight");
+    scene.movt="downRight";
+  }
+  else if(scene.mapTeclas.W){
+    //scene.model.update("adelante");
+    scene.movt="adelante";
+  }
+  else if(scene.mapTeclas.A){
+    //scene.model.update("strafeL");
+    scene.movt="strafeL";
+  }
+  else if(scene.mapTeclas.S){
+    //scene.model.update("atras");
+    scene.movt="atras";
+  }
+  else if(scene.mapTeclas.D){
+    //scene.model.update("strafeR");
+    scene.movt="strafeR";
+  } 
+  else if(scene.mapTeclas[" "]){
+    //alert("me pulsaste");
+    scene.movt="jump";
   }
 }
 
@@ -257,32 +298,9 @@ $(function () {
     let tecla=event.key.toUpperCase();
 
     scene.mapTeclas[tecla]=true;
+    checkKeys(scene)
 
-    if(scene.mapTeclas.W && scene.mapTeclas.A){
-      scene.model.update("upLeft");
-    }
-    else if(scene.mapTeclas.W && scene.mapTeclas.D){
-      scene.model.update("upRight");
-    }
-    else if(scene.mapTeclas.S && scene.mapTeclas.A){
-      scene.model.update("downLeft");
-    }
-    else if(scene.mapTeclas.S && scene.mapTeclas.D){
-      scene.model.update("downRight");
-    }
-    else if(scene.mapTeclas.W){
-      scene.model.update("adelante");
-    }
-    else if(scene.mapTeclas.A){
-      scene.model.update("strafeL");
-    }
-    else if(scene.mapTeclas.S){
-      scene.model.update("atras");
-    }
-    else if(scene.mapTeclas.D){
-      scene.model.update("strafeR");
-    }    
-    console.log(scene.mapTeclas);
+    //console.log(scene.mapTeclas);
 
     //Ahora toca la combinacion de teclas
 
@@ -292,6 +310,23 @@ $(function () {
   window.addEventListener("keyup", (event) => {
     scene.mapTeclas[event.key.toUpperCase()]=false;
     console.log(scene.mapTeclas);
+
+    event.stopImmediatePropagation()
+
+    let allFalse=true;
+
+    for(let aux in scene.mapTeclas){
+      if(scene.mapTeclas[aux])
+        allFalse=false;
+    }
+
+    if(allFalse){
+      scene.model.resetPosicion()
+      scene.movt="parado"
+    }
+    else{
+      checkKeys(scene)
+    }
   } );
   // Que no se nos olvide, la primera visualización.
   scene.update();

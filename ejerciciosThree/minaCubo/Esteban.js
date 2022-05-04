@@ -1,9 +1,13 @@
 import * as THREE from '../libs/three.module.js'
 import * as PM from './ParametrosMundo.js'
 class Esteban extends THREE.Object3D {
+  degToRad(deg){
+    return deg*(Math.PI/180)
+  }
   constructor(gui,titleGui) {
     super();
-
+    this.cambiarAnimacion=false;
+    this.maxMovimientoExt=this.degToRad(60);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // Se crea la parte de la interfaz que corresponde a la caja
     // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
@@ -124,7 +128,7 @@ class Esteban extends THREE.Object3D {
     brazoR.material = texturabrazoR;
     this.brazoLeft = new THREE.Object3D();
     this.brazoLeft.add(brazoL);
-    this.brazoLeft.rotation.x = 0.3;
+    //this.brazoLeft.rotation.x = 0.3;
     this.brazoLeft.position.y = 22/PM.PIXELES_ESTANDAR;
 
     this.brazoLeftW1 = new THREE.Object3D();
@@ -133,7 +137,7 @@ class Esteban extends THREE.Object3D {
 
     this.brazoRight = new THREE.Object3D();
     this.brazoRight.add(brazoR);
-    this.brazoRight.rotation.x = -0.3;
+    //this.brazoRight.rotation.x = -0.3;
     this.brazoRight.position.y = 22/PM.PIXELES_ESTANDAR;
 
     this.brazoRightW1 = new THREE.Object3D();
@@ -201,8 +205,8 @@ class Esteban extends THREE.Object3D {
     this.piernaLW1.add(piernaL);
     this.piernaRW1.add(piernaR);
 
-    this.piernaLW1.rotation.x=0.5;    //
-    this.piernaRW1.rotation.x=-0.5;   //
+    //this.piernaLW1.rotation.x=0.5;    //
+    //this.piernaRW1.rotation.x=-0.5;   //
 
     this.piernaLW1.position.set(2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
     this.piernaRW1.position.set(-2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
@@ -284,17 +288,72 @@ class Esteban extends THREE.Object3D {
     folder.add (this.guiControls, 'reset').name ('[ Reset ]');
   }
 
+  resetPosicion(){
+    this.piernaLW1.rotation.x=0
+    this.piernaRW1.rotation.x=0
+    this.brazoLeft.rotation.x=0
+    this.brazoRight.rotation.x=0
+  }
+
   update (movimiento) {
-    
+    //alert(movimiento)
     switch(movimiento){
       case "adelante":{
         this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), 0.1);
-        //this.camara3rdPerson.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), 0.1);
+        //alert(this.cambiarAnimacion)
+
+        //this.resetPosicion();
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1          
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }          
+        }
+
         break;
       }
 
       case "atras":{
         this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), 0.1);
+
+        //this.resetPosicion();
+
+        if(this.cambiarAnimacion){
+          this.piernaLW1.rotation.x+=-0.1
+          this.piernaRW1.rotation.x-=-0.1
+          this.brazoLeft.rotation.x-=-0.1
+          this.brazoRight.rotation.x+=-0.1
+
+          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+            this.cambiarAnimacion=false;
+          }
+        }
+        else{
+          this.piernaLW1.rotation.x+=0.1
+          this.piernaRW1.rotation.x-=0.1
+          this.brazoLeft.rotation.x-=0.1
+          this.brazoRight.rotation.x+=0.1          
+
+          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+            this.cambiarAnimacion=true;
+          }       
+        }   
+                
         break;
       }
 
@@ -326,15 +385,26 @@ class Esteban extends THREE.Object3D {
       case "downRight":{
         this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), 0.1);
         break;
-      }      
+      }    
+
+      case "jump":{
+        console.log("acaba con mi sufrimiento");
+      }
+      
+      default:{
+        break;
+      }
+      
     }
 
     this.target.x=this.position.x;
     this.target.y=this.position.y;
     this.target.z=this.position.z;
+    this.rotation.y=this.guiControls.giroY;
 
 
     //Parte de animacion
+    /*
     this.cabezaW1.rotation.y=this.guiControls.cabezaY;
     this.cabezaW1.rotation.x=this.guiControls.cabezaX;
 
@@ -344,6 +414,7 @@ class Esteban extends THREE.Object3D {
     this.brazoRight.rotation.x=this.guiControls.brazoR;
 
     this.rotation.y=this.guiControls.giroY;
+    */
   }
 }
 
