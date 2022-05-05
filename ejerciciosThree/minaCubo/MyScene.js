@@ -9,8 +9,7 @@ import { Stats } from '../libs/stats.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
-import { Hierba } from './cubos/Hierba.js'
-import { Tierra } from './cubos/Tierra.js'
+import * as cubos from './cubos/todos.js'
 import * as PM from './ParametrosMundo.js'
 
 /// La clase fachada del modelo
@@ -64,10 +63,10 @@ class MyScene extends THREE.Scene {
 
     //this.add(this.ghost)
     this.add (this.model);
-    var h = new Hierba();
+    var h = new cubos.Hierba();
     this.add(h);
 
-    var t = new Tierra();
+    var t = new cubos.Tierra();
     t.position.set(16/PM.PIXELES_ESTANDAR, 0, 0);
     this.add(t);
 
