@@ -15,8 +15,8 @@ class Tierra extends Cubo {
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/tierra/tierra.png")}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/tierra/tierra.png")}),
     ];
- 
-    this.caja.material = textura;
+    
+    this.material = textura;
 
   }
 

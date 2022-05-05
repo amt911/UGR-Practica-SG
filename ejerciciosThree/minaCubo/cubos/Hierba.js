@@ -15,8 +15,9 @@ class Hierba extends Cubo {
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
     ];
- 
-    this.caja.material = textura;
+
+    this.material = textura;
+   // this.caja.material = textura;
 
   }
 

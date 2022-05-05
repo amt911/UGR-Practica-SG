@@ -4,6 +4,9 @@
 import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
 import { TrackballControls } from '../libs/TrackballControls.js'
+import { OrbitControls } from '../libs/OrbitControls.js'
+import { PointerLockControls } from '../libs/PointerLockControls.js'
+
 import { Stats } from '../libs/stats.module.js'
 
 // Clases de mi proyecto
@@ -18,23 +21,23 @@ import * as PM from './ParametrosMundo.js'
  */
 
 class MyScene extends THREE.Scene {
-  constructor (myCanvas) {
+  constructor(myCanvas) {
     super();
 
-    this.movt="parado";
-    this.mapTeclas={
+    this.movt = "parado";
+    this.mapTeclas = {
       "W": false,
       "A": false,
       "D": false,
       "S": false,
       " ": false
     };
- 
+
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
     this.renderer = this.createRenderer(myCanvas);
 
     // Se añade a la gui los controles para manipular los elementos de esta clase
-    this.gui = this.createGUI ();
+    this.gui = this.createGUI();
 
     this.initStats();
 
@@ -42,7 +45,7 @@ class MyScene extends THREE.Scene {
 
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
     // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
-    this.createLights ();
+    this.createLights();
 
     // Tendremos una cámara con un control de movimiento con el ratón
 
@@ -50,8 +53,8 @@ class MyScene extends THREE.Scene {
     //this.createGround ();
 
     // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
-    this.axis = new THREE.AxesHelper (5);
-    this.add (this.axis);
+    this.axis = new THREE.AxesHelper(5);
+    this.add(this.axis);
 
 
     // Por último creamos el modelo.
@@ -59,17 +62,83 @@ class MyScene extends THREE.Scene {
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.model = new Esteban(this.gui, "Controles de la Caja");
     this.ghost = new Esteban(this.gui, " de la Caja");
-    this.createCamera ();
+    this.createCamera();
 
     //this.add(this.ghost)
-    this.add (this.model);
+    this.add(this.model);
+
     var h = new cubos.Hierba();
-    this.add(h);
+    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16 * 16);
+    var matrix = new THREE.Matrix4();
+    var k = 0;
+    for (var i = -7; i <= 8; i++) {
+      for (var j = -7; j <= 8; j++) {
+        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        mesh.setMatrixAt(k, matrix);
+        k++;
+      }
+    }
+    this.add(mesh);
 
     var t = new cubos.Tierra();
-    t.position.set(16/PM.PIXELES_ESTANDAR, 0, 0);
-    this.add(t);
 
+    let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 16 * 16 * 2);
+    var f = 0;
+    for (var k = 1; k < 3; k++) {
+      for (var i = -7; i <= 8; i++) {
+        for (var j = -7; j <= 8; j++) {
+          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+          meshtierra.setMatrixAt(f, matrix);
+          f++;
+        }
+      }
+    }
+    this.add(meshtierra);
+
+    var p = new cubos.Piedra();
+
+    let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 16 * 16 * 17);
+    f = 0;
+    for (var k = 3; k < 20; k++) {
+      for (var i = -7; i <= 8; i++) {
+        for (var j = -7; j <= 8; j++) {
+          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+          meshpiedra.setMatrixAt(f, matrix);
+          f++;
+        }
+      }
+
+    }
+    this.add(meshpiedra);
+
+    f = 0;
+    var madera = new cubos.MaderaRoble();
+    let meshmadera = new THREE.InstancedMesh(madera.geometria, madera.material, 5);
+    for (var i = 0; i < 5; i++) {
+      matrix.setPosition(3 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + i * 16 / PM.PIXELES_ESTANDAR, 5 * 16 / PM.PIXELES_ESTANDAR);
+      meshmadera.setMatrixAt(f, matrix);
+      f++;
+    }
+    this.add(meshmadera);
+
+    f = 0;
+    var hoja = new cubos.HojaRoble();
+    
+    //let meshhojas = new THREE.InstancedMesh(hoja.geometria, hoja.material, 35);
+    for (var i = 2; i < 5; i++) {
+      for (var j = 4; j < 7; j++) {
+        for (var k = 2; k < 6; k++) {
+          if (i != 3 || j != 5 || k > 4) {
+            var h = hoja.clone();
+            h.position.set(i * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + k * 16 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
+            this.add(h);
+
+          }
+        }
+      }
+    }
+    //hoja.figura.position.set(0, 8/PM.PIXELES_ESTANDAR,0);
+    //this.add(hoja.figura);
   }
 
   initStats() {
@@ -83,57 +152,59 @@ class MyScene extends THREE.Scene {
     stats.domElement.style.left = '0px';
     stats.domElement.style.top = '0px';
 
-    $("#Stats-output").append( stats.domElement );
+    $("#Stats-output").append(stats.domElement);
 
     this.stats = stats;
   }
 
-  createCamera () {
+  createCamera() {
     // Para crear una cámara le indicamos
     //   El ángulo del campo de visión en grados sexagesimales
     //   La razón de aspecto ancho/alto
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (this.model.position.x, this.model.position.y+5, this.model.position.z-10);
-    // Y hacia dónde mira
-    ////var look = new THREE.Vector3 (10,0,-5);
-    this.look = new THREE.Vector3 (this.model.position.x,this.model.position.y,this.model.position.z);
-    this.camera.lookAt(this.look);
-    this.add (this.camera);
+    this.camera.position.set(this.model.position.x, this.model.position.y + 5, this.model.position.z - 10);
+
+    this.camera.lookAt(this.model.position);
+    //this.add (this.camera);
+    //this.model.add(this.camera);
 
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
-    this.cameraControl = new TrackballControls (this.camera, this.renderer.domElement);
-    // Se configuran las velocidades de los movimientos
+
+    this.cameraControl = new OrbitControls(this.camera, this.renderer.domElement);
+    //this.cameraControl.enablePan = false;
+    //this.cameraControl.enableZoom = false;
     this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.zoomSpeed = -2;
-    this.cameraControl.panSpeed = 0.5;
-    // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = new THREE.Vector3(0,0, 0);//this.model.target;
+    //this.cameraControl.target = this.model.position;
+
+    //this.model.getWorldPosition(this.cameraControl.target);
+
+   //this.cameraControl=new PointerLockControls(this.camera, this.renderer.domElement);
   }
 
-  createGround () {
+  createGround() {
     // El suelo es un Mesh, necesita una geometría y un material.
 
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (50,0.2,50);
+    var geometryGround = new THREE.BoxGeometry(50, 0.2, 50);
 
     // El material se hará con una textura de madera
     var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
-    var materialGround = new THREE.MeshPhongMaterial ({map: texture});
+    var materialGround = new THREE.MeshPhongMaterial({ map: texture });
 
     // Ya se puede construir el Mesh
-    var ground = new THREE.Mesh (geometryGround, materialGround);
+    var ground = new THREE.Mesh(geometryGround, materialGround);
 
     // Todas las figuras se crean centradas en el origen.
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
     ground.position.y = -0.1;
 
     // Que no se nos olvide añadirlo a la escena, que en este caso es  this
-    this.add (ground);
+    this.add(ground);
   }
 
-  createGUI () {
+  createGUI() {
     // Se crea la interfaz gráfica de usuario
     var gui = new GUI();
 
@@ -142,53 +213,53 @@ class MyScene extends THREE.Scene {
     // En este caso la intensidad de la luz y si se muestran o no los ejes
     this.guiControls = {
       // En el contexto de una función   this   alude a la función
-      lightIntensity : 0.5,
-      axisOnOff : true
+      lightIntensity: 0.5,
+      axisOnOff: true
     }
 
     // Se crea una sección para los controles de esta clase
-    var folder = gui.addFolder ('Luz y Ejes');
+    var folder = gui.addFolder('Luz y Ejes');
 
     // Se le añade un control para la intensidad de la luz
-    folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1)
+    folder.add(this.guiControls, 'lightIntensity', 0, 1, 0.1)
       .name('Intensidad de la Luz : ')
-      .onChange ( (value) => this.setLightIntensity (value) );
+      .onChange((value) => this.setLightIntensity(value));
 
     // Y otro para mostrar u ocultar los ejes
-    folder.add (this.guiControls, 'axisOnOff')
-      .name ('Mostrar ejes : ')
-      .onChange ( (value) => this.setAxisVisible (value) );
+    folder.add(this.guiControls, 'axisOnOff')
+      .name('Mostrar ejes : ')
+      .onChange((value) => this.setAxisVisible(value));
 
     return gui;
   }
 
-  createLights () {
+  createLights() {
     // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
     // La luz ambiental solo tiene un color y una intensidad
     // Se declara como   var   y va a ser una variable local a este método
     //    se hace así puesto que no va a ser accedida desde otros métodos
     var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
     // La añadimos a la escena
-    this.add (ambientLight);
+    this.add(ambientLight);
 
     // Se crea una luz focal que va a ser la luz principal de la escena
     // La luz focal, además tiene una posición, y un punto de mira
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight.position.set( 60, 60, 40 );
-    this.add (this.spotLight);
+    this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
+    this.spotLight.position.set(60, 60, 40);
+    this.add(this.spotLight);
   }
 
-  setLightIntensity (valor) {
+  setLightIntensity(valor) {
     this.spotLight.intensity = valor;
   }
 
-  setAxisVisible (valor) {
+  setAxisVisible(valor) {
     this.axis.visible = valor;
   }
 
-  createRenderer (myCanvas) {
+  createRenderer(myCanvas) {
     // Se recibe el lienzo sobre el que se van a hacer los renderizados. Un div definido en el html.
 
     // Se instancia un Renderer   WebGL
@@ -206,13 +277,13 @@ class MyScene extends THREE.Scene {
     return renderer;
   }
 
-  getCamera () {
+  getCamera() {
     // En principio se devuelve la única cámara que tenemos
     // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
     return this.camera;
   }
 
-  setCameraAspect (ratio) {
+  setCameraAspect(ratio) {
     // Cada vez que el usuario modifica el tamaño de la ventana desde el gestor de ventanas de
     // su sistema operativo hay que actualizar el ratio de aspecto de la cámara
     this.camera.aspect = ratio;
@@ -220,34 +291,41 @@ class MyScene extends THREE.Scene {
     this.camera.updateProjectionMatrix();
   }
 
-  onWindowResize () {
+  onWindowResize() {
     // Este método es llamado cada vez que el usuario modifica el tamapo de la ventana de la aplicación
     // Hay que actualizar el ratio de aspecto de la cámara
-    this.setCameraAspect (window.innerWidth / window.innerHeight);
+    this.setCameraAspect(window.innerWidth / window.innerHeight);
 
     // Y también el tamaño del renderizador
-    this.renderer.setSize (window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  update () {
-
+  update() {
+    //console.log(this.camera.position);
+    console.log("Personaje: ")
+    console.log(this.model.position)
+    console.log("Target: ")
+    console.log(this.cameraControl.target);
+    console.log("Posicion camara: ")
+    console.log(this.camera.position)
     if (this.stats) this.stats.update();
 
     // Se actualizan los elementos de la escena para cada frame
 
     // Se actualiza la posición de la cámara según su controlador
-    //this.cameraControl.goTo(this.model.position);
+    this.model.getWorldPosition(this.cameraControl.target);
+    this.camera.position.set(this.model.position.x, this.model.position.y + 5, this.model.position.z - 10);
+    
+    //this.cameraControl.goTo(this.model.position)
+    //this.cameraControl.rotateUp(1);
     this.cameraControl.update();
-    //this.cameraControl.target.z-=0.01;
-    //this.camera.position.set (this.model.position.x, this.model.position.y+5, this.model.position.z-10);
 
-    //this.look.x+=0.01;
     // Se actualiza el resto del modelo
     this.model.update(this.movt);
     this.ghost.update(this.movt);
     this.ghost.resetPosicion();
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
-    this.renderer.render (this, this.getCamera());
+    this.renderer.render(this, this.getCamera());
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
@@ -256,42 +334,33 @@ class MyScene extends THREE.Scene {
   }
 }
 
-function checkKeys(scene){
-  if(scene.mapTeclas.W && scene.mapTeclas.A){
-    //scene.model.update("upLeft");
-    scene.movt="upLeft";
+function checkKeys(scene) {
+  if (scene.mapTeclas.W && scene.mapTeclas.A) {
+    scene.movt = "upLeft";
   }
-  else if(scene.mapTeclas.W && scene.mapTeclas.D){
-    //scene.model.update("upRight");
-    scene.movt="upRight";
+  else if (scene.mapTeclas.W && scene.mapTeclas.D) {
+    scene.movt = "upRight";
   }
-  else if(scene.mapTeclas.S && scene.mapTeclas.A){
-    //scene.model.update("downLeft");
-    scene.movt="downLeft";
+  else if (scene.mapTeclas.S && scene.mapTeclas.A) {
+    scene.movt = "downLeft";
   }
-  else if(scene.mapTeclas.S && scene.mapTeclas.D){
-    //scene.model.update("downRight");
-    scene.movt="downRight";
+  else if (scene.mapTeclas.S && scene.mapTeclas.D) {
+    scene.movt = "downRight";
   }
-  else if(scene.mapTeclas.W){
-    //scene.model.update("adelante");
-    scene.movt="adelante";
+  else if (scene.mapTeclas.W) {
+    scene.movt = "adelante";
   }
-  else if(scene.mapTeclas.A){
-    //scene.model.update("strafeL");
-    scene.movt="strafeL";
+  else if (scene.mapTeclas.A) {
+    scene.movt = "strafeL";
   }
-  else if(scene.mapTeclas.S){
-    //scene.model.update("atras");
-    scene.movt="atras";
+  else if (scene.mapTeclas.S) {
+    scene.movt = "atras";
   }
-  else if(scene.mapTeclas.D){
-    //scene.model.update("strafeR");
-    scene.movt="strafeR";
-  } 
-  else if(scene.mapTeclas[" "]){
-    //alert("me pulsaste");
-    scene.movt="jump";
+  else if (scene.mapTeclas.D) {
+    scene.movt = "strafeR";
+  }
+  else if (scene.mapTeclas[" "]) {
+    scene.movt = "jump";
   }
 }
 
@@ -302,42 +371,45 @@ $(function () {
   var scene = new MyScene("#WebGL-output");
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
-  window.addEventListener ("resize", () => scene.onWindowResize());
-  
-  window.addEventListener("keydown", (event) => {
-    let tecla=event.key.toUpperCase();
+  window.addEventListener("resize", () => scene.onWindowResize());
 
-    scene.mapTeclas[tecla]=true;
+  window.addEventListener("keydown", (event) => {
+    let tecla = event.key.toUpperCase();
+
+    scene.mapTeclas[tecla] = true;
     checkKeys(scene)
 
     //console.log(scene.mapTeclas);
 
     //Ahora toca la combinacion de teclas
 
-  } );
+  });
 
-  
+
   window.addEventListener("keyup", (event) => {
-    scene.mapTeclas[event.key.toUpperCase()]=false;
-    console.log(scene.mapTeclas);
+    scene.mapTeclas[event.key.toUpperCase()] = false;
+    //console.log(scene.mapTeclas);
 
     event.stopImmediatePropagation()
 
-    let allFalse=true;
+    let allFalse = true;
 
-    for(let aux in scene.mapTeclas){
-      if(scene.mapTeclas[aux])
-        allFalse=false;
+    for (let aux in scene.mapTeclas) {
+      if (scene.mapTeclas[aux])
+        allFalse = false;
     }
 
-    if(allFalse){
+    if (allFalse) {
       scene.model.resetPosicion()
-      scene.movt="parado"
+      scene.movt = "parado"
     }
-    else{
+    else {
       checkKeys(scene)
     }
-  } );
+  });
+
+  //window.addEventListener("click", ()=>scene.cameraControl.lock());
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });
+

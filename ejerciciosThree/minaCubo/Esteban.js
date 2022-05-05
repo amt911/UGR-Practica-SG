@@ -1,5 +1,9 @@
 import * as THREE from '../libs/three.module.js'
 import * as PM from './ParametrosMundo.js'
+
+
+
+//IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
 class Esteban extends THREE.Object3D {
   degToRad(deg){
     return deg*(Math.PI/180)
