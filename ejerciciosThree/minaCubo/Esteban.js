@@ -282,29 +282,31 @@ class Esteban extends THREE.Object3D {
   }
 
   update (movimiento) {
-    //alert(movimiento)
+    let velocidad=this.clock.getDelta()*4.317;
+    
     switch(movimiento){
       case "adelante":{
-        this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), 0.1);
+        this.wrapperFinal.rotation.y=0;
+        this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), velocidad);
         //alert(this.cambiarAnimacion)
 
         //this.resetPosicion();
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1          
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad     
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -315,25 +317,26 @@ class Esteban extends THREE.Object3D {
       }
 
       case "atras":{
-        this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), 0.1);
+        this.wrapperFinal.rotation.y=0;
+        this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), velocidad);
 
         //this.resetPosicion();
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1          
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad     
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -347,23 +350,23 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y<this.degToRad(45)){
           this.wrapperFinal.rotation.y+=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1          
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad     
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -376,23 +379,23 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
           this.wrapperFinal.rotation.y-=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1          
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad     
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -405,24 +408,24 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y<this.degToRad(45)){
           this.wrapperFinal.rotation.y+=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), velocidad);
 
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1          
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad     
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -435,23 +438,23 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
           this.wrapperFinal.rotation.y-=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1          
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad     
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -464,23 +467,23 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
           this.wrapperFinal.rotation.y-=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
-          this.brazoLeft.rotation.x-=-0.1
-          this.brazoRight.rotation.x+=-0.1
+          this.piernaLW1.rotation.x+=-velocidad
+          this.piernaRW1.rotation.x-=-velocidad
+          this.brazoLeft.rotation.x-=-velocidad
+          this.brazoRight.rotation.x+=-velocidad
 
           if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
-          this.brazoLeft.rotation.x-=0.1
-          this.brazoRight.rotation.x+=0.1          
+          this.piernaLW1.rotation.x+=velocidad
+          this.piernaRW1.rotation.x-=velocidad
+          this.brazoLeft.rotation.x-=velocidad
+          this.brazoRight.rotation.x+=velocidad     
 
           if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=true;
@@ -493,7 +496,7 @@ class Esteban extends THREE.Object3D {
         if(this.wrapperFinal.rotation.y<this.degToRad(45)){
           this.wrapperFinal.rotation.y+=0.08;
         }
-        this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), 0.1);
+        this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
           this.piernaLW1.rotation.x+=-0.1
