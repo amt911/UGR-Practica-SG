@@ -9,7 +9,7 @@ import { Stats } from '../libs/stats.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
-
+import { Hierba } from './Hierba.js'
 
 /// La clase fachada del modelo
 /**
@@ -62,6 +62,9 @@ class MyScene extends THREE.Scene {
 
     //this.add(this.ghost)
     this.add (this.model);
+    var h = new Hierba();
+    this.add(h);
+
   }
 
   initStats() {
