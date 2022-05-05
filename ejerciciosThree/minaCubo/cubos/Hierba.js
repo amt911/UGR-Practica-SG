@@ -1,6 +1,6 @@
 import { MeshPhongMaterial } from '../../libs/three.module.js';
-import { Cubo } from './Cubo.js';
-import * as THREE from '../libs/three.module.js'
+import { Cubo } from '../Cubo.js';
+import * as THREE from '../../libs/three.module.js'
 
 class Hierba extends Cubo {
   constructor() {
@@ -10,7 +10,7 @@ class Hierba extends Cubo {
     const textura = [
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
-      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/top.png"), color: 0x97c667}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/top.png"), color: 0xa2ff6e}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/bottom.png")}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
       new THREE.MeshBasicMaterial({map: loader.load("./texturas/hierba/ladocubo.png")}),
