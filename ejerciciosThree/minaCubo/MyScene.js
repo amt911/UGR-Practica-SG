@@ -66,6 +66,20 @@ class MyScene extends THREE.Scene {
     this.ghost = new Esteban(this.gui, " de la Caja");
     this.createCamera();
 
+    var path = "texturas/cielo/";
+    var format = '.png';
+
+    var urls = [
+      path + 'px' + format, path + 'nx' + format,
+      path + 'py' + format, path + 'ny' + format,
+      path + 'pz' + format, path + 'nz' + format
+    //  path + 'py' + format, path + 'ny' + format,
+    //  path + 'pz' + format, path + 'nz' + format
+    ]
+
+    var textureCube = new THREE.CubeTextureLoader().load(urls);
+
+    this.background = textureCube;
     //this.add(this.ghost)
     this.add(this.model);
 
@@ -307,12 +321,12 @@ class MyScene extends THREE.Scene {
 
   update() {
     //console.log(this.camera.position);
-    console.log("Personaje: ")
-    console.log(this.model.position)
-    console.log("Target: ")
-    console.log(this.cameraControl.target);
-    console.log("Posicion camara: ")
-    console.log(this.camera.position)
+    // console.log("Personaje: ")
+   //  console.log(this.model.position)
+   //  console.log("Target: ")
+   //  console.log(this.cameraControl.target);
+  //   console.log("Posicion camara: ")
+  //   console.log(this.camera.position)
     if (this.stats) this.stats.update();
 
     // Se actualizan los elementos de la escena para cada frame
