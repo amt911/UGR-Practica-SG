@@ -12,6 +12,8 @@ import { Stats } from '../libs/stats.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
+import { Zombie } from './Zombie.js'
+
 import * as cubos from './cubos/todos.js'
 import * as PM from './ParametrosMundo.js'
 
@@ -67,6 +69,9 @@ class MyScene extends THREE.Scene {
     //this.add(this.ghost)
     this.add(this.model);
 
+    this.zombie = new Zombie(this.gui, "Zombie");
+    this.zombie.rotation.set(0,Math.PI,0);
+    this.add(this.zombie);
     var h = new cubos.Hierba();
     let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16 * 16);
     var matrix = new THREE.Matrix4();
