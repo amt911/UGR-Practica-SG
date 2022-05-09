@@ -13,6 +13,7 @@ import { Stats } from '../libs/stats.module.js'
 
 import { Esteban } from './Esteban.js'
 import { Zombie } from './Zombie.js'
+import { Cerdo } from './Cerdo.js'
 
 import * as cubos from './cubos/todos.js'
 import * as PM from './ParametrosMundo.js'
@@ -85,7 +86,7 @@ class MyScene extends THREE.Scene {
 
     this.zombie = new Zombie(this.gui, "Zombie");
     this.zombie.rotation.set(0,Math.PI,0);
-    this.add(this.zombie);
+    //this.add(this.zombie);
     var h = new cubos.Hierba();
     let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16 * 16);
     var matrix = new THREE.Matrix4();
@@ -158,6 +159,8 @@ class MyScene extends THREE.Scene {
     }
     //hoja.figura.position.set(0, 8/PM.PIXELES_ESTANDAR,0);
     //this.add(hoja.figura);
+    this.cerdo = new Cerdo(this.gui, "Cerdo");
+    this.add(this.cerdo);
   }
 
   initStats() {
@@ -185,21 +188,12 @@ class MyScene extends THREE.Scene {
     // También se indica dónde se coloca
     this.camera.position.set(this.model.position.x, this.model.position.y + 5, this.model.position.z - 10);
 
-    this.camera.lookAt(this.model.position);
-    //this.add (this.camera);
-    //this.model.add(this.camera);
-
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
-
+    this.vector=new THREE.Vector3();
     this.cameraControl = new OrbitControls(this.camera, this.renderer.domElement);
-    //this.cameraControl.enablePan = false;
-    //this.cameraControl.enableZoom = false;
+    this.cameraControl.enablePan = false;
+    this.cameraControl.enableZoom = false;
     this.cameraControl.rotateSpeed = 5;
-    //this.cameraControl.target = this.model.position;
-
-    //this.model.getWorldPosition(this.cameraControl.target);
-
-   //this.cameraControl=new PointerLockControls(this.camera, this.renderer.domElement);
   }
 
   createGround() {
@@ -320,29 +314,21 @@ class MyScene extends THREE.Scene {
   }
 
   update() {
-    //console.log(this.camera.position);
-    // console.log("Personaje: ")
-   //  console.log(this.model.position)
-   //  console.log("Target: ")
-   //  console.log(this.cameraControl.target);
-  //   console.log("Posicion camara: ")
-  //   console.log(this.camera.position)
+    //console.log(this.cameraControl.object.position);
     if (this.stats) this.stats.update();
 
     // Se actualizan los elementos de la escena para cada frame
+    // Se actualiza la posición de la cámara según su controlador    
+    this.vector.subVectors(this.camera.position, this.cameraControl.target)
+    this.cameraControl.object.position.copy(this.model.position).add(this.vector);
+    this.cameraControl.target.copy(this.model.position);
 
-    // Se actualiza la posición de la cámara según su controlador
-    this.model.getWorldPosition(this.cameraControl.target);
-    this.camera.position.set(this.model.position.x, this.model.position.y + 5, this.model.position.z - 10);
-    
-    //this.cameraControl.goTo(this.model.position)
-    //this.cameraControl.rotateUp(1);
     this.cameraControl.update();
-
     // Se actualiza el resto del modelo
     this.model.update(this.movt);
-    this.ghost.update(this.movt);
-    this.ghost.resetPosicion();
+
+    //this.ghost.update(this.movt);
+    //this.ghost.resetPosicion();
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
 
