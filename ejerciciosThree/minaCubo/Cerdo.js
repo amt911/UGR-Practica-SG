@@ -91,58 +91,57 @@ class Cerdo extends THREE.Object3D {
 
     this.add(this.cabezaW1);
 
-    //BRAZOS Y PIERNAS
-
-    const texturabrazoR = [
+    //PATAS
+    const texturaPataDerecha = [
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoxpos.png"),
+        map: textureLoader.load("./texturas/cerdo/pataxpos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoxneg.png"),
+        map: textureLoader.load("./texturas/cerdo/pataxneg.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoypos.png"),
+        map: textureLoader.load("./texturas/cerdo/pataypos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoyneg.png"),
+        map: textureLoader.load("./texturas/cerdo/patayneg.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazozpos.png"),
+        map: textureLoader.load("./texturas/cerdo/patazpos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazozneg.png"),
+        map: textureLoader.load("./texturas/cerdo/patazneg.png"),
       }),
     ];
 
-
-    const texturabrazoL = [
+    const texturaPataIzquierda = [
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoxneg.png"),
+        map: textureLoader.load("./texturas/cerdo/pataxneg.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoxpos.png"),
+        map: textureLoader.load("./texturas/cerdo/pataxpos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoypos.png"),
+        map: textureLoader.load("./texturas/cerdo/pataypos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoyneg.png"),
+        map: textureLoader.load("./texturas/cerdo/patayneg.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazozposR.png"),
+        map: textureLoader.load("./texturas/cerdo/patazpos.png"),
       }),
       new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/brazoznegR.png"),
+        map: textureLoader.load("./texturas/cerdo/patazneg.png"),
       }),
-
     ];
 
     var geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,6/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
-    var pataLD = new THREE.Mesh(geometriaExtremidad, this.material);
+    var pataLD = new THREE.Mesh(geometriaExtremidad, texturaPataIzquierda);
 
     //brazo izquierdo
     pataLD.position.y = -3/PM.PIXELES_ESTANDAR;
     var pataRD = pataLD.clone();
+    pataRD.material = texturaPataDerecha;
+
     this.pataLeftDel = new THREE.Object3D();
     this.pataLeftDel.add(pataLD);
     //this.brazoLeft.rotation.x = 0.3;
@@ -168,56 +167,13 @@ class Cerdo extends THREE.Object3D {
     this.add(this.pataLeftDelW1);
     this.add(this.pataRightDelW1);
 
-    //Piernas
 
-    const texturaPiernaR = [
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaxpos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaxneg.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaypos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernayneg.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernazpos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernazneg.png"),
-      }),
-    ];
-
-    const texturaPiernaL = [
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaxneg.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaxpos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernaypos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernayneg.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernazpos.png"),
-      }),
-      new THREE.MeshStandardMaterial({
-        map: textureLoader.load("./texturas/cerdo/piernazneg.png"),
-      }),
-    ];
     //Izquierda
-    var pataLT=new THREE.Mesh(geometriaExtremidad, this.textura);
-    var pataRT=new THREE.Mesh(geometriaExtremidad, this.textura);
+    var pataLT=new THREE.Mesh(geometriaExtremidad, texturaPataIzquierda);
 
     pataLT.position.y=-3/PM.PIXELES_ESTANDAR;
-    pataRT.position.y=-3/PM.PIXELES_ESTANDAR;
-
+    var pataRT = pataLT.clone();
+    pataRT.material = texturaPataDerecha;
     this.pataLeftTras=new THREE.Object3D();
     this.pataRightTras=new THREE.Object3D();
 
@@ -263,8 +219,8 @@ class Cerdo extends THREE.Object3D {
     this.guiControls = {
       cabezaX: 0,
       cabezaY: 0,
-      piernaL: 0,
-      piernaR: 0,
+      pataL: 0,
+      pataR: 0,
       giroY: 0,
       brazoL: 0,
       brazoR: 0,
@@ -274,8 +230,8 @@ class Cerdo extends THREE.Object3D {
       reset : () => {
         this.guiControls.cabezaX=0;
         this.guiControls.cabezaY=0;
-        this.guiControls.piernaL=0;
-        this.guiControls.piernaR=0;
+        this.guiControls.pataL=0;
+        this.guiControls.pataR=0;
         this.guiControls.giroY=0;
         this.guiControls.brazoL=0;
         this.guiControls.brazoR=0;
@@ -290,8 +246,8 @@ class Cerdo extends THREE.Object3D {
     folder.add (this.guiControls, 'cabezaY', -Math.PI/2, Math.PI/2, 0.1).name ('Cabeza Y : ').listen();
     folder.add (this.guiControls, 'cabezaX', -Math.PI/2, Math.PI/2, 0.1).name ('Cabeza X : ').listen();
 
-    folder.add (this.guiControls, 'piernaL', -Math.PI/2, Math.PI/2, 0.1).name ('Pierna L : ').listen();
-    folder.add (this.guiControls, 'piernaR', -Math.PI/2, Math.PI/2, 0.1).name ('Pierna R : ').listen();
+    folder.add (this.guiControls, 'pataL', -Math.PI/2, Math.PI/2, 0.1).name ('pata L : ').listen();
+    folder.add (this.guiControls, 'pataR', -Math.PI/2, Math.PI/2, 0.1).name ('pata R : ').listen();
 
     folder.add (this.guiControls, 'brazoL', -Math.PI/2, Math.PI/2, 0.1).name ('Brazo L : ').listen();
     folder.add (this.guiControls, 'brazoR', -Math.PI/2, Math.PI/2, 0.1).name ('Brazo R : ').listen();
@@ -302,8 +258,8 @@ class Cerdo extends THREE.Object3D {
   }
 
   resetPosicion(){
-    this.piernaLW1.rotation.x=0;
-    this.piernaRW1.rotation.x=0;
+    this.pataLW1.rotation.x=0;
+    this.pataRW1.rotation.x=0;
     this.brazoLeft.rotation.x=0;
     this.brazoRight.rotation.x=0;
     this.wrapperFinal.rotation.y=0;
@@ -321,22 +277,22 @@ class Cerdo extends THREE.Object3D {
         //this.resetPosicion();
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad     
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }          
         }
@@ -351,22 +307,22 @@ class Cerdo extends THREE.Object3D {
         //this.resetPosicion();
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad     
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }       
         }   
@@ -381,22 +337,22 @@ class Cerdo extends THREE.Object3D {
         this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad     
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }          
         }       
@@ -410,22 +366,22 @@ class Cerdo extends THREE.Object3D {
         this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad     
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }          
         }             
@@ -440,22 +396,22 @@ class Cerdo extends THREE.Object3D {
 
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad     
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }          
         }        
@@ -469,22 +425,22 @@ class Cerdo extends THREE.Object3D {
         this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad     
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }          
         }         
@@ -498,22 +454,22 @@ class Cerdo extends THREE.Object3D {
         this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
+          this.pataLW1.rotation.x+=-velocidad
+          this.pataRW1.rotation.x-=-velocidad
           this.brazoLeft.rotation.x-=-velocidad
           this.brazoRight.rotation.x+=-velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
+          this.pataLW1.rotation.x+=velocidad
+          this.pataRW1.rotation.x-=velocidad
           this.brazoLeft.rotation.x-=velocidad
           this.brazoRight.rotation.x+=velocidad     
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }       
         }           
@@ -527,22 +483,22 @@ class Cerdo extends THREE.Object3D {
         this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), velocidad);
 
         if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-0.1
-          this.piernaRW1.rotation.x-=-0.1
+          this.pataLW1.rotation.x+=-0.1
+          this.pataRW1.rotation.x-=-0.1
           this.brazoLeft.rotation.x-=-0.1
           this.brazoRight.rotation.x+=-0.1
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x>=this.maxMovimientoExt){
             this.cambiarAnimacion=false;
           }
         }
         else{
-          this.piernaLW1.rotation.x+=0.1
-          this.piernaRW1.rotation.x-=0.1
+          this.pataLW1.rotation.x+=0.1
+          this.pataRW1.rotation.x-=0.1
           this.brazoLeft.rotation.x-=0.1
           this.brazoRight.rotation.x+=0.1          
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
+          if(this.pataRW1.rotation.x<=-this.maxMovimientoExt){
             this.cambiarAnimacion=true;
           }       
         }          
@@ -573,8 +529,8 @@ class Cerdo extends THREE.Object3D {
     this.cabezaW1.rotation.y=this.guiControls.cabezaY;
     this.cabezaW1.rotation.x=this.guiControls.cabezaX;
 
-    this.piernaLW1.rotation.x=this.guiControls.piernaL;    //
-    this.piernaRW1.rotation.x=this.guiControls.piernaR;
+    this.pataLW1.rotation.x=this.guiControls.pataL;    //
+    this.pataRW1.rotation.x=this.guiControls.pataR;
     this.brazoLeft.rotation.x=this.guiControls.brazoL;    //
     this.brazoRight.rotation.x=this.guiControls.brazoR;
 
