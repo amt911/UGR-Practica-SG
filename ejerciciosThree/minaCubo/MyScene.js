@@ -15,7 +15,9 @@ import { Esteban } from './Esteban.js'
 import { Zombie } from './Zombie.js'
 import { Cerdo } from './Cerdo.js'
 
-import * as cubos from './cubos/todos.js'
+import * as cubos from './Cubo.js'
+import * as estructuras from './estructuras.js'
+
 import * as PM from './ParametrosMundo.js'
 
 /// La clase fachada del modelo
@@ -87,7 +89,7 @@ class MyScene extends THREE.Scene {
     this.zombie = new Zombie(this.gui, "Zombie");
     this.zombie.position.set(-3,0,0);
     this.add(this.zombie);
-    var h = new cubos.Hierba();
+    let h = new cubos.Hierba();
     let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16 * 16);
     var matrix = new THREE.Matrix4();
     var k = 0;
@@ -131,32 +133,8 @@ class MyScene extends THREE.Scene {
     }
     this.add(meshpiedra);
 
-    f = 0;
-    var madera = new cubos.MaderaRoble();
-    let meshmadera = new THREE.InstancedMesh(madera.geometria, madera.material, 5);
-    for (var i = 0; i < 5; i++) {
-      matrix.setPosition(3 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + i * 16 / PM.PIXELES_ESTANDAR, 5 * 16 / PM.PIXELES_ESTANDAR);
-      meshmadera.setMatrixAt(f, matrix);
-      f++;
-    }
-    this.add(meshmadera);
-
-    f = 0;
-    var hoja = new cubos.HojaRoble();
-    
-    //let meshhojas = new THREE.InstancedMesh(hoja.geometria, hoja.material, 35);
-    for (var i = 2; i < 5; i++) {
-      for (var j = 4; j < 7; j++) {
-        for (var k = 2; k < 6; k++) {
-          if (i != 3 || j != 5 || k > 4) {
-            var h = hoja.clone();
-            h.position.set(i * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + k * 16 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
-            this.add(h);
-
-          }
-        }
-      }
-    }
+    var arbol = new estructuras.ArbolRoble();
+    this.add(arbol);
     //hoja.figura.position.set(0, 8/PM.PIXELES_ESTANDAR,0);
     //this.add(hoja.figura);
     this.cerdo = new Cerdo(this.gui, "Cerdo");
