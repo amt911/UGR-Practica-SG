@@ -66,8 +66,10 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.model = new Esteban(this.gui, "Controles de la Caja");
-    this.ghost = new Esteban(this.gui, " de la Caja");
     this.createCamera();
+
+    //this.model.addCamara(this.camera);
+    this.ghost = new Esteban(this.gui, " de la Caja");
 
     var path = "texturas/cielo/";
     var format = '.png';
@@ -186,14 +188,17 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set(this.model.position.x, this.model.position.y + 5, this.model.position.z - 10);
+    this.camera.position.set(this.model.position.x, this.model.position.y + 10, this.model.position.z - 10);
 
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
     this.vector=new THREE.Vector3();
     this.cameraControl = new OrbitControls(this.camera, this.renderer.domElement);
+    this.cameraControl.target.set(this.model.position.x, this.model.position.y, this.model.position.z)
     this.cameraControl.enablePan = false;
     this.cameraControl.enableZoom = false;
     this.cameraControl.rotateSpeed = 5;
+
+    this.model.addCamara(this.cameraControl);
   }
 
   createGround() {
@@ -320,10 +325,16 @@ class MyScene extends THREE.Scene {
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la posición de la cámara según su controlador    
     this.vector.subVectors(this.camera.position, this.cameraControl.target)
+    /*
     this.cameraControl.object.position.copy(this.model.position).add(this.vector);
     this.cameraControl.target.copy(this.model.position);
+*/
+    let valores=new THREE.Vector3(this.model.position.x, this.model.position.y+36/PM.PIXELES_ESTANDAR, this.model.position.z);
+    this.cameraControl.object.position.copy(valores).add(this.vector);
+    this.cameraControl.target.copy(valores);
 
     this.cameraControl.update();
+    
     // Se actualiza el resto del modelo
     this.model.update(this.movt);
 
@@ -331,6 +342,7 @@ class MyScene extends THREE.Scene {
     //this.ghost.resetPosicion();
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
+    
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".

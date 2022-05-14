@@ -8,8 +8,13 @@ class Esteban extends THREE.Object3D {
   degToRad(deg){
     return deg*(Math.PI/180)
   }
+
+  radToDeg(rad){
+    return rad*(180/Math.PI);
+  }
   constructor(gui,titleGui) {
     super();
+
     this.clock=new THREE.Clock();
     this.cambiarAnimacion=false;
     this.maxMovimientoExt=this.degToRad(60);
@@ -17,8 +22,6 @@ class Esteban extends THREE.Object3D {
     // Se crea la parte de la interfaz que corresponde a la caja
     // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
     this.createGUI(gui,titleGui);
-
-    this.target=new THREE.Vector3(10, -5, 0);
 
     const textureLoader = new THREE.TextureLoader();
     const texturaCabeza = [
@@ -42,7 +45,7 @@ class Esteban extends THREE.Object3D {
       }),
     ];
     
-    //CABESA
+    //CABEZA
     var geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
 
     var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
@@ -234,6 +237,10 @@ class Esteban extends THREE.Object3D {
     this.add(this.wrapperFinal);
   }
 
+  addCamara(camara){
+    this.cameraControls=camara;
+  }
+
   createGUI (gui,titleGui) {
     // Controles para el tamaño, la orientación y la posición de la caja
     this.guiControls = {
@@ -288,13 +295,14 @@ class Esteban extends THREE.Object3D {
   update (movimiento) {
     let velocidad=this.clock.getDelta()*4.317;
     
+    //Giro arriba y abajo de la cabeza
+    this.cabezaW1.rotation.x = Math.PI/2 - this.cameraControls.getPolarAngle();
+    this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
+
     switch(movimiento){
       case "adelante":{
         this.wrapperFinal.rotation.y=0;
         this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), velocidad);
-        //alert(this.cambiarAnimacion)
-
-        //this.resetPosicion();
 
         if(this.cambiarAnimacion){
           this.piernaLW1.rotation.x+=velocidad
@@ -323,11 +331,20 @@ class Esteban extends THREE.Object3D {
       case "atras":{
 
         //ARREGLAR PARPADEO AL VOLVER
-        if(this.wrapperFinal.rotation.y<0)
+        if(this.wrapperFinal.rotation.y<0){
           this.wrapperFinal.rotation.y+=0.08;
-        else if(this.wrapperFinal.rotation.y>0)
+          
+          if(this.wrapperFinal.rotation.y>0)
+            this.wrapperFinal.rotation.y=0;
+        }
+        else if(this.wrapperFinal.rotation.y>0){
           this.wrapperFinal.rotation.y-=0.08;
+          
+          if(this.wrapperFinal.rotation.y<0)
+            this.wrapperFinal.rotation.y=0;        
+        }
 
+        console.log(this.wrapperFinal.rotation.y);
 
         this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), velocidad);
 
@@ -541,28 +558,6 @@ class Esteban extends THREE.Object3D {
       }
       
     }
-
-    this.target.x=this.position.x;
-    this.target.y=this.position.y;
-    this.target.z=this.position.z;
-    //this.rotation.y=this.guiControls.giroY;
-
-
-    //console.log(this.clock.getDelta()*this.clock.getDelta())
-    //this.position.y-=0.981*this.clock.getDelta()//*this.clock.getDelta()
-
-    //Parte de animacion
-    /*
-    this.cabezaW1.rotation.y=this.guiControls.cabezaY;
-    this.cabezaW1.rotation.x=this.guiControls.cabezaX;
-
-    this.piernaLW1.rotation.x=this.guiControls.piernaL;    //
-    this.piernaRW1.rotation.x=this.guiControls.piernaR;
-    this.brazoLeft.rotation.x=this.guiControls.brazoL;    //
-    this.brazoRight.rotation.x=this.guiControls.brazoR;
-
-    this.rotation.y=this.guiControls.giroY;
-    */
   }
 }
 
