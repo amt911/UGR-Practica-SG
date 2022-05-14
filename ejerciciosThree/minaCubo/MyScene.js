@@ -135,6 +135,26 @@ class MyScene extends THREE.Scene {
     }
     this.add(meshpiedra);
 
+    var b = new cubos.PiedraBase();
+    let meshbedrock = new THREE.InstancedMesh(b.geometria, b.material, 32*32);
+    f=0;
+    for (var i = -15; i <= 16; i++) {
+      for (var j = -15; j <= 16; j++) {
+        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - 20 * 16 /PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        meshbedrock.setMatrixAt(f, matrix);
+        f++;
+      }
+    }
+    
+    let cristal = new cubos.Cristal();
+    cristal.position.set(-5 * 16/ PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16/PM.PIXELES_ESTANDAR)
+    let cristal2 = new cubos.Cristal();
+    cristal2.position.set(-6 * 16/ PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16/PM.PIXELES_ESTANDAR)
+    this.add(cristal2);
+    this.add(cristal);
+
+
+    this.add(meshbedrock);
     var arbol = new estructuras.ArbolRoble();
     this.add(arbol);
     //hoja.figura.position.set(0, 8/PM.PIXELES_ESTANDAR,0);

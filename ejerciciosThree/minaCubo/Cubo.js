@@ -191,4 +191,61 @@ class Roca extends Cubo {
   }
 }
 
-export {Hierba, Tierra, Roca, Piedra, HojaRoble, MaderaRoble};
+class PiedraBase extends Cubo {
+  constructor() {
+    super();
+    const loader = new THREE.TextureLoader();
+
+    const textura = [
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/bedrock.png")}),
+    ];
+ 
+    this.material = textura;
+
+  }
+
+  createGUI(gui, titleGui) {
+
+  }
+
+  update(movimiento) {
+
+  }
+}
+
+
+class Cristal extends Cubo {
+  constructor() {
+    super();
+    const loader = new THREE.TextureLoader();
+
+      var matExt = new THREE.MeshPhongMaterial({alphaMap: loader.load("./texturas/cristal.png")});
+   //   matExt.alphaMap = loader.load("./texturas/hojaroble/hoja.png");
+  //  matExt.color = 0xa2ff6e;
+    matExt.transparent = true;
+    matExt.side = THREE.FrontSide;
+
+    var matInt = matExt.clone();
+    matInt.side = THREE.BackSide;
+   // matInt.color =  0xa2ff6e;
+
+    
+    this.figura = SceneUtils.createMultiMaterialObject(this.geometria,  [matInt, matExt]);
+    this.add(this.figura);
+  }
+
+  createGUI(gui, titleGui) {
+
+  }
+
+  update(movimiento) {
+
+  }
+}
+
+export {Hierba, Tierra, Roca, Piedra, HojaRoble, MaderaRoble, PiedraBase, Cristal};
