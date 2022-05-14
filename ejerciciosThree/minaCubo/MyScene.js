@@ -108,18 +108,19 @@ class MyScene extends THREE.Scene {
 
     var t = new cubos.Tierra();
 
-    let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
+    //let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
+    this.meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
     var f = 0;
     for (var k = 1; k < 3; k++) {
       for (var i = -15; i <= 16; i++) {
         for (var j = -15; j <= 16; j++) {
           matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
-          meshtierra.setMatrixAt(f, matrix);
+          this.meshtierra.setMatrixAt(f, matrix);
           f++;
         }
       }
     }
-    this.add(meshtierra);
+    this.add(this.meshtierra);
 
     var p = new cubos.Piedra();
 
@@ -318,6 +319,23 @@ class MyScene extends THREE.Scene {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+
+  onDocumentMouseDown(event){
+    let mouse= new THREE.Vector2();
+    mouse.x=(event.clientX/window.innerWidth)*2-1;
+    mouse.y=1-2*(event.clientY/window.innerHeight);
+
+    let raycaster=new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, this.camera);
+
+    let objetos=raycaster.intersectObjects(this.meshtierra, true);
+
+    if(objetos.length > 0){
+      objetos[0].material.transparent=true;
+      objetos[0].material.opacity=0.1;
+    }
+  }
+
   update() {
     //console.log(this.cameraControl.object.position);
     if (this.stats) this.stats.update();
@@ -334,7 +352,7 @@ class MyScene extends THREE.Scene {
     this.cameraControl.target.copy(valores);
 
     this.cameraControl.update();
-    
+
     // Se actualiza el resto del modelo
     this.model.update(this.movt);
 
@@ -425,6 +443,7 @@ $(function () {
     }
   });
 
+  window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));
   //window.addEventListener("click", ()=>scene.cameraControl.lock());
   // Que no se nos olvide, la primera visualización.
   scene.update();

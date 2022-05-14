@@ -28,7 +28,7 @@ constructor(){
     for (var i = 2; i < 5; i++) {
       for (var j = 4; j < 7; j++) {
         for (var k = 2; k < altura+1; k++) {
-          if (i != 3 || j != 5 || k > 4) {
+          if (i != 3 || j != 5 || k > altura-1) {
             var h = hoja.clone();
             h.position.set(i * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + k * 16 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
             this.add(h);
