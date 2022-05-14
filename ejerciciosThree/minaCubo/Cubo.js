@@ -35,6 +35,7 @@ class Hierba extends Cubo {
 
     this.material = textura;
    // this.caja.material = textura;
+   
 
   }
 

@@ -90,13 +90,15 @@ class MyScene extends THREE.Scene {
     this.zombie.position.set(-3,0,0);
     this.add(this.zombie);
     let h = new cubos.Hierba();
-    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16 * 16);
+    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 32 * 32);
+    
     var matrix = new THREE.Matrix4();
     var k = 0;
-    for (var i = -7; i <= 8; i++) {
-      for (var j = -7; j <= 8; j++) {
+    for (var i = -15; i <= 16; i++) {
+      for (var j = -15; j <= 16; j++) {
         matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
         mesh.setMatrixAt(k, matrix);
+        
         k++;
       }
     }
@@ -104,11 +106,11 @@ class MyScene extends THREE.Scene {
 
     var t = new cubos.Tierra();
 
-    let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 16 * 16 * 2);
+    let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
     var f = 0;
     for (var k = 1; k < 3; k++) {
-      for (var i = -7; i <= 8; i++) {
-        for (var j = -7; j <= 8; j++) {
+      for (var i = -15; i <= 16; i++) {
+        for (var j = -15; j <= 16; j++) {
           matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
           meshtierra.setMatrixAt(f, matrix);
           f++;
@@ -119,11 +121,11 @@ class MyScene extends THREE.Scene {
 
     var p = new cubos.Piedra();
 
-    let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 16 * 16 * 17);
+    let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 32 * 32 * 17);
     f = 0;
     for (var k = 3; k < 20; k++) {
-      for (var i = -7; i <= 8; i++) {
-        for (var j = -7; j <= 8; j++) {
+      for (var i = -15; i <= 16; i++) {
+        for (var j = -15; j <= 16; j++) {
           matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
           meshpiedra.setMatrixAt(f, matrix);
           f++;
