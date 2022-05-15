@@ -194,7 +194,7 @@ class MyScene extends THREE.Scene {
     this.add(this.cerdo);
   */
 
-    const cellSize=PM.PIXELES_ESTANDAR;
+    const cellSize=32;
     const tileSize=16;
     const tileTextureWidth=256;
     const tileTextureHeight=64;
@@ -204,89 +204,23 @@ class MyScene extends THREE.Scene {
     const texture = loader.load('https://threejs.org/manual/examples/resources/images/minecraft/flourish-cc-by-nc-sa.png');
     texture.magFilter = THREE.NearestFilter;
     texture.minFilter = THREE.NearestFilter;    
-    const world=new VoxelWorld({
-      cellSize,
-      tileSize,
-      tileTextureWidth,
-      tileTextureHeight
-    })
-    
+
     const material = new THREE.MeshLambertMaterial({
       map: texture,
       side: THREE.DoubleSide,
       alphaTest: 0.1,
       transparent: true,
     });  
+    const world=new VoxelWorld({
+      cellSize,
+      tileSize,
+      tileTextureWidth,
+      tileTextureHeight,
+      material
+    })
+    
 
-    const cellIdToMesh = {};
-    function updateCellGeometry(x, y, z, scene) {
-      const cellX = Math.floor(x / cellSize);
-      const cellY = Math.floor(y / cellSize);
-      const cellZ = Math.floor(z / cellSize);
-      const cellId = world.computeCellId(x, y, z);
-      let mesh = cellIdToMesh[cellId];
-      const geometry = mesh ? mesh.geometry : new THREE.BufferGeometry();
-  
-      const {positions, normals, uvs, indices} = world.generateGeometryDataForCell(cellX, cellY, cellZ);
-      const positionNumComponents = 3;
-      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), positionNumComponents));
-      const normalNumComponents = 3;
-      geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), normalNumComponents));
-      const uvNumComponents = 2;
-      geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents));
-      geometry.setIndex(indices);
-      geometry.computeBoundingSphere();
-  
-      if (!mesh) {
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.name = cellId;
-        cellIdToMesh[cellId] = mesh;
-        scene.add(mesh);
-        mesh.position.set(cellX * cellSize, cellY * cellSize, cellZ * cellSize);
-      }
-    }
-  
-    const neighborOffsets = [
-      [ 0,  0,  0], // self
-      [-1,  0,  0], // left
-      [ 1,  0,  0], // right
-      [ 0, -1,  0], // down
-      [ 0,  1,  0], // up
-      [ 0,  0, -1], // back
-      [ 0,  0,  1], // front
-    ];
-    function updateVoxelGeometry(x, y, z, scene) {
-      const updatedCellIds = {};
-      for (const offset of neighborOffsets) {
-        const ox = x + offset[0];
-        const oy = y + offset[1];
-        const oz = z + offset[2];
-        const cellId = world.computeCellId(ox, oy, oz);
-        if (!updatedCellIds[cellId]) {
-          updatedCellIds[cellId] = true;
-          updateCellGeometry(ox, oy, oz, scene);
-        }
-      }
-    }
-  
-    for (let y = 0; y < cellSize; ++y) {
-      for (let z = 0; z < cellSize; ++z) {
-        for (let x = 0; x < cellSize; ++x) {
-          const height = (Math.sin(x / cellSize * Math.PI * 2) + Math.sin(z / cellSize * Math.PI * 3)) * (cellSize / 6) + (cellSize / 2);
-          if (y < height) {
-            world.setVoxel(x, y, z, randInt(1, 17));
-          }
-        }
-      }
-    }
-  
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min) + min);
-    }
-  
-    updateVoxelGeometry(1, 1, 1, this);  // 0,0,0 will generate
-
-    //this.add(world);
+    world.generarChunk(this);
   }
 
 
