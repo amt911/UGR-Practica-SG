@@ -23,7 +23,7 @@ constructor(){
 
     f = 0;
     var hoja = new cubos.HojaRoble();
-    
+    this.array=[];
     //let meshhojas = new THREE.InstancedMesh(hoja.geometria, hoja.material, 35);
     for (var i = 2; i < 5; i++) {
       for (var j = 4; j < 7; j++) {
@@ -31,6 +31,7 @@ constructor(){
           if (i != 3 || j != 5 || k > altura-1) {
             var h = hoja.clone();
             h.position.set(i * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + k * 16 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
+            this.array.push(h);
             this.add(h);
 
           }

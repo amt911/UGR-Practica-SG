@@ -6,8 +6,10 @@ import { GUI } from '../libs/dat.gui.module.js'
 import { TrackballControls } from '../libs/TrackballControls.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { PointerLockControls } from '../libs/PointerLockControls.js'
-
+//import { BufferGeometryUtils } from '../libs/BufferGeometryUtils.js'
+import * as BufferGeometryUtils from '../libs/BufferGeometryUtils.js'
 import { Stats } from '../libs/stats.module.js'
+import {VoxelWorld} from './todo.js'
 
 // Clases de mi proyecto
 
@@ -68,7 +70,6 @@ class MyScene extends THREE.Scene {
     this.model = new Esteban(this.gui, "Controles de la Caja");
     this.createCamera();
 
-    //this.model.addCamara(this.camera);
     this.ghost = new Esteban(this.gui, " de la Caja");
 
     var path = "texturas/cielo/";
@@ -91,6 +92,8 @@ class MyScene extends THREE.Scene {
     this.zombie = new Zombie(this.gui, "Zombie");
     this.zombie.position.set(-3,0,0);
     this.add(this.zombie);
+
+    /*
     let h = new cubos.Hierba();
     let mesh = new THREE.InstancedMesh(h.geometria, h.material, 32 * 32);
     
@@ -147,8 +150,34 @@ class MyScene extends THREE.Scene {
         meshbedrock.setMatrixAt(f, matrix);
         f++;
       }
+          this.add(meshbedrock);
+
+    }*/
+
+/*
+    let h = new cubos.Hierba();
+    //let mesh = new THREE.Mesh(h.geometria, h.material);
+    let arMesh=[]
+
+    for(let k = 0; k > -30; k--){
+      for(let f = 8; f > -7; f--){
+        for(let c = 8; c > -7; c--){
+          //let mesh = new THREE.Mesh(h.geometria, h.material);
+          let aux=h.geometria.clone();
+          //aux.position.set(f, k, c);
+          aux.translate(f, k, c);
+
+          arMesh.push(aux);
+          //this.add(aux);
+        }
+      }
     }
-    
+    console.log(arMesh.length);
+
+    this.final=new THREE.Mesh(BufferGeometryUtils.mergeBufferGeometries(arMesh), h.material);
+
+    this.add(this.final);
+
     let cristal = new cubos.Cristal();
     cristal.position.set(-5 * 16/ PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16/PM.PIXELES_ESTANDAR)
     let cristal2 = new cubos.Cristal();
@@ -157,14 +186,109 @@ class MyScene extends THREE.Scene {
     this.add(cristal);
 
 
-    this.add(meshbedrock);
-    var arbol = new estructuras.ArbolRoble();
-    this.add(arbol);
+    this.arbol = new estructuras.ArbolRoble();
+    this.add(this.arbol);
     //hoja.figura.position.set(0, 8/PM.PIXELES_ESTANDAR,0);
     //this.add(hoja.figura);
     this.cerdo = new Cerdo(this.gui, "Cerdo");
     this.add(this.cerdo);
+  */
+
+    const cellSize=PM.PIXELES_ESTANDAR;
+    const tileSize=16;
+    const tileTextureWidth=256;
+    const tileTextureHeight=64;
+
+    
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('https://threejs.org/manual/examples/resources/images/minecraft/flourish-cc-by-nc-sa.png');
+    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = THREE.NearestFilter;    
+    const world=new VoxelWorld({
+      cellSize,
+      tileSize,
+      tileTextureWidth,
+      tileTextureHeight
+    })
+    
+    const material = new THREE.MeshLambertMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+      alphaTest: 0.1,
+      transparent: true,
+    });  
+
+    const cellIdToMesh = {};
+    function updateCellGeometry(x, y, z, scene) {
+      const cellX = Math.floor(x / cellSize);
+      const cellY = Math.floor(y / cellSize);
+      const cellZ = Math.floor(z / cellSize);
+      const cellId = world.computeCellId(x, y, z);
+      let mesh = cellIdToMesh[cellId];
+      const geometry = mesh ? mesh.geometry : new THREE.BufferGeometry();
+  
+      const {positions, normals, uvs, indices} = world.generateGeometryDataForCell(cellX, cellY, cellZ);
+      const positionNumComponents = 3;
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), positionNumComponents));
+      const normalNumComponents = 3;
+      geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), normalNumComponents));
+      const uvNumComponents = 2;
+      geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents));
+      geometry.setIndex(indices);
+      geometry.computeBoundingSphere();
+  
+      if (!mesh) {
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.name = cellId;
+        cellIdToMesh[cellId] = mesh;
+        scene.add(mesh);
+        mesh.position.set(cellX * cellSize, cellY * cellSize, cellZ * cellSize);
+      }
+    }
+  
+    const neighborOffsets = [
+      [ 0,  0,  0], // self
+      [-1,  0,  0], // left
+      [ 1,  0,  0], // right
+      [ 0, -1,  0], // down
+      [ 0,  1,  0], // up
+      [ 0,  0, -1], // back
+      [ 0,  0,  1], // front
+    ];
+    function updateVoxelGeometry(x, y, z, scene) {
+      const updatedCellIds = {};
+      for (const offset of neighborOffsets) {
+        const ox = x + offset[0];
+        const oy = y + offset[1];
+        const oz = z + offset[2];
+        const cellId = world.computeCellId(ox, oy, oz);
+        if (!updatedCellIds[cellId]) {
+          updatedCellIds[cellId] = true;
+          updateCellGeometry(ox, oy, oz, scene);
+        }
+      }
+    }
+  
+    for (let y = 0; y < cellSize; ++y) {
+      for (let z = 0; z < cellSize; ++z) {
+        for (let x = 0; x < cellSize; ++x) {
+          const height = (Math.sin(x / cellSize * Math.PI * 2) + Math.sin(z / cellSize * Math.PI * 3)) * (cellSize / 6) + (cellSize / 2);
+          if (y < height) {
+            world.setVoxel(x, y, z, randInt(1, 17));
+          }
+        }
+      }
+    }
+  
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  
+    updateVoxelGeometry(1, 1, 1, this);  // 0,0,0 will generate
+
+    //this.add(world);
   }
+
 
   initStats() {
 
@@ -321,19 +445,21 @@ class MyScene extends THREE.Scene {
 
 
   onDocumentMouseDown(event){
-    let mouse= new THREE.Vector2();
+    /*let mouse= new THREE.Vector2();
     mouse.x=(event.clientX/window.innerWidth)*2-1;
     mouse.y=1-2*(event.clientY/window.innerHeight);
 
     let raycaster=new THREE.Raycaster();
     raycaster.setFromCamera(mouse, this.camera);
 
-    let objetos=raycaster.intersectObjects(this.meshtierra, true);
+    //let prueba=[this.model.brazoLeftW1, this.model.brazoRightW1, this.model.cabezaW1]
+    let objetos=raycaster.intersectObjects(this.arbol.array, true);
 
+    console.log(objetos);
     if(objetos.length > 0){
-      objetos[0].material.transparent=true;
-      objetos[0].material.opacity=0.1;
-    }
+      objetos[0].object.material.transparent=true;
+      objetos[0].object.material.opacity=0;
+    }*/
   }
 
   update() {

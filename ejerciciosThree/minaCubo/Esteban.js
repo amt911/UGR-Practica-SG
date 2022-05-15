@@ -344,7 +344,7 @@ class Esteban extends THREE.Object3D {
             this.wrapperFinal.rotation.y=0;        
         }
 
-        console.log(this.wrapperFinal.rotation.y);
+        //console.log(this.wrapperFinal.rotation.y);
 
         this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), velocidad);
 
@@ -550,7 +550,7 @@ class Esteban extends THREE.Object3D {
       }    
 
       case "jump":{
-        console.log("acaba con mi sufrimiento");
+        //console.log("acaba con mi sufrimiento");
       }
       
       default:{
