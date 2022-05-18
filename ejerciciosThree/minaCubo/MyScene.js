@@ -28,6 +28,10 @@ import * as PM from './ParametrosMundo.js'
  */
 
 class MyScene extends THREE.Scene {
+  getCanvas(){
+    return $(this.myCanvasName);
+  }
+
   constructor(myCanvas) {
     super();
 
@@ -40,6 +44,7 @@ class MyScene extends THREE.Scene {
       " ": false
     };
 
+    this.myCanvasName=myCanvas;
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
     this.renderer = this.createRenderer(myCanvas);
 
@@ -194,7 +199,7 @@ class MyScene extends THREE.Scene {
     this.add(this.cerdo);
   */
 
-    const cellSize=32;
+    const tamanochunk=32; //número de bloques por chunk
     const tileSize=16;
     const tileTextureWidth=256;
     const tileTextureHeight=64;
@@ -211,8 +216,8 @@ class MyScene extends THREE.Scene {
       alphaTest: 0.1,
       transparent: true,
     });  
-    const world=new VoxelWorld({
-      cellSize,
+    this.world=new VoxelWorld({
+      cellSize: tamanochunk,
       tileSize,
       tileTextureWidth,
       tileTextureHeight,
@@ -220,7 +225,7 @@ class MyScene extends THREE.Scene {
     })
     
 
-    world.generarChunk(this);
+    this.world.generarChunk(this);
   }
 
 
@@ -349,6 +354,7 @@ class MyScene extends THREE.Scene {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     // La visualización se muestra en el lienzo recibido
+    //console.log("tipo renderer: "+(typeof renderer.domElement))
     $(myCanvas).append(renderer.domElement);
 
     return renderer;
@@ -461,9 +467,9 @@ function checkKeys(scene) {
 
 /// La función   main
 $(function () {
-
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
   var scene = new MyScene("#WebGL-output");
+  const canvas=scene.renderer.domElement
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener("resize", () => scene.onWindowResize());
@@ -503,6 +509,110 @@ $(function () {
     }
   });
 
+//----------------------------------------------------------------------------------------
+
+
+const neighborOffsets = [
+  [ 0,  0,  0], // self
+  [-1,  0,  0], // left
+  [ 1,  0,  0], // right
+  [ 0, -1,  0], // down
+  [ 0,  1,  0], // up
+  [ 0,  0, -1], // back
+  [ 0,  0,  1], // front
+];
+
+
+function updateVoxelGeometry(x, y, z) {
+  const updatedCellIds = {};
+  for (const offset of neighborOffsets) {
+    const ox = x + offset[0];
+    const oy = y + offset[1];
+    const oz = z + offset[2];
+    const cellId = scene.world.computeCellId(ox, oy, oz);
+    if (!updatedCellIds[cellId]) {
+      updatedCellIds[cellId] = true;
+      scene.world.updateCellGeometry(ox, oy, oz,scene);
+    }
+  }
+}
+
+let currentVoxel = 1;//0;
+//let currentId;
+
+function getCanvasRelativePosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  console.log(canvas)
+  return {
+    x: (event.clientX - rect.left) * canvas.width  / rect.width,
+    y: (event.clientY - rect.top ) * canvas.height / rect.height,
+  };
+}
+
+function placeVoxel(event) {
+  const pos = getCanvasRelativePosition(event);
+  const x = (pos.x / canvas.width ) *  2 - 1;
+  const y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
+  //console.log(pos.x);
+  //console.log(pos.y);
+  const start = new THREE.Vector3();
+  const end = new THREE.Vector3();
+  start.setFromMatrixPosition(scene.camera.matrixWorld);
+  end.set(x, y, 1).unproject(scene.camera);
+
+  const intersection = scene.world.intersectRay(start, end);
+  if (intersection) {
+    const voxelId = event.shiftKey ? 0 : currentVoxel;
+    // the intersection point is on the face. That means
+    // the math imprecision could put us on either side of the face.
+    // so go half a normal into the voxel if removing (currentVoxel = 0)
+    // our out of the voxel if adding (currentVoxel  > 0)
+    const pos = intersection.position.map((v, ndx) => {
+      return v + intersection.normal[ndx] * (voxelId > 0 ? 0.5 : -0.5);
+    });
+    scene.world.setVoxel(...pos, voxelId);
+    updateVoxelGeometry(...pos);
+    //requestRenderIfNotRequested();
+  }
+}
+
+const mouse = {
+  x: 0,
+  y: 0,
+};
+
+function recordStartPosition(event) {
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
+  mouse.moveX = 0;
+  mouse.moveY = 0;
+}
+function recordMovement(event) {
+  mouse.moveX += Math.abs(mouse.x - event.clientX);
+  mouse.moveY += Math.abs(mouse.y - event.clientY);
+}
+function placeVoxelIfNoMovement(event) {
+  if (mouse.moveX < 5 && mouse.moveY < 5) {
+    placeVoxel(event);
+  }
+  window.removeEventListener('pointermove', recordMovement);
+  window.removeEventListener('pointerup', placeVoxelIfNoMovement);
+}
+canvas.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
+  recordStartPosition(event);
+  window.addEventListener('pointermove', recordMovement);
+  window.addEventListener('pointerup', placeVoxelIfNoMovement);
+}, {passive: false});
+canvas.addEventListener('touchstart', (event) => {
+  // prevent scrolling
+  event.preventDefault();
+}, {passive: false});
+
+
+
+
+//----------------------------------------------------------------------------------------
   window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));
   //window.addEventListener("click", ()=>scene.cameraControl.lock());
   // Que no se nos olvide, la primera visualización.

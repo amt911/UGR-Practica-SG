@@ -1,0 +1,19 @@
+#cajainventario{
+    display:absolute;
+    bottom: 2px;
+    margin: auto;
+}
+
+#inventario{
+    background-color: grey;
+    outline-color: black;
+    outline-width: 1px;
+    outline-style: solid;
+    display:grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 1%;
+}
+
+.item{
+    display:grid;
+}
