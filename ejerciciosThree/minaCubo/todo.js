@@ -3,7 +3,7 @@ import * as THREE from '../libs/three.module.js'
 
 
 class VoxelWorld {
-    constructor(options) {
+    constructor(options, BORRAR) {
         this.material=options.material;
         this.cellSize = options.cellSize;
         this.tileSize = options.tileSize;
@@ -13,14 +13,12 @@ class VoxelWorld {
         this.cellSliceSize = cellSize * cellSize;
         this.cells = {};
         
-        /*
+        this.scene=BORRAR;
         this.borrame=[];
-        for(let i=0; i<27; i++){
+        for(let i=0; i<3000; i++){
             this.borrame.push(new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshPhongMaterial()));
             BORRAR.add(this.borrame[this.borrame.length-1]);
         }
-
-        */
       }
 
     //Cálculo de las coordenadas del chunk de un voxel concreto (ej: si un chunk es de 16x16, el bloque <32,23,15> estará en el chunq <2,1,0>)
@@ -50,6 +48,7 @@ class VoxelWorld {
 
     //Añade un chunk nuevo para un voxel concreto
     addCellForVoxel(x, y, z) {
+        console.log("añado chunk");
         const cellId = this.computeCellId(x, y, z);
         let cell = this.cells[cellId];
         if (!cell) {
@@ -218,14 +217,20 @@ class VoxelWorld {
     //METODOS NUESTROS
     checkCollisionCharacter(p){
         let position=p.position;
-        let noc=this.computeCellId(position.x, 0, position.z).split(",");
+        let noc=[this.computeCellId(position.x-1, 0, position.z+1).split(","),
+        this.computeCellId(position.x+1, 0, position.z-1).split(","),
+        this.computeCellId(position.x+1, 0, position.z+1).split(","),
+        this.computeCellId(position.x-1, 0, position.z-1).split(",")]
 
-        for(let i=0; i<noc.length; i++)
-            noc[i]=parseInt(noc[i]);
+        for(let i=0; i<noc.length; i++){
+            for(let j=0; j<noc[i].length; j++){
+                noc[i][j]=parseInt(noc[i]);
+            }
+        }
+
+        //Ahora hace falta quitar los que son iguales
 
         let geom=this.generateGeometryDataForCellAllFaces(...noc);
-
-        //console.log(geom.positions)
 
         let cubos=[];
 
@@ -234,6 +239,9 @@ class VoxelWorld {
             bG.translate(0.5+geom.positions[i*72], 0.5+geom.positions[i*72+1]-1, 0.5+geom.positions[i*72+2]);
 
             cubos.push(new THREE.Mesh(bG));     //Hay fuga de memoria aqui
+
+            this.borrame[i].geometry.dispose();
+            this.borrame[i].geometry=bG;
         }
 
         //console.log(cubos.length);
