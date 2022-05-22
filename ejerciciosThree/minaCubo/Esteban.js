@@ -1,4 +1,5 @@
 import * as THREE from '../libs/three.module.js'
+//import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import * as PM from './ParametrosMundo.js'
 
 
@@ -235,6 +236,12 @@ class Esteban extends THREE.Object3D {
     this.wrapperFinal.add(torso)
     
     this.add(this.wrapperFinal);
+
+    let boundingBoxGeom=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 32/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
+    this.boundingBox=new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
+    this.boundingBox.position.y+=16/PM.PIXELES_ESTANDAR
+
+    this.add(this.boundingBox);
   }
 
   addCamara(camara){

@@ -2,12 +2,9 @@
 // Clases de la biblioteca
 
 import * as THREE from '../libs/three.module.js'
+//import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import { GUI } from '../libs/dat.gui.module.js'
-import { TrackballControls } from '../libs/TrackballControls.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
-import { PointerLockControls } from '../libs/PointerLockControls.js'
-//import { BufferGeometryUtils } from '../libs/BufferGeometryUtils.js'
-import * as BufferGeometryUtils from '../libs/BufferGeometryUtils.js'
 import { Stats } from '../libs/stats.module.js'
 import {VoxelWorld} from './todo.js'
 
@@ -199,16 +196,16 @@ class MyScene extends THREE.Scene {
     this.add(this.cerdo);
   */
 
-    const tamanochunk=32; //número de bloques por chunk
+    const tamanochunk=10; //número de bloques por chunk
     const tileSize=16;
     const tileTextureWidth=256;
     const tileTextureHeight=64;
 
-    
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('https://threejs.org/manual/examples/resources/images/minecraft/flourish-cc-by-nc-sa.png');
+    const texture = loader.load('https://threejs.org/manual/examples/resources/images/minecraft/flourish-cc-by-nc-sa.png', this.render);
     texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestFilter;    
+    texture.minFilter = THREE.NearestFilter;
+  
 
     const material = new THREE.MeshLambertMaterial({
       map: texture,
@@ -222,7 +219,7 @@ class MyScene extends THREE.Scene {
       tileTextureWidth,
       tileTextureHeight,
       material
-    })
+    }, this)
     
 
     this.world.generarChunk(this);
@@ -402,6 +399,22 @@ class MyScene extends THREE.Scene {
     }*/
   }
 
+  detectCollisionCharacterWorld(){
+    this.model.boundingBox.geometry.computeBoundingBox();
+    this.world.geometry.computeBoundingBox();
+    this.model.boundingBox.updateMatrixWorld();
+    this.world.mesh.updateMatrixWorld();
+
+    let a=this.model.boundingBox.geometry.boundingBox.clone();
+    a.applyMatrix4(this.model.boundingBox.matrixWorld);
+
+    let b=this.world.geometry.boundingBox.clone();
+    //console.log(b);
+    b.applyMatrix4(this.world.mesh.matrixWorld);
+
+    return a.intersectsBox(b);
+  }
+
   update() {
     //console.log(this.cameraControl.object.position);
     if (this.stats) this.stats.update();
@@ -428,10 +441,14 @@ class MyScene extends THREE.Scene {
     this.renderer.render(this, this.getCamera());
     
 
+    let a=this.world.checkCollisionCharacter(this.model);
+    console.log(a)
+
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
+
   }
 }
 
@@ -542,7 +559,7 @@ let currentVoxel = 1;//0;
 
 function getCanvasRelativePosition(event) {
   const rect = canvas.getBoundingClientRect();
-  console.log(canvas)
+  //console.log(canvas)
   return {
     x: (event.clientX - rect.left) * canvas.width  / rect.width,
     y: (event.clientY - rect.top ) * canvas.height / rect.height,
@@ -618,4 +635,5 @@ canvas.addEventListener('touchstart', (event) => {
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });
+
 
