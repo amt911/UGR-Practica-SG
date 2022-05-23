@@ -7,7 +7,7 @@ import { GUI } from '../libs/dat.gui.module.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { Stats } from '../libs/stats.module.js'
 import {VoxelWorld} from './todo.js'
-
+import { Math } from '../libs/three.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
@@ -95,23 +95,46 @@ class MyScene extends THREE.Scene {
     this.zombie.position.set(-3,0,0);
     this.add(this.zombie);
 
-    /*
+    this.bloques=[];
+
     let h = new cubos.Hierba();
-    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 32 * 32);
+    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 10*10);
     
     var matrix = new THREE.Matrix4();
     var k = 0;
-    for (var i = -15; i <= 16; i++) {
-      for (var j = -15; j <= 16; j++) {
+    for (var i = 0; i < 10; i++) {
+      for (var j = 0; j < 10; j++) {
+        this.bloques.push({x:j * 16 / PM.PIXELES_ESTANDAR, y:-8 / PM.PIXELES_ESTANDAR, z:i * 16 / PM.PIXELES_ESTANDAR});
         matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
         mesh.setMatrixAt(k, matrix);
         
         k++;
       }
     }
+    //console.log(this.bloques);
+    //throw new Error("xd");
     this.add(mesh);
 
-    var t = new cubos.Tierra();
+    this.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1)))
+/*
+    let h = new cubos.Hierba();
+
+    this.bloques=[];
+    var matrix = new THREE.Matrix4();
+    var k = 0;
+    var amplitud = 100;
+    for (var i = -31; i <= 32; i++) {
+      for (var j = -31; j <= 32; j++) {
+        let mesh = new THREE.Mesh(h.geometria, h.material);
+        //var v = Math.round(noise.perlin2(i,j)*amplitud/5)*5;
+        mesh.position.set(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        this.bloques.push(mesh);
+        this.add(mesh);
+      }
+    }
+    //this.add(mesh);
+
+/*    var t = new cubos.Tierra();
 
     //let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
     this.meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
@@ -154,10 +177,12 @@ class MyScene extends THREE.Scene {
       }
           this.add(meshbedrock);
 
-    }*/
+    } 
 
-/*
-    let h = new cubos.Hierba();
+    
+*/
+
+    /*let h = new cubos.Hierba();
     //let mesh = new THREE.Mesh(h.geometria, h.material);
     let arMesh=[]
 
@@ -179,7 +204,7 @@ class MyScene extends THREE.Scene {
     this.final=new THREE.Mesh(BufferGeometryUtils.mergeBufferGeometries(arMesh), h.material);
 
     this.add(this.final);
-
+*/
     let cristal = new cubos.Cristal();
     cristal.position.set(-5 * 16/ PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16/PM.PIXELES_ESTANDAR)
     let cristal2 = new cubos.Cristal();
@@ -194,35 +219,8 @@ class MyScene extends THREE.Scene {
     //this.add(hoja.figura);
     this.cerdo = new Cerdo(this.gui, "Cerdo");
     this.add(this.cerdo);
-  */
+ 
 
-    const tamanochunk=10; //número de bloques por chunk
-    const tileSize=16;
-    const tileTextureWidth=256;
-    const tileTextureHeight=64;
-
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('https://threejs.org/manual/examples/resources/images/minecraft/flourish-cc-by-nc-sa.png', this.render);
-    texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestFilter;
-  
-
-    const material = new THREE.MeshLambertMaterial({
-      map: texture,
-      side: THREE.DoubleSide,
-      alphaTest: 0.1,
-      transparent: true,
-    });  
-    this.world=new VoxelWorld({
-      cellSize: tamanochunk,
-      tileSize,
-      tileTextureWidth,
-      tileTextureHeight,
-      material
-    }, this)
-    
-
-    this.world.generarChunk(this);
   }
 
 
@@ -433,7 +431,7 @@ class MyScene extends THREE.Scene {
     this.cameraControl.update();
 
     // Se actualiza el resto del modelo
-    this.model.update(this.movt);
+    this.model.update(this.movt, this.bloques);
 
     //this.ghost.update(this.movt);
     //this.ghost.resetPosicion();
@@ -441,8 +439,6 @@ class MyScene extends THREE.Scene {
     this.renderer.render(this, this.getCamera());
     
 
-    let a=this.world.checkCollisionCharacter(this.model);
-    console.log(a)
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
@@ -528,7 +524,7 @@ $(function () {
 
 //----------------------------------------------------------------------------------------
 
-
+/*
 const neighborOffsets = [
   [ 0,  0,  0], // self
   [-1,  0,  0], // left
@@ -627,7 +623,7 @@ canvas.addEventListener('touchstart', (event) => {
 }, {passive: false});
 
 
-
+*/
 
 //----------------------------------------------------------------------------------------
   window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));

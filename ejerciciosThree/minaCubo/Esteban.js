@@ -3,7 +3,6 @@ import * as THREE from '../libs/three.module.js'
 import * as PM from './ParametrosMundo.js'
 
 
-
 //IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
 class Esteban extends THREE.Object3D {
   degToRad(deg){
@@ -15,6 +14,9 @@ class Esteban extends THREE.Object3D {
   }
   constructor(gui,titleGui) {
     super();
+
+    this.caidaVel=-0.01;
+    this.caidaAcc=-0.01;
 
     this.clock=new THREE.Clock();
     this.cambiarAnimacion=false;
@@ -237,7 +239,7 @@ class Esteban extends THREE.Object3D {
     
     this.add(this.wrapperFinal);
 
-    let boundingBoxGeom=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 32/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
+    let boundingBoxGeom=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 32/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
     this.boundingBox=new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
     this.boundingBox.position.y+=16/PM.PIXELES_ESTANDAR
 
@@ -299,7 +301,7 @@ class Esteban extends THREE.Object3D {
     this.wrapperFinal.rotation.y=0;
   }
 
-  update (movimiento) {
+  update (movimiento, bloques) {
     let velocidad=this.clock.getDelta()*4.317;
     
     //Giro arriba y abajo de la cabeza
@@ -558,6 +560,7 @@ class Esteban extends THREE.Object3D {
 
       case "jump":{
         //console.log("acaba con mi sufrimiento");
+        this.caidaVel=0.1;
       }
       
       default:{
@@ -565,6 +568,47 @@ class Esteban extends THREE.Object3D {
       }
       
     }
+
+    //Deteccion de caidas
+    this.position.y+=this.caidaVel;
+    this.caidaVel+=this.caidaAcc;
+
+    let estaSuelo=false;
+
+    for(let i=0; i<bloques.length && !estaSuelo; i++){
+//      console.log("----------------------------------")
+//      console.log(this.position.x);
+//      console.log(bloques[i].x);
+//      console.log(this.position.z-bloques[i].z+0.5);
+      //console.log("__________________________________")
+      //console.log(Math.abs(this.position.x)-Math.abs(bloques[i].x)+0.25);
+      //console.log(Math.abs(this.position.z)-Math.abs(bloques[i].z)+0.25);
+      //console.log("**********************************")
+
+      if(((this.position.x)-(bloques[i].x)-0.25)<=0 && ((this.position.x)-(bloques[i].x)+0.25)>=0  && ((this.position.z)-(bloques[i].z)-0.25)<=0 && ((this.position.z)-(bloques[i].z)+0.25)>=0){
+        //console.log("----------------------------------")
+        //console.log(bloques[i].position.y+32/PM.PIXELES_ESTANDAR/2)
+        //console.log(this.position.y)
+        //console.log("__________________________________")
+        //if(bloques[i].y+32/PM.PIXELES_ESTANDAR/2 -0.5 >= this.position.y){
+        if(-bloques[i].y -1 + this.position.y <= 0 && this.position.y - bloques[i].y>=0){
+          this.position.y=bloques[i].y+32/PM.PIXELES_ESTANDAR/2 -0.5; 
+          //console.log(bloques[i].position.y+32/PM.PIXELES_ESTANDAR/2+0.5)
+          this.caidaVel=0;
+          estaSuelo=true;
+        }
+      }
+    }
+    //console.log("tam bloques: "+bloques.length)
+    console.log(this.position.y)
+    //console.log(estaSuelo)
+    //console.log(this.caidaVel)
+    //console.log(this.caidaAcc)
+/*
+    if(!estaSuelo){
+      this.caidaVel=-0.01;
+    }
+    */
   }
 }
 
