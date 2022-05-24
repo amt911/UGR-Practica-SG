@@ -98,7 +98,7 @@ class MyScene extends THREE.Scene {
     this.bloques=[];
 
     let h = new cubos.Hierba();
-    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16*16 + 6);
+    this.mesh = new THREE.InstancedMesh(h.geometria, h.material, 16*16 + 6);
     
     let matrix = new THREE.Matrix4();
     let k = 0;
@@ -106,7 +106,7 @@ class MyScene extends THREE.Scene {
       for (let j = 0; j < 16; j++) {
         this.bloques.push({x:j * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y:-8 / PM.PIXELES_ESTANDAR, z:i * 16 / PM.PIXELES_ESTANDAR+ 8 / PM.PIXELES_ESTANDAR});
         matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR+ 8 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR);
-        mesh.setMatrixAt(k, matrix);
+        this.mesh.setMatrixAt(k, matrix);
         
         k++;
       }
@@ -114,38 +114,38 @@ class MyScene extends THREE.Scene {
 
     this.bloques.push({x:2 + 8 / PM.PIXELES_ESTANDAR, y: 8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(2 + 8 / PM.PIXELES_ESTANDAR,  8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
 
     k++;
 
     this.bloques.push({x:5 + 8 / PM.PIXELES_ESTANDAR, y: 8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR,  8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
 
     k++;
 
     this.bloques.push({x:5 + 8 / PM.PIXELES_ESTANDAR, y: 1+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR,  1+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
     k++;
 
     this.bloques.push({x:4 + 8 / PM.PIXELES_ESTANDAR, y: 1+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(4 + 8 / PM.PIXELES_ESTANDAR,  1+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
     k++;
 
     this.bloques.push({x:7 + 8 / PM.PIXELES_ESTANDAR, y: 3+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(7+ 8 / PM.PIXELES_ESTANDAR,  3+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
 
     k++;
 
     this.bloques.push({x:6 + 8 / PM.PIXELES_ESTANDAR, y: 2+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
     matrix.setPosition(6+ 8 / PM.PIXELES_ESTANDAR,  2+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
-    mesh.setMatrixAt(k, matrix);
+    this.mesh.setMatrixAt(k, matrix);
     //console.log(this.bloques);
     //throw new Error("xd");
-    this.add(mesh);
+    this.add(this.mesh);
 
     this.bloqueRaro=new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
     this.add(this.bloqueRaro);
@@ -154,102 +154,7 @@ class MyScene extends THREE.Scene {
     this.add(this.asd)
 
     //this.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1)))
-/*
-    for(let i=0; i<this.bloques.length; i++){
-      let aux=new THREE.BoxGeometry(1, 1, 1);
-      aux.translate(this.bloques[i].x, this.bloques[i].y, this.bloques[i].z) 
 
-      this.add(new THREE.Mesh(aux))
-    }
-/*
-    let h = new cubos.Hierba();
-
-    this.bloques=[];
-    let matrix = new THREE.Matrix4();
-    let k = 0;
-    let amplitud = 100;
-    for (let i = -31; i <= 32; i++) {
-      for (let j = -31; j <= 32; j++) {
-        let mesh = new THREE.Mesh(h.geometria, h.material);
-        //let v = Math.round(noise.perlin2(i,j)*amplitud/5)*5;
-        mesh.position.set(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
-        this.bloques.push(mesh);
-        this.add(mesh);
-      }
-    }
-    //this.add(mesh);
-
-/*    let t = new cubos.Tierra();
-
-    //let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
-    this.meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
-    let f = 0;
-    for (let k = 1; k < 3; k++) {
-      for (let i = -15; i <= 16; i++) {
-        for (let j = -15; j <= 16; j++) {
-          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
-          this.meshtierra.setMatrixAt(f, matrix);
-          f++;
-        }
-      }
-    }
-    this.add(this.meshtierra);
-
-    let p = new cubos.Piedra();
-
-    let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 32 * 32 * 17);
-    f = 0;
-    for (let k = 3; k < 20; k++) {
-      for (let i = -15; i <= 16; i++) {
-        for (let j = -15; j <= 16; j++) {
-          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
-          meshpiedra.setMatrixAt(f, matrix);
-          f++;
-        }
-      }
-
-    }
-    this.add(meshpiedra);
-
-    let b = new cubos.PiedraBase();
-    let meshbedrock = new THREE.InstancedMesh(b.geometria, b.material, 32*32);
-    f=0;
-    for (let i = -15; i <= 16; i++) {
-      for (let j = -15; j <= 16; j++) {
-        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - 20 * 16 /PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
-        meshbedrock.setMatrixAt(f, matrix);
-        f++;
-      }
-          this.add(meshbedrock);
-
-    } 
-
-    
-*/
-
-    /*let h = new cubos.Hierba();
-    //let mesh = new THREE.Mesh(h.geometria, h.material);
-    let arMesh=[]
-
-    for(let k = 0; k > -30; k--){
-      for(let f = 8; f > -7; f--){
-        for(let c = 8; c > -7; c--){
-          //let mesh = new THREE.Mesh(h.geometria, h.material);
-          let aux=h.geometria.clone();
-          //aux.position.set(f, k, c);
-          aux.translate(f, k, c);
-
-          arMesh.push(aux);
-          //this.add(aux);
-        }
-      }
-    }
-    console.log(arMesh.length);
-
-    this.final=new THREE.Mesh(BufferGeometryUtils.mergeBufferGeometries(arMesh), h.material);
-
-    this.add(this.final);
-*/
     let cristal = new cubos.Cristal();
     cristal.position.set(-5 * 16/ PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16/PM.PIXELES_ESTANDAR)
     let cristal2 = new cubos.Cristal();
@@ -425,7 +330,7 @@ class MyScene extends THREE.Scene {
 
 
   onDocumentMouseDown(event){
-    /*let mouse= new THREE.Vector2();
+    let mouse= new THREE.Vector2();
     mouse.x=(event.clientX/window.innerWidth)*2-1;
     mouse.y=1-2*(event.clientY/window.innerHeight);
 
@@ -433,13 +338,22 @@ class MyScene extends THREE.Scene {
     raycaster.setFromCamera(mouse, this.camera);
 
     //let prueba=[this.model.brazoLeftW1, this.model.brazoRightW1, this.model.cabezaW1]
-    let objetos=raycaster.intersectObjects(this.arbol.array, true);
+    let objetos=raycaster.intersectObject(this.mesh, true);
 
     console.log(objetos);
     if(objetos.length > 0){
-      objetos[0].object.material.transparent=true;
-      objetos[0].object.material.opacity=0;
-    }*/
+      //for(let i=0; i<objetos[0].object.material.length; i++){
+      //  //objetos[0].object.material[i].transparent=true;
+      //  //objetos[0].object.material[i].opacity=0;
+      //  //objetos[0].object.material[i].color="0xffff00";
+      //  let aux=objetos[0].object.material[i].clone();
+      //  aux.color=0xff0000;
+      //  objetos[0].object.material[i].dispose();
+//
+      //  objetos[0].object.material[i]=aux
+      //}
+      //console.log(objetos[0].object.material)
+    }
   }
 
   detectCollisionCharacterWorld(){
@@ -452,23 +366,18 @@ class MyScene extends THREE.Scene {
     a.applyMatrix4(this.model.boundingBox.matrixWorld);
 
     let b=this.world.geometry.boundingBox.clone();
-    //console.log(b);
     b.applyMatrix4(this.world.mesh.matrixWorld);
 
     return a.intersectsBox(b);
   }
 
   update() {
-    //console.log(this.cameraControl.object.position);
     if (this.stats) this.stats.update();
 
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la posición de la cámara según su controlador    
     this.vector.subVectors(this.camera.position, this.cameraControl.target)
-    /*
-    this.cameraControl.object.position.copy(this.model.position).add(this.vector);
-    this.cameraControl.target.copy(this.model.position);
-*/
+
     let valores=new THREE.Vector3(this.model.position.x, this.model.position.y+36/PM.PIXELES_ESTANDAR, this.model.position.z);
     this.cameraControl.object.position.copy(valores).add(this.vector);
     this.cameraControl.target.copy(valores);
@@ -478,8 +387,6 @@ class MyScene extends THREE.Scene {
     // Se actualiza el resto del modelo
     this.model.update(this.movt, this.bloques, this.bloqueRaro, this.asd);
 
-    //this.ghost.update(this.movt);
-    //this.ghost.resetPosicion();
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
     
@@ -570,109 +477,6 @@ $(function () {
       checkKeys(scene)
     }
   });
-
-//----------------------------------------------------------------------------------------
-
-/*
-const neighborOffsets = [
-  [ 0,  0,  0], // self
-  [-1,  0,  0], // left
-  [ 1,  0,  0], // right
-  [ 0, -1,  0], // down
-  [ 0,  1,  0], // up
-  [ 0,  0, -1], // back
-  [ 0,  0,  1], // front
-];
-
-
-function updateVoxelGeometry(x, y, z) {
-  const updatedCellIds = {};
-  for (const offset of neighborOffsets) {
-    const ox = x + offset[0];
-    const oy = y + offset[1];
-    const oz = z + offset[2];
-    const cellId = scene.world.computeCellId(ox, oy, oz);
-    if (!updatedCellIds[cellId]) {
-      updatedCellIds[cellId] = true;
-      scene.world.updateCellGeometry(ox, oy, oz,scene);
-    }
-  }
-}
-
-let currentVoxel = 1;//0;
-//let currentId;
-
-function getCanvasRelativePosition(event) {
-  const rect = canvas.getBoundingClientRect();
-  //console.log(canvas)
-  return {
-    x: (event.clientX - rect.left) * canvas.width  / rect.width,
-    y: (event.clientY - rect.top ) * canvas.height / rect.height,
-  };
-}
-
-function placeVoxel(event) {
-  const pos = getCanvasRelativePosition(event);
-  const x = (pos.x / canvas.width ) *  2 - 1;
-  const y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
-  //console.log(pos.x);
-  //console.log(pos.y);
-  const start = new THREE.Vector3();
-  const end = new THREE.Vector3();
-  start.setFromMatrixPosition(scene.camera.matrixWorld);
-  end.set(x, y, 1).unproject(scene.camera);
-
-  const intersection = scene.world.intersectRay(start, end);
-  if (intersection) {
-    const voxelId = event.shiftKey ? 0 : currentVoxel;
-    // the intersection point is on the face. That means
-    // the math imprecision could put us on either side of the face.
-    // so go half a normal into the voxel if removing (currentVoxel = 0)
-    // our out of the voxel if adding (currentVoxel  > 0)
-    const pos = intersection.position.map((v, ndx) => {
-      return v + intersection.normal[ndx] * (voxelId > 0 ? 0.5 : -0.5);
-    });
-    scene.world.setVoxel(...pos, voxelId);
-    updateVoxelGeometry(...pos);
-    //requestRenderIfNotRequested();
-  }
-}
-
-const mouse = {
-  x: 0,
-  y: 0,
-};
-
-function recordStartPosition(event) {
-  mouse.x = event.clientX;
-  mouse.y = event.clientY;
-  mouse.moveX = 0;
-  mouse.moveY = 0;
-}
-function recordMovement(event) {
-  mouse.moveX += Math.abs(mouse.x - event.clientX);
-  mouse.moveY += Math.abs(mouse.y - event.clientY);
-}
-function placeVoxelIfNoMovement(event) {
-  if (mouse.moveX < 5 && mouse.moveY < 5) {
-    placeVoxel(event);
-  }
-  window.removeEventListener('pointermove', recordMovement);
-  window.removeEventListener('pointerup', placeVoxelIfNoMovement);
-}
-canvas.addEventListener('pointerdown', (event) => {
-  event.preventDefault();
-  recordStartPosition(event);
-  window.addEventListener('pointermove', recordMovement);
-  window.addEventListener('pointerup', placeVoxelIfNoMovement);
-}, {passive: false});
-canvas.addEventListener('touchstart', (event) => {
-  // prevent scrolling
-  event.preventDefault();
-}, {passive: false});
-
-
-*/
 
 //----------------------------------------------------------------------------------------
   window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));

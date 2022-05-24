@@ -14,13 +14,13 @@ constructor(){
     var altura = Math.floor(Math.random()*2) + 4;
     console.log(altura);
 
-    let meshmadera = new THREE.InstancedMesh(madera.geometria, madera.material, altura);
+    this.meshmadera = new THREE.InstancedMesh(madera.geometria, madera.material, altura);
     for (var i = 0; i < altura; i++) {
       matrix.setPosition(3 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR + i * 16 / PM.PIXELES_ESTANDAR, 5 * 16 / PM.PIXELES_ESTANDAR);
-      meshmadera.setMatrixAt(f, matrix);
+      this.meshmadera.setMatrixAt(f, matrix);
       f++;
     }
-    this.add(meshmadera);
+    this.add(this.meshmadera);
 
     f = 0;
     var hoja = new cubos.HojaRoble();

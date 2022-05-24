@@ -9,3 +9,121 @@ ARREGLAR QUE COLISIONA CON DOS BLOQUES LIBRES
 SI DA TIEMPO QUE FUESE MAS FLUIDO EL MOVIMIENTO
 
 ARREGLAR QUE CUANDO SE SALTAN DOS BLOQUES, SE PEGA EL PERSONAJE AL MISMO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+    for(let i=0; i<this.bloques.length; i++){
+      let aux=new THREE.BoxGeometry(1, 1, 1);
+      aux.translate(this.bloques[i].x, this.bloques[i].y, this.bloques[i].z) 
+
+      this.add(new THREE.Mesh(aux))
+    }
+/*
+    let h = new cubos.Hierba();
+
+    this.bloques=[];
+    let matrix = new THREE.Matrix4();
+    let k = 0;
+    let amplitud = 100;
+    for (let i = -31; i <= 32; i++) {
+      for (let j = -31; j <= 32; j++) {
+        let mesh = new THREE.Mesh(h.geometria, h.material);
+        //let v = Math.round(noise.perlin2(i,j)*amplitud/5)*5;
+        mesh.position.set(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        this.bloques.push(mesh);
+        this.add(mesh);
+      }
+    }
+    //this.add(mesh);
+
+/*    let t = new cubos.Tierra();
+
+    //let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
+    this.meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
+    let f = 0;
+    for (let k = 1; k < 3; k++) {
+      for (let i = -15; i <= 16; i++) {
+        for (let j = -15; j <= 16; j++) {
+          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+          this.meshtierra.setMatrixAt(f, matrix);
+          f++;
+        }
+      }
+    }
+    this.add(this.meshtierra);
+
+    let p = new cubos.Piedra();
+
+    let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 32 * 32 * 17);
+    f = 0;
+    for (let k = 3; k < 20; k++) {
+      for (let i = -15; i <= 16; i++) {
+        for (let j = -15; j <= 16; j++) {
+          matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+          meshpiedra.setMatrixAt(f, matrix);
+          f++;
+        }
+      }
+
+    }
+    this.add(meshpiedra);
+
+    let b = new cubos.PiedraBase();
+    let meshbedrock = new THREE.InstancedMesh(b.geometria, b.material, 32*32);
+    f=0;
+    for (let i = -15; i <= 16; i++) {
+      for (let j = -15; j <= 16; j++) {
+        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - 20 * 16 /PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        meshbedrock.setMatrixAt(f, matrix);
+        f++;
+      }
+          this.add(meshbedrock);
+
+    } 
+
+    
+*/
+
+    /*let h = new cubos.Hierba();
+    //let mesh = new THREE.Mesh(h.geometria, h.material);
+    let arMesh=[]
+
+    for(let k = 0; k > -30; k--){
+      for(let f = 8; f > -7; f--){
+        for(let c = 8; c > -7; c--){
+          //let mesh = new THREE.Mesh(h.geometria, h.material);
+          let aux=h.geometria.clone();
+          //aux.position.set(f, k, c);
+          aux.translate(f, k, c);
+
+          arMesh.push(aux);
+          //this.add(aux);
+        }
+      }
+    }
+    console.log(arMesh.length);
+
+    this.final=new THREE.Mesh(BufferGeometryUtils.mergeBufferGeometries(arMesh), h.material);
+
+    this.add(this.final);
+*/
