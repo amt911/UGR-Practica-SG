@@ -98,19 +98,51 @@ class MyScene extends THREE.Scene {
     this.bloques=[];
 
     let h = new cubos.Hierba();
-    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16*16);
+    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16*16 + 6);
     
     let matrix = new THREE.Matrix4();
     let k = 0;
     for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 16; j++) {
-        this.bloques.push({x:j * 16 / PM.PIXELES_ESTANDAR, y:-8 / PM.PIXELES_ESTANDAR, z:i * 16 / PM.PIXELES_ESTANDAR});
-        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
+        this.bloques.push({x:j * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y:-8 / PM.PIXELES_ESTANDAR, z:i * 16 / PM.PIXELES_ESTANDAR+ 8 / PM.PIXELES_ESTANDAR});
+        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR+ 8 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR);
         mesh.setMatrixAt(k, matrix);
         
         k++;
       }
     }
+
+    this.bloques.push({x:2 + 8 / PM.PIXELES_ESTANDAR, y: 8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(2 + 8 / PM.PIXELES_ESTANDAR,  8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
+
+    k++;
+
+    this.bloques.push({x:5 + 8 / PM.PIXELES_ESTANDAR, y: 8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR,  8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
+
+    k++;
+
+    this.bloques.push({x:5 + 8 / PM.PIXELES_ESTANDAR, y: 1+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR,  1+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
+    k++;
+
+    this.bloques.push({x:4 + 8 / PM.PIXELES_ESTANDAR, y: 1+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(4 + 8 / PM.PIXELES_ESTANDAR,  1+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
+    k++;
+
+    this.bloques.push({x:7 + 8 / PM.PIXELES_ESTANDAR, y: 3+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(7+ 8 / PM.PIXELES_ESTANDAR,  3+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
+
+    k++;
+
+    this.bloques.push({x:6 + 8 / PM.PIXELES_ESTANDAR, y: 2+8/PM.PIXELES_ESTANDAR, z: 2+8 / PM.PIXELES_ESTANDAR});
+    matrix.setPosition(6+ 8 / PM.PIXELES_ESTANDAR,  2+8/PM.PIXELES_ESTANDAR, 2+8 / PM.PIXELES_ESTANDAR);
+    mesh.setMatrixAt(k, matrix);
     //console.log(this.bloques);
     //throw new Error("xd");
     this.add(mesh);
@@ -474,6 +506,9 @@ function checkKeys(scene) {
   else if (scene.mapTeclas.S && scene.mapTeclas.D) {
     scene.movt = "downRight";
   }
+  else if (scene.mapTeclas[" "] && scene.mapTeclas.W) {
+    scene.movt = "jumpUp";
+  }
   else if (scene.mapTeclas.W) {
     scene.movt = "adelante";
   }
@@ -489,6 +524,7 @@ function checkKeys(scene) {
   else if (scene.mapTeclas[" "]) {
     scene.movt = "jump";
   }
+
 }
 
 /// La función   main
