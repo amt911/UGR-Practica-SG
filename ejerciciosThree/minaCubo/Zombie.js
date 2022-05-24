@@ -16,7 +16,7 @@ class Zombie extends THREE.Object3D {
     this.maxMovimientoExt=this.degToRad(60);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // Se crea la parte de la interfaz que corresponde a la caja
-    // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
+    // Se crea primero porque otros métodos usan las letiables que se definen para la interfaz
     this.createGUI(gui,titleGui);
 
     this.target=new THREE.Vector3(10, -5, 0);
@@ -44,9 +44,9 @@ class Zombie extends THREE.Object3D {
     ];
     
     //CABESA
-    var geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
+    let geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
 
-    var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
+    let cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
 
     cabeza.position.y=4/PM.PIXELES_ESTANDAR;
 
@@ -103,12 +103,12 @@ class Zombie extends THREE.Object3D {
 
     ];
 
-    var geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,12/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
-    var brazoL = new THREE.Mesh(geometriaExtremidad, texturabrazoL);
+    let geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,12/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
+    let brazoL = new THREE.Mesh(geometriaExtremidad, texturabrazoL);
 
     //brazo izquierdo
     brazoL.position.y = -4/PM.PIXELES_ESTANDAR;
-    var brazoR = brazoL.clone();
+    let brazoR = brazoL.clone();
     
     brazoR.material = texturabrazoR;
     this.brazoLeft = new THREE.Object3D();
@@ -183,8 +183,8 @@ class Zombie extends THREE.Object3D {
       }),
     ];
     //Izquierda
-    var piernaL=new THREE.Mesh(geometriaExtremidad, texturaPiernaL);
-    var piernaR=new THREE.Mesh(geometriaExtremidad, texturaPiernaR);
+    let piernaL=new THREE.Mesh(geometriaExtremidad, texturaPiernaL);
+    let piernaR=new THREE.Mesh(geometriaExtremidad, texturaPiernaR);
 
     piernaL.position.y=-6/PM.PIXELES_ESTANDAR;
     piernaR.position.y=-6/PM.PIXELES_ESTANDAR;
@@ -222,9 +222,9 @@ class Zombie extends THREE.Object3D {
       }),
     ];
     //TORSO
-    var geometriaTorso=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
+    let geometriaTorso=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
 
-    var torso=new THREE.Mesh(geometriaTorso, texturaCuerpo);
+    let torso=new THREE.Mesh(geometriaTorso, texturaCuerpo);
     torso.position.y = 18/PM.PIXELES_ESTANDAR;
     //this.add(torso);
 
@@ -248,7 +248,7 @@ class Zombie extends THREE.Object3D {
     // Se crea una sección para los controles de la caja
     // Estas lineas son las que añaden los componentes de la interfaz
     // Las tres cifras indican un valor mínimo, un máximo y el incremento
-    // El método   listen()   permite que si se cambia el valor de la variable en código, el deslizador de la interfaz se actualice
+    // El método   listen()   permite que si se cambia el valor de la letiable en código, el deslizador de la interfaz se actualice
 
   }
 

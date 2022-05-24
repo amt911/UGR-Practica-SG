@@ -5,26 +5,29 @@ import * as PM from './ParametrosMundo.js'
 
 //IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
 class Esteban extends THREE.Object3D {
-  degToRad(deg){
-    return deg*(Math.PI/180)
+  degToRad(deg) {
+    return deg * (Math.PI / 180)
   }
 
-  radToDeg(rad){
-    return rad*(180/Math.PI);
+  radToDeg(rad) {
+    return rad * (180 / Math.PI);
   }
-  constructor(gui,titleGui) {
+  constructor(gui, titleGui) {
     super();
 
-    this.caidaVel=-0.01;
-    this.caidaAcc=-0.01;
+    this.caidaVel = -0.01;
+    this.caidaAcc = -0.01;
 
-    this.clock=new THREE.Clock();
-    this.cambiarAnimacion=false;
-    this.maxMovimientoExt=this.degToRad(60);
+    //this.caidaVel=0;
+    //this.caidaAcc=0;
+
+    this.clock = new THREE.Clock();
+    this.cambiarAnimacion = false;
+    this.maxMovimientoExt = this.degToRad(60);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // Se crea la parte de la interfaz que corresponde a la caja
-    // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
-    this.createGUI(gui,titleGui);
+    // Se crea primero porque otros métodos usan las letiables que se definen para la interfaz
+    this.createGUI(gui, titleGui);
 
     const textureLoader = new THREE.TextureLoader();
     const texturaCabeza = [
@@ -47,18 +50,18 @@ class Esteban extends THREE.Object3D {
         map: textureLoader.load("./texturas/esteban/cabezazneg.png"),
       }),
     ];
-    
+
     //CABEZA
-    var geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
+    let geometriaCabeza = new THREE.BoxGeometry(8 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR);
 
-    var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
+    let cabeza = new THREE.Mesh(geometriaCabeza, texturaCabeza);
 
-    cabeza.position.y=4/PM.PIXELES_ESTANDAR;
+    cabeza.position.y = 4 / PM.PIXELES_ESTANDAR;
 
-    this.cabezaW1=new THREE.Object3D();
+    this.cabezaW1 = new THREE.Object3D();
     this.cabezaW1.add(cabeza);
 
-    this.cabezaW1.position.y=24/PM.PIXELES_ESTANDAR;
+    this.cabezaW1.position.y = 24 / PM.PIXELES_ESTANDAR;
 
     //this.add(this.cabezaW1);
 
@@ -108,29 +111,29 @@ class Esteban extends THREE.Object3D {
 
     ];
 
-    var geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,12/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
-    var brazoL = new THREE.Mesh(geometriaExtremidad, texturabrazoL);
+    let geometriaExtremidad = new THREE.BoxGeometry(4 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 4 / PM.PIXELES_ESTANDAR);
+    let brazoL = new THREE.Mesh(geometriaExtremidad, texturabrazoL);
 
     //brazo izquierdo
-    brazoL.position.y = -4/PM.PIXELES_ESTANDAR;
-    var brazoR = brazoL.clone();
+    brazoL.position.y = -4 / PM.PIXELES_ESTANDAR;
+    let brazoR = brazoL.clone();
     brazoR.material = texturabrazoR;
     this.brazoLeft = new THREE.Object3D();
     this.brazoLeft.add(brazoL);
     //this.brazoLeft.rotation.x = 0.3;
-    this.brazoLeft.position.y = 22/PM.PIXELES_ESTANDAR;
+    this.brazoLeft.position.y = 22 / PM.PIXELES_ESTANDAR;
 
     this.brazoLeftW1 = new THREE.Object3D();
-    this.brazoLeftW1.position.x = +6/PM.PIXELES_ESTANDAR;
+    this.brazoLeftW1.position.x = +6 / PM.PIXELES_ESTANDAR;
     this.brazoLeftW1.add(this.brazoLeft);
 
     this.brazoRight = new THREE.Object3D();
     this.brazoRight.add(brazoR);
     //this.brazoRight.rotation.x = -0.3;
-    this.brazoRight.position.y = 22/PM.PIXELES_ESTANDAR;
+    this.brazoRight.position.y = 22 / PM.PIXELES_ESTANDAR;
 
     this.brazoRightW1 = new THREE.Object3D();
-    this.brazoRightW1.position.x = -6/PM.PIXELES_ESTANDAR;
+    this.brazoRightW1.position.x = -6 / PM.PIXELES_ESTANDAR;
     this.brazoRightW1.add(this.brazoRight);
 
 
@@ -181,20 +184,20 @@ class Esteban extends THREE.Object3D {
       }),
     ];
     //Izquierda
-    var piernaL=new THREE.Mesh(geometriaExtremidad, texturaPiernaL);
-    var piernaR=new THREE.Mesh(geometriaExtremidad, texturaPiernaR);
+    let piernaL = new THREE.Mesh(geometriaExtremidad, texturaPiernaL);
+    let piernaR = new THREE.Mesh(geometriaExtremidad, texturaPiernaR);
 
-    piernaL.position.y=-6/PM.PIXELES_ESTANDAR;
-    piernaR.position.y=-6/PM.PIXELES_ESTANDAR;
+    piernaL.position.y = -6 / PM.PIXELES_ESTANDAR;
+    piernaR.position.y = -6 / PM.PIXELES_ESTANDAR;
 
-    this.piernaLW1=new THREE.Object3D();
-    this.piernaRW1=new THREE.Object3D();
+    this.piernaLW1 = new THREE.Object3D();
+    this.piernaRW1 = new THREE.Object3D();
 
     this.piernaLW1.add(piernaL);
     this.piernaRW1.add(piernaR);
 
-    this.piernaLW1.position.set(2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
-    this.piernaRW1.position.set(-2/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 0);
+    this.piernaLW1.position.set(2 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 0);
+    this.piernaRW1.position.set(-2 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 0);
 
     //this.add(this.piernaLW1);
     //this.add(this.piernaRW1);
@@ -220,15 +223,15 @@ class Esteban extends THREE.Object3D {
       }),
     ];
     //TORSO
-    var geometriaTorso=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 12/PM.PIXELES_ESTANDAR, 4/PM.PIXELES_ESTANDAR);
+    let geometriaTorso = new THREE.BoxGeometry(8 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 4 / PM.PIXELES_ESTANDAR);
 
-    var torso=new THREE.Mesh(geometriaTorso, texturaCuerpo);
-    torso.position.y = 18/PM.PIXELES_ESTANDAR;
+    let torso = new THREE.Mesh(geometriaTorso, texturaCuerpo);
+    torso.position.y = 18 / PM.PIXELES_ESTANDAR;
     //this.add(torso);
 
 
     //ESTO ES NECESARIO PARA QUE FUNCIONE LA ANIMACION DE STRAFE
-    this.wrapperFinal=new THREE.Object3D();
+    this.wrapperFinal = new THREE.Object3D();
 
     this.wrapperFinal.add(this.cabezaW1)
     this.wrapperFinal.add(this.brazoLeftW1)
@@ -236,21 +239,28 @@ class Esteban extends THREE.Object3D {
     this.wrapperFinal.add(this.piernaLW1)
     this.wrapperFinal.add(this.piernaRW1)
     this.wrapperFinal.add(torso)
-    
+
     this.add(this.wrapperFinal);
 
-    let boundingBoxGeom=new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 32/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
-    this.boundingBox=new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
-    this.boundingBox.position.y+=16/PM.PIXELES_ESTANDAR
+    let boundingBoxGeom = new THREE.BoxGeometry(8 / PM.PIXELES_ESTANDAR, 32 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR);
+    this.boundingBox = new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
+    this.boundingBox.position.y += 16 / PM.PIXELES_ESTANDAR
 
     this.add(this.boundingBox);
+
+    this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
+    //this.add(this.bloqueRaro);
+
+    this.position.y += 10;
+
+    this.puedeSaltar=true;
   }
 
-  addCamara(camara){
-    this.cameraControls=camara;
+  addCamara(camara) {
+    this.cameraControls = camara;
   }
 
-  createGUI (gui,titleGui) {
+  createGUI(gui, titleGui) {
     // Controles para el tamaño, la orientación y la posición de la caja
     this.guiControls = {
       cabezaX: 0,
@@ -263,94 +273,113 @@ class Esteban extends THREE.Object3D {
 
       // Un botón para dejarlo todo en su posición inicial
       // Cuando se pulse se ejecutará esta función.
-      reset : () => {
-        this.guiControls.cabezaX=0;
-        this.guiControls.cabezaY=0;
-        this.guiControls.piernaL=0;
-        this.guiControls.piernaR=0;
-        this.guiControls.giroY=0;
-        this.guiControls.brazoL=0;
-        this.guiControls.brazoR=0;
+      reset: () => {
+        this.guiControls.cabezaX = 0;
+        this.guiControls.cabezaY = 0;
+        this.guiControls.piernaL = 0;
+        this.guiControls.piernaR = 0;
+        this.guiControls.giroY = 0;
+        this.guiControls.brazoL = 0;
+        this.guiControls.brazoR = 0;
       }
     }
 
     // Se crea una sección para los controles de la caja
-    var folder = gui.addFolder (titleGui);
+    let folder = gui.addFolder(titleGui);
     // Estas lineas son las que añaden los componentes de la interfaz
     // Las tres cifras indican un valor mínimo, un máximo y el incremento
-    // El método   listen()   permite que si se cambia el valor de la variable en código, el deslizador de la interfaz se actualice
-    folder.add (this.guiControls, 'cabezaY', -Math.PI/2, Math.PI/2, 0.1).name ('Cabeza Y : ').listen();
-    folder.add (this.guiControls, 'cabezaX', -Math.PI/2, Math.PI/2, 0.1).name ('Cabeza X : ').listen();
+    // El método   listen()   permite que si se cambia el valor de la letiable en código, el deslizador de la interfaz se actualice
+    folder.add(this.guiControls, 'cabezaY', -Math.PI / 2, Math.PI / 2, 0.1).name('Cabeza Y : ').listen();
+    folder.add(this.guiControls, 'cabezaX', -Math.PI / 2, Math.PI / 2, 0.1).name('Cabeza X : ').listen();
 
-    folder.add (this.guiControls, 'piernaL', -Math.PI/2, Math.PI/2, 0.1).name ('Pierna L : ').listen();
-    folder.add (this.guiControls, 'piernaR', -Math.PI/2, Math.PI/2, 0.1).name ('Pierna R : ').listen();
+    folder.add(this.guiControls, 'piernaL', -Math.PI / 2, Math.PI / 2, 0.1).name('Pierna L : ').listen();
+    folder.add(this.guiControls, 'piernaR', -Math.PI / 2, Math.PI / 2, 0.1).name('Pierna R : ').listen();
 
-    folder.add (this.guiControls, 'brazoL', -Math.PI/2, Math.PI/2, 0.1).name ('Brazo L : ').listen();
-    folder.add (this.guiControls, 'brazoR', -Math.PI/2, Math.PI/2, 0.1).name ('Brazo R : ').listen();
+    folder.add(this.guiControls, 'brazoL', -Math.PI / 2, Math.PI / 2, 0.1).name('Brazo L : ').listen();
+    folder.add(this.guiControls, 'brazoR', -Math.PI / 2, Math.PI / 2, 0.1).name('Brazo R : ').listen();
 
-    folder.add (this.guiControls, 'giroY', -Math.PI/2, Math.PI/2, 0.1).name ('Giro Esteban: ').listen();
+    folder.add(this.guiControls, 'giroY', -Math.PI / 2, Math.PI / 2, 0.1).name('Giro Esteban: ').listen();
 
-    folder.add (this.guiControls, 'reset').name ('[ Reset ]');
+    folder.add(this.guiControls, 'reset').name('[ Reset ]');
   }
 
-  resetPosicion(){
-    this.piernaLW1.rotation.x=0;
-    this.piernaRW1.rotation.x=0;
-    this.brazoLeft.rotation.x=0;
-    this.brazoRight.rotation.x=0;
-    this.wrapperFinal.rotation.y=0;
+  resetPosicion() {
+    this.piernaLW1.rotation.x = 0;
+    this.piernaRW1.rotation.x = 0;
+    this.brazoLeft.rotation.x = 0;
+    this.brazoRight.rotation.x = 0;
+    this.wrapperFinal.rotation.y = 0;
   }
 
-  update (movimiento, bloques) {
-    let velocidad=this.clock.getDelta()*4.317;
-    
+  detectCollisionCharacterWorld(box) {
+    this.boundingBox.geometry.computeBoundingBox();
+    box.geometry.computeBoundingBox();
+    this.boundingBox.updateMatrixWorld();
+    box.updateMatrixWorld();
+
+    let a = this.boundingBox.geometry.boundingBox.clone();
+    a.applyMatrix4(this.boundingBox.matrixWorld);
+
+    let b = box.geometry.boundingBox.clone();
+    //console.log(b);
+    b.applyMatrix4(box.matrixWorld);
+
+    return a.intersectsBox(b);
+  }
+
+
+  update(movimiento, bloques, bloqueRaro, asd) {
+    //console.log(this.bloqueRaro.position);
+    let velocidad = this.clock.getDelta() * 4.317;
+
     //Giro arriba y abajo de la cabeza
-    this.cabezaW1.rotation.x = Math.PI/2 - this.cameraControls.getPolarAngle();
+    this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
 
-    switch(movimiento){
-      case "adelante":{
-        this.wrapperFinal.rotation.y=0;
-        this.translateOnAxis(new THREE.Vector3(0,0,1).normalize(), velocidad);
+    
+    switch (movimiento) {
+      case "adelante": {
+        this.wrapperFinal.rotation.y = 0;
+        this.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad     
+        else {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }          
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
         }
 
         break;
       }
 
-      case "atras":{
+      case "atras": {
 
         //ARREGLAR PARPADEO AL VOLVER
-        if(this.wrapperFinal.rotation.y<0){
-          this.wrapperFinal.rotation.y+=0.08;
-          
-          if(this.wrapperFinal.rotation.y>0)
-            this.wrapperFinal.rotation.y=0;
+        if (this.wrapperFinal.rotation.y < 0) {
+          this.wrapperFinal.rotation.y += 0.08;
+
+          if (this.wrapperFinal.rotation.y > 0)
+            this.wrapperFinal.rotation.y = 0;
         }
-        else if(this.wrapperFinal.rotation.y>0){
-          this.wrapperFinal.rotation.y-=0.08;
-          
-          if(this.wrapperFinal.rotation.y<0)
-            this.wrapperFinal.rotation.y=0;        
+        else if (this.wrapperFinal.rotation.y > 0) {
+          this.wrapperFinal.rotation.y -= 0.08;
+
+          if (this.wrapperFinal.rotation.y < 0)
+            this.wrapperFinal.rotation.y = 0;
         }
 
         //console.log(this.wrapperFinal.rotation.y);
@@ -359,256 +388,245 @@ class Esteban extends THREE.Object3D {
 
         //this.resetPosicion();
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad     
+        else {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }       
-        }   
-                
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
+
         break;
       }
 
-      case "strafeL":{
-        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
-          this.wrapperFinal.rotation.y+=0.08;
+      case "strafeL": {
+        if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+          this.wrapperFinal.rotation.y += 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad     
+        else {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }          
-        }       
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
       }
 
-      case "strafeR":{
-        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
-          this.wrapperFinal.rotation.y-=0.08;
+      case "strafeR": {
+        if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+          this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad     
+        else {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }          
-        }             
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
       }
-      
-      case "upLeft":{
-        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
-          this.wrapperFinal.rotation.y+=0.08;
+
+      case "upLeft": {
+        if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+          this.wrapperFinal.rotation.y += 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), velocidad);
 
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad     
+        else {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }          
-        }        
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
       }
-      
-      case "upRight":{
-        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
-          this.wrapperFinal.rotation.y-=0.08;
+
+      case "upRight": {
+        if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+          this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad     
+        else {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }          
-        }         
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
       }
-      
-      case "downLeft":{
-        if(this.wrapperFinal.rotation.y>this.degToRad(-45)){
-          this.wrapperFinal.rotation.y-=0.08;
+
+      case "downLeft": {
+        if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+          this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad     
+        else {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }       
-        }           
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
       }
-      
-      case "downRight":{
-        if(this.wrapperFinal.rotation.y<this.degToRad(45)){
-          this.wrapperFinal.rotation.y+=0.08;
+
+      case "downRight": {
+        if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+          this.wrapperFinal.rotation.y += 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), velocidad);
 
-        if(this.cambiarAnimacion){
-          this.piernaLW1.rotation.x+=-velocidad
-          this.piernaRW1.rotation.x-=-velocidad
-          this.brazoLeft.rotation.x-=-velocidad
-          this.brazoRight.rotation.x+=-velocidad
+        if (this.cambiarAnimacion) {
+          this.piernaLW1.rotation.x += -velocidad
+          this.piernaRW1.rotation.x -= -velocidad
+          this.brazoLeft.rotation.x -= -velocidad
+          this.brazoRight.rotation.x += -velocidad
 
-          if(this.piernaRW1.rotation.x>=this.maxMovimientoExt){
-            this.cambiarAnimacion=false;
+          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
+            this.cambiarAnimacion = false;
           }
         }
-        else{
-          this.piernaLW1.rotation.x+=velocidad
-          this.piernaRW1.rotation.x-=velocidad
-          this.brazoLeft.rotation.x-=velocidad
-          this.brazoRight.rotation.x+=velocidad     
+        else {
+          this.piernaLW1.rotation.x += velocidad
+          this.piernaRW1.rotation.x -= velocidad
+          this.brazoLeft.rotation.x -= velocidad
+          this.brazoRight.rotation.x += velocidad
 
-          if(this.piernaRW1.rotation.x<=-this.maxMovimientoExt){
-            this.cambiarAnimacion=true;
-          }       
-        }          
+          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
+            this.cambiarAnimacion = true;
+          }
+        }
         break;
-      }    
+      }
 
-      case "jump":{
+      case "jump": {
         //console.log("acaba con mi sufrimiento");
-        this.caidaVel=0.1;
-      }
-      
-      default:{
+        if(this.puedeSaltar){
+          this.caidaVel = 1;
+          this.puedeSaltar=false;
+        }
+
         break;
       }
-      
+
+      default: {
+        break;
+      }
+
     }
 
     //Deteccion de caidas
-    this.position.y+=this.caidaVel;
-    this.caidaVel+=this.caidaAcc;
+    this.position.y += this.caidaVel;
+    this.caidaVel += this.caidaAcc;
+    let estaSuelo = false;
 
-    let estaSuelo=false;
+    console.log(this.position.y);
+    for (let i = 0; i < bloques.length; i++) {
+      let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
+      let eV = new THREE.Vector2(this.position.x, this.position.z);
 
-    for(let i=0; i<bloques.length && !estaSuelo; i++){
-//      console.log("----------------------------------")
-//      console.log(this.position.x);
-//      console.log(bloques[i].x);
-//      console.log(this.position.z-bloques[i].z+0.5);
-      //console.log("__________________________________")
-      //console.log(Math.abs(this.position.x)-Math.abs(bloques[i].x)+0.25);
-      //console.log(Math.abs(this.position.z)-Math.abs(bloques[i].z)+0.25);
-      //console.log("**********************************")
+      if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
 
-      if(((this.position.x)-(bloques[i].x)-0.25)<=0 && ((this.position.x)-(bloques[i].x)+0.25)>=0  && ((this.position.z)-(bloques[i].z)-0.25)<=0 && ((this.position.z)-(bloques[i].z)+0.25)>=0){
-        //console.log("----------------------------------")
-        //console.log(bloques[i].position.y+32/PM.PIXELES_ESTANDAR/2)
-        //console.log(this.position.y)
-        //console.log("__________________________________")
-        //if(bloques[i].y+32/PM.PIXELES_ESTANDAR/2 -0.5 >= this.position.y){
-        if(-bloques[i].y -1 + this.position.y <= 0 && this.position.y - bloques[i].y>=0){
-          this.position.y=bloques[i].y+32/PM.PIXELES_ESTANDAR/2 -0.5; 
-          //console.log(bloques[i].position.y+32/PM.PIXELES_ESTANDAR/2+0.5)
-          this.caidaVel=0;
-          estaSuelo=true;
+        asd.position.set(bloques[i].x, bloques[i].y, bloques[i].z)
+        bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
+        
+        if (this.position.y - (bloques[i].y + 0.5) <= 0) {
+          this.position.y = bloques[i].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
+          
+          this.caidaVel = 0;
+          this.puedeSaltar=true;
+          break;
         }
       }
     }
-    //console.log("tam bloques: "+bloques.length)
-    console.log(this.position.y)
-    //console.log(estaSuelo)
-    //console.log(this.caidaVel)
-    //console.log(this.caidaAcc)
-/*
-    if(!estaSuelo){
-      this.caidaVel=-0.01;
-    }
-    */
   }
 }
 

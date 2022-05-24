@@ -21,7 +21,7 @@ import * as PM from './ParametrosMundo.js'
 
 /// La clase fachada del modelo
 /**
- * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
+ * Usaremos una clase derivada de la clase Scene de Three.js para llelet el control de la escena y de todo lo que ocurre en ella.
  */
 
 class MyScene extends THREE.Scene {
@@ -53,7 +53,7 @@ class MyScene extends THREE.Scene {
     // Construimos los distinos elementos que tendremos en la escena
 
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
-    // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
+    // Tras crear cada elemento se añadirá a la escena con   this.add(letiable)
     this.createLights();
 
     // Tendremos una cámara con un control de movimiento con el ratón
@@ -74,10 +74,10 @@ class MyScene extends THREE.Scene {
 
     this.ghost = new Esteban(this.gui, " de la Caja");
 
-    var path = "texturas/cielo/";
-    var format = '.png';
+    let path = "texturas/cielo/";
+    let format = '.png';
 
-    var urls = [
+    let urls = [
       path + 'px' + format, path + 'nx' + format,
       path + 'py' + format, path + 'ny' + format,
       path + 'pz' + format, path + 'nz' + format
@@ -85,7 +85,7 @@ class MyScene extends THREE.Scene {
     //  path + 'pz' + format, path + 'nz' + format
     ]
 
-    var textureCube = new THREE.CubeTextureLoader().load(urls);
+    let textureCube = new THREE.CubeTextureLoader().load(urls);
 
     this.background = textureCube;
     //this.add(this.ghost)
@@ -98,12 +98,12 @@ class MyScene extends THREE.Scene {
     this.bloques=[];
 
     let h = new cubos.Hierba();
-    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 10*10);
+    let mesh = new THREE.InstancedMesh(h.geometria, h.material, 16*16);
     
-    var matrix = new THREE.Matrix4();
-    var k = 0;
-    for (var i = 0; i < 10; i++) {
-      for (var j = 0; j < 10; j++) {
+    let matrix = new THREE.Matrix4();
+    let k = 0;
+    for (let i = 0; i < 16; i++) {
+      for (let j = 0; j < 16; j++) {
         this.bloques.push({x:j * 16 / PM.PIXELES_ESTANDAR, y:-8 / PM.PIXELES_ESTANDAR, z:i * 16 / PM.PIXELES_ESTANDAR});
         matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
         mesh.setMatrixAt(k, matrix);
@@ -115,18 +115,31 @@ class MyScene extends THREE.Scene {
     //throw new Error("xd");
     this.add(mesh);
 
-    this.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1)))
+    this.bloqueRaro=new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
+    this.add(this.bloqueRaro);
+
+    this.asd=new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({color: 0xFF0000}))
+    this.add(this.asd)
+
+    //this.add(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1)))
+/*
+    for(let i=0; i<this.bloques.length; i++){
+      let aux=new THREE.BoxGeometry(1, 1, 1);
+      aux.translate(this.bloques[i].x, this.bloques[i].y, this.bloques[i].z) 
+
+      this.add(new THREE.Mesh(aux))
+    }
 /*
     let h = new cubos.Hierba();
 
     this.bloques=[];
-    var matrix = new THREE.Matrix4();
-    var k = 0;
-    var amplitud = 100;
-    for (var i = -31; i <= 32; i++) {
-      for (var j = -31; j <= 32; j++) {
+    let matrix = new THREE.Matrix4();
+    let k = 0;
+    let amplitud = 100;
+    for (let i = -31; i <= 32; i++) {
+      for (let j = -31; j <= 32; j++) {
         let mesh = new THREE.Mesh(h.geometria, h.material);
-        //var v = Math.round(noise.perlin2(i,j)*amplitud/5)*5;
+        //let v = Math.round(noise.perlin2(i,j)*amplitud/5)*5;
         mesh.position.set(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
         this.bloques.push(mesh);
         this.add(mesh);
@@ -134,14 +147,14 @@ class MyScene extends THREE.Scene {
     }
     //this.add(mesh);
 
-/*    var t = new cubos.Tierra();
+/*    let t = new cubos.Tierra();
 
     //let meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
     this.meshtierra = new THREE.InstancedMesh(t.geometria, t.material, 32 * 32 * 2);
-    var f = 0;
-    for (var k = 1; k < 3; k++) {
-      for (var i = -15; i <= 16; i++) {
-        for (var j = -15; j <= 16; j++) {
+    let f = 0;
+    for (let k = 1; k < 3; k++) {
+      for (let i = -15; i <= 16; i++) {
+        for (let j = -15; j <= 16; j++) {
           matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
           this.meshtierra.setMatrixAt(f, matrix);
           f++;
@@ -150,13 +163,13 @@ class MyScene extends THREE.Scene {
     }
     this.add(this.meshtierra);
 
-    var p = new cubos.Piedra();
+    let p = new cubos.Piedra();
 
     let meshpiedra = new THREE.InstancedMesh(p.geometria, p.material, 32 * 32 * 17);
     f = 0;
-    for (var k = 3; k < 20; k++) {
-      for (var i = -15; i <= 16; i++) {
-        for (var j = -15; j <= 16; j++) {
+    for (let k = 3; k < 20; k++) {
+      for (let i = -15; i <= 16; i++) {
+        for (let j = -15; j <= 16; j++) {
           matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - k * 16 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
           meshpiedra.setMatrixAt(f, matrix);
           f++;
@@ -166,11 +179,11 @@ class MyScene extends THREE.Scene {
     }
     this.add(meshpiedra);
 
-    var b = new cubos.PiedraBase();
+    let b = new cubos.PiedraBase();
     let meshbedrock = new THREE.InstancedMesh(b.geometria, b.material, 32*32);
     f=0;
-    for (var i = -15; i <= 16; i++) {
-      for (var j = -15; j <= 16; j++) {
+    for (let i = -15; i <= 16; i++) {
+      for (let j = -15; j <= 16; j++) {
         matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR - 20 * 16 /PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR);
         meshbedrock.setMatrixAt(f, matrix);
         f++;
@@ -226,7 +239,7 @@ class MyScene extends THREE.Scene {
 
   initStats() {
 
-    var stats = new Stats();
+    let stats = new Stats();
 
     stats.setMode(0); // 0: fps, 1: ms
 
@@ -264,14 +277,14 @@ class MyScene extends THREE.Scene {
     // El suelo es un Mesh, necesita una geometría y un material.
 
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry(50, 0.2, 50);
+    let geometryGround = new THREE.BoxGeometry(50, 0.2, 50);
 
     // El material se hará con una textura de madera
-    var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
-    var materialGround = new THREE.MeshPhongMaterial({ map: texture });
+    let texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
+    let materialGround = new THREE.MeshPhongMaterial({ map: texture });
 
     // Ya se puede construir el Mesh
-    var ground = new THREE.Mesh(geometryGround, materialGround);
+    let ground = new THREE.Mesh(geometryGround, materialGround);
 
     // Todas las figuras se crean centradas en el origen.
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
@@ -283,7 +296,7 @@ class MyScene extends THREE.Scene {
 
   createGUI() {
     // Se crea la interfaz gráfica de usuario
-    var gui = new GUI();
+    let gui = new GUI();
 
     // La escena le va a añadir sus propios controles.
     // Se definen mediante un objeto de control
@@ -295,7 +308,7 @@ class MyScene extends THREE.Scene {
     }
 
     // Se crea una sección para los controles de esta clase
-    var folder = gui.addFolder('Luz y Ejes');
+    let folder = gui.addFolder('Luz y Ejes');
 
     // Se le añade un control para la intensidad de la luz
     folder.add(this.guiControls, 'lightIntensity', 0, 1, 0.1)
@@ -313,9 +326,9 @@ class MyScene extends THREE.Scene {
   createLights() {
     // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
     // La luz ambiental solo tiene un color y una intensidad
-    // Se declara como   var   y va a ser una variable local a este método
+    // Se declara como   let   y va a ser una letiable local a este método
     //    se hace así puesto que no va a ser accedida desde otros métodos
-    var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
+    let ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
     // La añadimos a la escena
     this.add(ambientLight);
 
@@ -340,7 +353,7 @@ class MyScene extends THREE.Scene {
     // Se recibe el lienzo sobre el que se van a hacer los renderizados. Un div definido en el html.
 
     // Se instancia un Renderer   WebGL
-    var renderer = new THREE.WebGLRenderer();
+    let renderer = new THREE.WebGLRenderer();
 
     // Se establece un color de fondo en las imágenes que genera el render
     renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);
@@ -357,7 +370,7 @@ class MyScene extends THREE.Scene {
 
   getCamera() {
     // En principio se devuelve la única cámara que tenemos
-    // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
+    // Si hubiera letias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
     return this.camera;
   }
 
@@ -431,7 +444,7 @@ class MyScene extends THREE.Scene {
     this.cameraControl.update();
 
     // Se actualiza el resto del modelo
-    this.model.update(this.movt, this.bloques);
+    this.model.update(this.movt, this.bloques, this.bloqueRaro, this.asd);
 
     //this.ghost.update(this.movt);
     //this.ghost.resetPosicion();
@@ -481,7 +494,7 @@ function checkKeys(scene) {
 /// La función   main
 $(function () {
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
-  var scene = new MyScene("#WebGL-output");
+  let scene = new MyScene("#WebGL-output");
   const canvas=scene.renderer.domElement
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
