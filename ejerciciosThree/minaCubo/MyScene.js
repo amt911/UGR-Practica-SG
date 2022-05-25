@@ -7,7 +7,7 @@ import { GUI } from '../libs/dat.gui.module.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { Stats } from '../libs/stats.module.js'
 import { VoxelWorld } from './todo.js'
-import { Math } from '../libs/three.module.js'
+//import { Math } from '../libs/three.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
@@ -96,78 +96,54 @@ class MyScene extends THREE.Scene {
     this.add(this.zombie);
 
     this.chunks = [];   //Almacena chunks
-    this.bloques = [];  //BORRAR
-    this.TAM_CHUNK = 3;
+    //this.bloques = [];  //BORRAR
+    this.TAM_CHUNK = 5;
     this.DISTANCIA_RENDER = 3;
     let h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
+    let amplitud = 1 + (Math.random() *45);
+    noise.seed(Math.random());
+    let inc = 0.02;
+    let xoff = 0;
+    let zoff = 0;
 
-    for (let i = -this.DISTANCIA_RENDER+1; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
+    for (let i = -this.DISTANCIA_RENDER; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       let bloques=[];
-      for (let j = -this.DISTANCIA_RENDER+1; j < this.DISTANCIA_RENDER; j++) {
-        let mesh = new THREE.InstancedMesh(h.geometria, h.material, this.TAM_CHUNK * this.TAM_CHUNK);
+      for (let j = -this.DISTANCIA_RENDER; j < this.DISTANCIA_RENDER; j++) {
+        let mesh = new THREE.InstancedMesh(h.geometria, h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK);
         let k=0;
 
         for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j*this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
-            //this.bloques.push({ x: i * x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: -8 / PM.PIXELES_ESTANDAR, z: j * z * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
-            matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR); 
+            xoff = inc*x;
+            zoff= inc*z;
+            
+            let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
+            //console.log(v);
+            matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR); 
             mesh.setMatrixAt(k, matrix);
+
+
+            bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
             k++;
             //bloques.push()
+/*          RETOCAR, SIRVE PARA RELLENAR
+            for(let y = v-1; y >= -6; y--){
+              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR); 
+              mesh.setMatrixAt(k, matrix);
+  
+  
+              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: y -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
+              k++;
+            }
+            */
           }
         }
         this.add(mesh);
-      }
-      //this.chunks.push(bloques);
-    }
-/*
-    let k = 0;
-    for (let i = 0; i < 16; i++) {
-      for (let j = 0; j < 16; j++) {
-        this.bloques.push({ x: j * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: -8 / PM.PIXELES_ESTANDAR, z: i * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
-        matrix.setPosition(j * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, -8 / PM.PIXELES_ESTANDAR, i * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR);
-        this.mesh.setMatrixAt(k, matrix);
-
-        k++;
+        this.chunks.push(bloques);
       }
     }
-
-    this.bloques.push({ x: 2 + 8 / PM.PIXELES_ESTANDAR, y: 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(2 + 8 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-
-    k++;
-
-    this.bloques.push({ x: 5 + 8 / PM.PIXELES_ESTANDAR, y: 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-
-    k++;
-
-    this.bloques.push({ x: 5 + 8 / PM.PIXELES_ESTANDAR, y: 1 + 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(5 + 8 / PM.PIXELES_ESTANDAR, 1 + 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-    k++;
-
-    this.bloques.push({ x: 4 + 8 / PM.PIXELES_ESTANDAR, y: 1 + 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(4 + 8 / PM.PIXELES_ESTANDAR, 1 + 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-    k++;
-
-    this.bloques.push({ x: 7 + 8 / PM.PIXELES_ESTANDAR, y: 3 + 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(7 + 8 / PM.PIXELES_ESTANDAR, 3 + 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-
-    k++;
-
-    this.bloques.push({ x: 6 + 8 / PM.PIXELES_ESTANDAR, y: 2 + 8 / PM.PIXELES_ESTANDAR, z: 2 + 8 / PM.PIXELES_ESTANDAR });
-    matrix.setPosition(6 + 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR, 2 + 8 / PM.PIXELES_ESTANDAR);
-    this.mesh.setMatrixAt(k, matrix);
-    //console.log(this.bloques);
-    //throw new Error("xd");
-    this.add(this.mesh);
-*/
+    
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
     this.add(this.bloqueRaro);
 
@@ -404,7 +380,7 @@ class MyScene extends THREE.Scene {
 
     //console.log(this.mapTeclas);
     // Se actualiza el resto del modelo
-    this.model.update(this.movt, this.bloques, this.bloqueRaro, this.mapTeclas);
+    this.model.update(this.movt, this.chunks, this.bloqueRaro, this.mapTeclas);
 
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());

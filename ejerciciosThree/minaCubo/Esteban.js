@@ -15,11 +15,11 @@ class Esteban extends THREE.Object3D {
   constructor(gui, titleGui) {
     super();
 
-    //this.caidaVel = -0.01;
-    //this.caidaAcc = -0.01;
+    this.caidaVel = -0.01;
+    this.caidaAcc = -0.01;
 
-    this.caidaVel=0;
-    this.caidaAcc=0;
+    //this.caidaVel=0;
+    //this.caidaAcc=0;
 
     this.clock = new THREE.Clock();
     this.clockAnim=new THREE.Clock();
@@ -358,17 +358,19 @@ class Esteban extends THREE.Object3D {
 
 
   checkCollision(bloques, vector, velocidad){
-    for (let i = 0; i < bloques.length; i++) {
-      let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-      let eV = new THREE.Vector2(this.position.x, this.position.z);
+    for(let i=0; i<bloques.length; i++){
+      for (let j = 0; j < bloques[i].length; j++) {
+        let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
+        let eV = new THREE.Vector2(this.position.x, this.position.z);
 
-      if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-        if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-          let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
-          this.translateOnAxis(aux.normalize(), velocidad);
+        if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
+          if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
+            let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
+            this.translateOnAxis(aux.normalize(), velocidad);
+          }
         }
-      }
-    }    
+      }    
+    }
   }
 
   update(movimiento, bloques, bloqueRaro, teclasPulsadas) {
@@ -452,19 +454,21 @@ class Esteban extends THREE.Object3D {
     this.position.y += this.caidaVel;
     this.caidaVel += this.caidaAcc;
 
-    for (let i = 0; i < bloques.length; i++) {
-      let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-      let eV = new THREE.Vector2(this.position.x, this.position.z);
+    for(let i=0; i<bloques.length; i++){
+      for (let j = 0; j < bloques[i].length;j++) {
+        let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
+        let eV = new THREE.Vector2(this.position.x, this.position.z);
 
-      if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-        bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-        
-        if (this.position.y - (bloques[i].y + 0.5)<= 0 && this.position.y - (bloques[i].y + 0.5) > -0.4) {
-          this.position.y = bloques[i].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
+        if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
+          bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
           
-          this.caidaVel = 0;
-          this.puedeSaltar=true;
-          break;
+          if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
+            this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
+            
+            this.caidaVel = 0;
+            this.puedeSaltar=true;
+            break;
+          }
         }
       }
     }
