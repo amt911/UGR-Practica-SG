@@ -371,7 +371,7 @@ class Esteban extends THREE.Object3D {
     }    
   }
 
-  update(movimiento, bloques, bloqueRaro, asd) {
+  update(movimiento, bloques, bloqueRaro, teclasPulsadas) {
     //console.log(this.bloqueRaro.position);
     let velocidad = this.clock.getDelta() * 4.317;
     //Giro arriba y abajo de la cabeza
@@ -379,13 +379,15 @@ class Esteban extends THREE.Object3D {
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
 
     //console.log(this.radToDeg(this.piernaRW1.rotation.x))
+/*
+
     switch (movimiento) {
       case "adelante": {
         this.wrapperFinal.rotation.y = 0;
 
         this.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), velocidad);
         this.checkCollision(bloques, new THREE.Vector3(0, 0, 1), velocidad);
-        
+
         this.animacion(true, velocidad);
         break;
       }
@@ -506,6 +508,89 @@ class Esteban extends THREE.Object3D {
         break;
       }
 
+    }
+*/
+
+    let vectorDir=new THREE.Vector3(0, 0, 0);
+
+    let moviendose=false;
+    let esForward=true;
+    
+    if(teclasPulsadas.W){
+      vectorDir.z+=1;
+      moviendose = true;
+    }
+    if(teclasPulsadas.S){
+      vectorDir.z-=1;
+      moviendose = true;
+      esForward=false;
+    }
+    if(teclasPulsadas.A){
+           vectorDir.x+=1;
+      moviendose = true;
+    }
+    if(teclasPulsadas.D){
+      vectorDir.x-=1;
+      moviendose = true;
+    }
+
+    if(teclasPulsadas.A && teclasPulsadas.W){
+      if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+        this.wrapperFinal.rotation.y += 0.08;
+      }      
+    }
+    else if(teclasPulsadas.A && teclasPulsadas.S){
+      if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+        this.wrapperFinal.rotation.y -= 0.08;
+      }            
+    }
+    else if(teclasPulsadas.D && teclasPulsadas.W){
+      if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+        this.wrapperFinal.rotation.y -= 0.08;
+      }      
+    }
+    else if(teclasPulsadas.D && teclasPulsadas.S){
+      if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+        this.wrapperFinal.rotation.y += 0.08;
+      }      
+    }
+    else if(teclasPulsadas.A){
+      if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
+        this.wrapperFinal.rotation.y += 0.08;
+      }      
+    }
+    else if(teclasPulsadas.D){
+      if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
+        this.wrapperFinal.rotation.y -= 0.08;
+      }
+    }
+    else if(teclasPulsadas.W){
+      this.wrapperFinal.rotation.y = 0;
+    }
+    else if(teclasPulsadas.S){
+      if (this.wrapperFinal.rotation.y < 0) {
+        this.wrapperFinal.rotation.y += 0.08;
+
+        if (this.wrapperFinal.rotation.y > 0)
+          this.wrapperFinal.rotation.y = 0;
+      }
+      else if (this.wrapperFinal.rotation.y > 0) {
+        this.wrapperFinal.rotation.y -= 0.08;
+
+        if (this.wrapperFinal.rotation.y < 0)
+          this.wrapperFinal.rotation.y = 0;
+      }
+    }
+
+    this.translateOnAxis(vectorDir.normalize(), velocidad);
+    this.checkCollision(bloques, vectorDir, velocidad);
+    
+    if(moviendose)
+      this.animacion(esForward, velocidad);
+
+    if(this.puedeSaltar && teclasPulsadas[" "]){
+      this.caidaVel = 0.15;
+      this.puedeSaltar=false;
     }
 
     //Deteccion de caidas

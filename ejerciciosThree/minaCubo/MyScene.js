@@ -384,8 +384,9 @@ class MyScene extends THREE.Scene {
 
     this.cameraControl.update();
 
+    //console.log(this.mapTeclas);
     // Se actualiza el resto del modelo
-    this.model.update(this.movt, this.bloques, this.bloqueRaro, this.asd);
+    this.model.update(this.movt, this.bloques, this.bloqueRaro, this.mapTeclas);
 
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
@@ -414,7 +415,7 @@ function checkKeys(scene) {
     scene.movt = "downRight";
   }
   else if (scene.mapTeclas[" "] && scene.mapTeclas.W) {
-    scene.movt = "jumpUp";
+    scene.movt = "jumpForward";
   }
   else if (scene.mapTeclas.W) {
     scene.movt = "adelante";
@@ -447,7 +448,7 @@ $(function () {
     let tecla = event.key.toUpperCase();
 
     scene.mapTeclas[tecla] = true;
-    checkKeys(scene)
+    //checkKeys(scene)
 
     //console.log(scene.mapTeclas);
 
