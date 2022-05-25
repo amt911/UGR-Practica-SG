@@ -340,7 +340,7 @@ class MyScene extends THREE.Scene {
     //let prueba=[this.model.brazoLeftW1, this.model.brazoRightW1, this.model.cabezaW1]
     let objetos=raycaster.intersectObject(this.mesh, true);
 
-    console.log(objetos);
+    console.log(objetos[0]);
     if(objetos.length > 0){
       //for(let i=0; i<objetos[0].object.material.length; i++){
       //  //objetos[0].object.material[i].transparent=true;

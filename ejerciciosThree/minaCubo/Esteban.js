@@ -22,6 +22,7 @@ class Esteban extends THREE.Object3D {
     //this.caidaAcc=0;
 
     this.clock = new THREE.Clock();
+    this.clockAnim=new THREE.Clock();
     this.cambiarAnimacion = false;
     this.maxMovimientoExt = this.degToRad(60);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -327,66 +328,69 @@ class Esteban extends THREE.Object3D {
     return a.intersectsBox(b);
   }
 
+  animacion(esForward, velocidad){
+    //let velocidad = clock.getDelta() * 4.317;
+    //console.log(this.radToDeg(this.piernaRW1.rotation.x))
+    //console.log(velocidad);
+    let velFinal=(esForward)? velocidad : -velocidad;
+
+    if (this.cambiarAnimacion) {
+      this.piernaLW1.rotation.x += velFinal
+      this.piernaRW1.rotation.x -= velFinal
+      this.brazoLeft.rotation.x -= velFinal
+      this.brazoRight.rotation.x += velFinal
+
+      if ((esForward && this.piernaRW1.rotation.x <= -this.maxMovimientoExt) || (!esForward && this.piernaRW1.rotation.x >= this.maxMovimientoExt)) {
+        this.cambiarAnimacion = false;
+      }
+    }
+    else {
+      this.piernaLW1.rotation.x += -velFinal
+      this.piernaRW1.rotation.x -= -velFinal
+      this.brazoLeft.rotation.x -= -velFinal
+      this.brazoRight.rotation.x += -velFinal
+
+      if ((esForward && this.piernaRW1.rotation.x >= this.maxMovimientoExt) || (!esForward && this.piernaRW1.rotation.x <= -this.maxMovimientoExt)) {
+        this.cambiarAnimacion = true;
+      }
+    }
+  }
+
+
+  checkCollision(bloques, vector, velocidad){
+    for (let i = 0; i < bloques.length; i++) {
+      let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
+      let eV = new THREE.Vector2(this.position.x, this.position.z);
+
+      if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
+        if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
+          let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
+          this.translateOnAxis(aux.normalize(), velocidad);
+        }
+      }
+    }    
+  }
 
   update(movimiento, bloques, bloqueRaro, asd) {
     //console.log(this.bloqueRaro.position);
     let velocidad = this.clock.getDelta() * 4.317;
-
     //Giro arriba y abajo de la cabeza
     this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
 
+    //console.log(this.radToDeg(this.piernaRW1.rotation.x))
     switch (movimiento) {
       case "adelante": {
         this.wrapperFinal.rotation.y = 0;
 
         this.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), velocidad);
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            console.log("------------------------------------")
-            console.log(this.position.y - (bloques[i].y - 0.5))
-            console.log("____________________________________")
-            //console.log(this.position.y - (bloques[i].y - 1)<=0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), velocidad);
-            }
-          }
-        }    
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
-
+        this.checkCollision(bloques, new THREE.Vector3(0, 0, 1), velocidad);
+        
+        this.animacion(true, velocidad);
         break;
       }
 
       case "atras": {
-
-        //ARREGLAR PARPADEO AL VOLVER
         if (this.wrapperFinal.rotation.y < 0) {
           this.wrapperFinal.rotation.y += 0.08;
 
@@ -403,46 +407,9 @@ class Esteban extends THREE.Object3D {
         //console.log(this.wrapperFinal.rotation.y);
 
         this.translateOnAxis(new THREE.Vector3(0, 0, -1).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(0, 0, -1), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), velocidad);
-            }
-          }
-        }
-
-        //this.resetPosicion();
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(false, velocidad);
 
         break;
       }
@@ -452,44 +419,9 @@ class Esteban extends THREE.Object3D {
           this.wrapperFinal.rotation.y += 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(1, 0, 0), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), velocidad);
-            }
-          }
-        }
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(true, velocidad);
         break;
       }
 
@@ -498,44 +430,9 @@ class Esteban extends THREE.Object3D {
           this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 0).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(-1, 0, 0), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(1, 0, 0).normalize(), velocidad);
-            }
-          }
-        }
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(true, velocidad);
         break;
       }
 
@@ -544,91 +441,21 @@ class Esteban extends THREE.Object3D {
           this.wrapperFinal.rotation.y += 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(1, 0, 1), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), velocidad);
-            }
-          }
-        }
-
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(true, velocidad);
         break;
       }
 
       case "upRight": {
+        
         if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
           this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(-1, 0, 1), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), velocidad);
-            }
-          }
-        }
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(true, velocidad);
         break;
       }
 
@@ -637,44 +464,9 @@ class Esteban extends THREE.Object3D {
           this.wrapperFinal.rotation.y -= 0.08;
         }
         this.translateOnAxis(new THREE.Vector3(1, 0, -1).normalize(), velocidad);
+        this.checkCollision(bloques, new THREE.Vector3(1, 0, -1), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            asd.position.set(bloques[i].x, bloques[i].y-0.5, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            //console.log(this.position.y - (bloques[i].y + 0.5))
-            //console.log(this.position.y - (bloques[i].y + 0.5)==0)
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(-1, 0, 1).normalize(), velocidad);
-            }
-          }
-        }
-
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
+        this.animacion(false, velocidad);
         break;
       }
 
@@ -685,41 +477,9 @@ class Esteban extends THREE.Object3D {
 
         this.translateOnAxis(new THREE.Vector3(-1, 0, -1).normalize(), velocidad);
 
-        for (let i = 0; i < bloques.length; i++) {
-          let bV = new THREE.Vector2(bloques[i].x, bloques[i].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-    
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i].x)) >= 0 && Math.abs((this.position.z) - (bloques[i].z)) >= 0) {
-    
-            //asd.position.set(bloques[i].x, bloques[i].y, bloques[i].z)
-            bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-            
-            if (this.position.y - (bloques[i].y - 0.5)== 0 || this.position.y - (bloques[i].y - 0.5)== -1){
-              this.translateOnAxis(new THREE.Vector3(1, 0, 1).normalize(), velocidad);
-            }
-          }
-        }        
+        this.checkCollision(bloques, new THREE.Vector3(-1, 0, -1), velocidad);
+        this.animacion(false, velocidad);
 
-        if (this.cambiarAnimacion) {
-          this.piernaLW1.rotation.x += -velocidad
-          this.piernaRW1.rotation.x -= -velocidad
-          this.brazoLeft.rotation.x -= -velocidad
-          this.brazoRight.rotation.x += -velocidad
-
-          if (this.piernaRW1.rotation.x >= this.maxMovimientoExt) {
-            this.cambiarAnimacion = false;
-          }
-        }
-        else {
-          this.piernaLW1.rotation.x += velocidad
-          this.piernaRW1.rotation.x -= velocidad
-          this.brazoLeft.rotation.x -= velocidad
-          this.brazoRight.rotation.x += velocidad
-
-          if (this.piernaRW1.rotation.x <= -this.maxMovimientoExt) {
-            this.cambiarAnimacion = true;
-          }
-        }
         break;
       }
 
@@ -732,12 +492,14 @@ class Esteban extends THREE.Object3D {
 
         break;
       }
-      case "jumpUp": {
+      case "jumpForward": {
         //console.log("acaba con mi sufrimiento");
         if(this.puedeSaltar){
           this.caidaVel = 0.2;
           this.puedeSaltar=false;
         }
+
+        
         break;
       }
       default: {
@@ -749,7 +511,6 @@ class Esteban extends THREE.Object3D {
     //Deteccion de caidas
     this.position.y += this.caidaVel;
     this.caidaVel += this.caidaAcc;
-    let estaSuelo = false;
 
     //console.log(this.position.y);
     for (let i = 0; i < bloques.length; i++) {
