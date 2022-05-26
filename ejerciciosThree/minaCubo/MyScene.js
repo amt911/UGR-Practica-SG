@@ -99,11 +99,11 @@ class MyScene extends THREE.Scene {
     this.chunk=[];
     //this.bloques = [];  //BORRAR
     this.TAM_CHUNK = 4;
-    this.DISTANCIA_RENDER = 3;
+    this.DISTANCIA_RENDER = 5;
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
-    let amplitud = 1 + (Math.random() *45);
+    this.amplitud = 1 + (Math.random() *45);
     let inc = 0.02;
     let xoff = 0;
     let zoff = 0;
@@ -122,7 +122,7 @@ class MyScene extends THREE.Scene {
             xoff = inc*x;
             zoff= inc*z;
             
-            let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
+            let v = Math.round(noise.perlin2(xoff,  zoff) * this.amplitud / 1) * 1;
             //console.log(v);
             matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
             this.mesh.setMatrixAt(k, matrix);
@@ -447,6 +447,7 @@ class MyScene extends THREE.Scene {
       //console.log(aux.z)
       //console.log(this.chunkMinMax.max.z)
       //console.log("________________________")
+    let renderChunksAgain=false;
     if(aux.z>(this.chunkMinMax.min.z+this.chunkMinMax.max.z)/2){
       console.log(this.chunkMinMax.min.z);
       console.log(this.chunkMinMax.max.z);
@@ -454,71 +455,89 @@ class MyScene extends THREE.Scene {
       //Movemos los limites
       this.chunkMinMax.min.z++;
       this.chunkMinMax.max.z++;
+      renderChunksAgain=true;
+    }
 
-      this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK);
-      let l=0;
-      let amplitud = 1 + (Math.random() *45);
+    //Revisar el >=0
+    if(aux.z<(this.chunkMinMax.min.z+this.chunkMinMax.max.z)/2 && aux.z>=0){
+      this.chunkMinMax.min.z--;
+      this.chunkMinMax.max.z--;
+      renderChunksAgain=true;      
+    }
+
+    //Parte para las x
+    if(aux.x>(this.chunkMinMax.min.x+this.chunkMinMax.max.x)/2){
+      console.log(this.chunkMinMax.min.z);
+      console.log(this.chunkMinMax.max.z);
+
+      //Movemos los limites
+      this.chunkMinMax.min.x++;
+      this.chunkMinMax.max.x++;
+      renderChunksAgain=true;
+    }    
+
+    if(aux.x<(this.chunkMinMax.min.x+this.chunkMinMax.max.x)/2 && aux.x>=0){
+      this.chunkMinMax.min.x--;
+      this.chunkMinMax.max.x--;
+      renderChunksAgain=true;      
+    }
+
+    if (renderChunksAgain) {
+      this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK * this.TAM_CHUNK);
+      let l = 0;
+      //let amplitud = 1 + (Math.random() *45);
       let inc = 0.02;
       let xoff = 0;
       let zoff = 0;
       let matrix = new THREE.Matrix4();
 
       //Alternativa
-      for(let i=this.chunkMinMax.min.x; i<=this.chunkMinMax.max.x; i++){
-      //for(let i=aux.x-(this.DISTANCIA_RENDER)/2; i<=aux.x+(this.DISTANCIA_RENDER)/2; i++){
-        if(this.chunk[i]!=undefined && this.chunk[i][this.chunkMinMax.z]!=undefined){
-          for(let j=0; j<this.chunk[i][this.chunkMinMax.z].length; j++){
-            console.log("genera los chunks existentes");
-          }
-        }
-        else{
-          if(this.chunk[i]==undefined)
-            this.chunk[i]=[];
-            //console.log("crear chunk")
-          //Genera el chunk que no existia
-          let bloques=[];
-          for(let j=this.chunkMinMax.max.z*this.TAM_CHUNK; j<this.chunkMinMax.max.z*this.TAM_CHUNK+this.TAM_CHUNK; j++){
-            for(let k=i*this.TAM_CHUNK; k<i*this.TAM_CHUNK+this.TAM_CHUNK; k++){
-              xoff = inc*k;
-              zoff= inc*j;
-              
-              let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
-              //console.log(v);
-              matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, j* 16 / PM.PIXELES_ESTANDAR); 
-              this.mesh.setMatrixAt(l, matrix);
-  
-              
-              bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: j* 16 / PM.PIXELES_ESTANDAR});
-              console.log("position steve")
-              console.log(this.model.position);
-              console.log("fin position steve")
-              console.log(bloques[bloques.length-1]);
-              console.log("fin posicion cubo")
-              l++;   
-              let asd=new THREE.BoxGeometry(1, 1, 1);
-              asd.translate(bloques[bloques.length-1].x, bloques[bloques.length-1].y, bloques[bloques.length-1].z)
-              this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({color: 0xff0000})))
+      for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
+        for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
+          //if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
+          //  //for (let j = 0; j < this.chunk[i][this.chunkMinMax.z].length; j++) {
+          //    console.log("genera los chunks existentes");
+          //  //}
+          //}
+          //else {
+            if (this.chunk[i] == undefined)
+              this.chunk[i] = [];
+            //Genera el chunk que no existia
+            let bloques = [];
+            for (let j = a * this.TAM_CHUNK; j < a * this.TAM_CHUNK + this.TAM_CHUNK; j++) {
+              for (let k = i * this.TAM_CHUNK; k < i * this.TAM_CHUNK + this.TAM_CHUNK; k++) {
+                xoff = inc * k;
+                zoff = inc * j;
+
+                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+                //console.log(v);
+                matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
+                this.mesh.setMatrixAt(l, matrix);
+
+
+                bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR });
+                console.log("position steve")
+                console.log(this.model.position);
+                console.log("fin position steve")
+                console.log(bloques[bloques.length - 1]);
+                console.log("fin posicion cubo")
+                l++;
+                let asd = new THREE.BoxGeometry(1, 1, 1);
+                asd.translate(bloques[bloques.length - 1].x, bloques[bloques.length - 1].y, bloques[bloques.length - 1].z)
+                this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({ color: 0xff0000 })))
+              }
             }
-          }
 
-          this.chunkCollision.push(bloques);
-          //console.log(bloques)
-          //console.log(bloques[bloques.length-1]);
-          let chunkIndex=this.identificarChunk(bloques[0].x, bloques[0].z);
-          //ASI NO SE INDEXAN LOS CHUNKS
-          /*
-          if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined)
-          this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
-          
-          this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=bloques;
-          */
-  
-          if(this.chunk[chunkIndex.x]==undefined)
-          this.chunk[chunkIndex.x]=[];
-          
-          this.chunk[chunkIndex.x][chunkIndex.z]=bloques;                  
+            this.chunkCollision.push(bloques);
+            let chunkIndex = this.identificarChunk(bloques[0].x, bloques[0].z);
+
+            if (this.chunk[chunkIndex.x] == undefined)
+              this.chunk[chunkIndex.x] = [];
+
+            this.chunk[chunkIndex.x][chunkIndex.z] = bloques;
+          //}
+
         }
-
       }
     }
 
