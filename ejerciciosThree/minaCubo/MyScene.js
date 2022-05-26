@@ -95,23 +95,27 @@ class MyScene extends THREE.Scene {
     this.zombie.position.set(-3, 0, 0);
     this.add(this.zombie);
 
-    this.chunks = [];   //Almacena chunks
+    this.chunkCollision = [];   //Almacena chunks
+    this.chunk=[];
     //this.bloques = [];  //BORRAR
-    this.TAM_CHUNK = 5;
-    this.DISTANCIA_RENDER = 3;
-    let h = new cubos.Hierba();
+    this.TAM_CHUNK = 10;
+    this.DISTANCIA_RENDER = 5;
+    this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
-    let amplitud = 1 + (Math.random() *45);
     noise.seed(Math.random());
+    let amplitud = 1 + (Math.random() *45);
     let inc = 0.02;
     let xoff = 0;
     let zoff = 0;
 
-    for (let i = -this.DISTANCIA_RENDER; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
+    this.model.position.x=(this.DISTANCIA_RENDER*this.TAM_CHUNK)/2
+    this.model.position.z=(this.DISTANCIA_RENDER*this.TAM_CHUNK)/2
+    this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK*this.DISTANCIA_RENDER*this.DISTANCIA_RENDER);
+    let k=0;
+
+    for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       let bloques=[];
-      for (let j = -this.DISTANCIA_RENDER; j < this.DISTANCIA_RENDER; j++) {
-        let mesh = new THREE.InstancedMesh(h.geometria, h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK);
-        let k=0;
+      for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
 
         for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j*this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
@@ -120,11 +124,11 @@ class MyScene extends THREE.Scene {
             
             let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
             //console.log(v);
-            matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR); 
-            mesh.setMatrixAt(k, matrix);
+            matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
+            this.mesh.setMatrixAt(k, matrix);
 
 
-            bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
+            bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
             k++;
             //bloques.push()
 /*          RETOCAR, SIRVE PARA RELLENAR
@@ -139,11 +143,44 @@ class MyScene extends THREE.Scene {
             */
           }
         }
-        this.add(mesh);
-        this.chunks.push(bloques);
+        this.chunkCollision.push(bloques);
+        //console.log(bloques)
+        //console.log(bloques[bloques.length-1]);
+
+        //ASI NO SE INDEXAN LOS CHUNKS
+        if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined)
+        this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
+        
+        this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=bloques;
       }
     }
+    this.add(this.mesh);
     
+    
+/*
+    for(let i=0; i<this.chunk.length; i++){
+      for(let j=0; this.chunk[i]!=undefined && j<this.chunk[i].length; j++ ){
+        for(let z=0; this.chunk[i][j]!=undefined && z<this.chunk[i][j].length; z++){
+        let block = new THREE.BoxGeometry(1, 1, 1);
+        block.translate(this.chunk[i][j][z].x, this.chunk[i][j][z].y, this.chunk[i][j][z].z);
+
+        this.add(new THREE.Mesh(block, new THREE.MeshBasicMaterial({color: 0xff0000})))
+      }
+    }
+    }
+*/
+    this.chunkMinMax={min: {x: 0, z: 0},
+    max: {x: this.DISTANCIA_RENDER-1, z: this.DISTANCIA_RENDER-1}};
+
+    this.prueba=[[]]
+  //this.prueba[3][5]="hola"
+    //console.log(this.prueba)
+    this.prueba[3]=[]
+    //console.log(this.prueba[3][1])
+    //console.log(this.prueba[3][5])
+
+    //console.log(3.5 | 0)
+
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
     this.add(this.bloqueRaro);
 
@@ -165,6 +202,17 @@ class MyScene extends THREE.Scene {
     this.add(this.cerdo);
 
 
+  }
+
+  //ASI TAMPOCO SE INDEXAN
+  //LA FORMULA ES: (X-X%TAM_CHUNK)/TAM_CHUNK DONDE X ES LA POSICION
+  identificarChunk(x, z){
+    let res={
+      x: (x/this.DISTANCIA_RENDER) | 0,
+      z: (z/this.DISTANCIA_RENDER) | 0
+    }
+
+    return res;
   }
 
 
@@ -334,7 +382,7 @@ class MyScene extends THREE.Scene {
     //let prueba=[this.model.brazoLeftW1, this.model.brazoRightW1, this.model.cabezaW1]
     let objetos = raycaster.intersectObject(this.mesh, true);
 
-    console.log(objetos[0]);
+    //console.log(objetos[0]);
     if (objetos.length > 0) {
       //for(let i=0; i<objetos[0].object.material.length; i++){
       //  //objetos[0].object.material[i].transparent=true;
@@ -380,54 +428,115 @@ class MyScene extends THREE.Scene {
 
     //console.log(this.mapTeclas);
     // Se actualiza el resto del modelo
-    this.model.update(this.movt, this.chunks, this.bloqueRaro, this.mapTeclas);
+    let aux=this.identificarChunk(this.model.position.x, this.model.position.z);
+    //console.log(this.chunk[aux.x][aux.z]);
+    this.model.update(this.movt, this.chunkCollision/*this.chunk[aux.x][aux.z]*/, this.bloqueRaro, this.mapTeclas);
+
+    console.log(this.identificarChunk(this.model.position.x, this.model.position.z))
 
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
 
+    //if(aux.z<this.chunkMinMax.z && aux.z>=0){
+      //console.log("------------------------")
+      //console.log(aux.z)
+      //console.log(this.chunkMinMax.max.z)
+      //console.log("________________________")
+    if(aux.z>(this.chunkMinMax.min.z+this.chunkMinMax.max.z)/2){
+      //console.log("asdasdasd")
+      console.log(this.chunkMinMax.min.z);
+      console.log(this.chunkMinMax.max.z);
+      //this.remove(this.mesh);
+
+      this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK);
+      let k=0;
+      let amplitud = 1 + (Math.random() *45);
+      let inc = 0.02;
+      let xoff = 0;
+      let zoff = 0;
+      let matrix = new THREE.Matrix4();
+           
+      for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
+        let bloques=[];
+      //  for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
+  
+      
+          for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
+            for (let z = this.chunkMinMax.max.z*this.TAM_CHUNK; z < (this.chunkMinMax.max.z * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
+              xoff = inc*x;
+              zoff= inc*z;
+              
+              let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
+              //console.log(v);
+              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
+              this.mesh.setMatrixAt(k, matrix);
+  
+  
+              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
+              k++;
+           
+            }
+          }
+          this.chunkCollision.push(bloques);
+          if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined){
+            this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
+          }
+          else if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]==undefined){
+            this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=[...bloques];
+          }
+      //  }
+      }  
+      
+     /*
+      for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
+        let bloques=[];
+        for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
+          
+          for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
+            for (let z = j*this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
+              if(this.chunk[] == undefined){
+              xoff = inc*x;
+              zoff= inc*z;
+              let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
+              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
+              this.mesh.setMatrixAt(k, matrix);
+              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
+            }
+            else{
+                        
+            }
+              //console.log(v);
+
+  
+  
+              k++;
+
+            }
+          }
+          this.chunkCollision.push(bloques);
+          //console.log(bloques)
+          //console.log(bloques[bloques.length-1]);
+          if(this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0]==undefined)
+          this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0]=[];
+          
+          this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0][(bloques[bloques.length-1].z/this.TAM_CHUNK) | 0]=bloques;
+        }
+      }
+
+      this.chunkMinMax.min.z++;
+      this.chunkMinMax.max.z++;
+      this.add(this.mesh);
+      */
+    }
 
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
-
   }
 }
 
-function checkKeys(scene) {
-  if (scene.mapTeclas.W && scene.mapTeclas.A) {
-    scene.movt = "upLeft";
-  }
-  else if (scene.mapTeclas.W && scene.mapTeclas.D) {
-    scene.movt = "upRight";
-  }
-  else if (scene.mapTeclas.S && scene.mapTeclas.A) {
-    scene.movt = "downLeft";
-  }
-  else if (scene.mapTeclas.S && scene.mapTeclas.D) {
-    scene.movt = "downRight";
-  }
-  else if (scene.mapTeclas[" "] && scene.mapTeclas.W) {
-    scene.movt = "jumpForward";
-  }
-  else if (scene.mapTeclas.W) {
-    scene.movt = "adelante";
-  }
-  else if (scene.mapTeclas.A) {
-    scene.movt = "strafeL";
-  }
-  else if (scene.mapTeclas.S) {
-    scene.movt = "atras";
-  }
-  else if (scene.mapTeclas.D) {
-    scene.movt = "strafeR";
-  }
-  else if (scene.mapTeclas[" "]) {
-    scene.movt = "jump";
-  }
-
-}
 
 /// La función   main
 $(function () {
@@ -468,9 +577,9 @@ $(function () {
       scene.model.resetPosicion()
       scene.movt = "parado"
     }
-    else {
-      checkKeys(scene)
-    }
+    //else {
+    //  checkKeys(scene)
+    //}
   });
 
   //----------------------------------------------------------------------------------------
