@@ -98,8 +98,8 @@ class MyScene extends THREE.Scene {
     this.chunkCollision = [];   //Almacena chunks
     this.chunk=[];
     //this.bloques = [];  //BORRAR
-    this.TAM_CHUNK = 10;
-    this.DISTANCIA_RENDER = 5;
+    this.TAM_CHUNK = 4;
+    this.DISTANCIA_RENDER = 3;
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
@@ -146,12 +146,19 @@ class MyScene extends THREE.Scene {
         this.chunkCollision.push(bloques);
         //console.log(bloques)
         //console.log(bloques[bloques.length-1]);
-
+        let chunkIndex=this.identificarChunk(bloques[0].x, bloques[0].z);
         //ASI NO SE INDEXAN LOS CHUNKS
+        /*
         if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined)
         this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
         
         this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=bloques;
+        */
+
+        if(this.chunk[chunkIndex.x]==undefined)
+        this.chunk[chunkIndex.x]=[];
+        
+        this.chunk[chunkIndex.x][chunkIndex.z]=bloques;        
       }
     }
     this.add(this.mesh);
@@ -164,18 +171,19 @@ class MyScene extends THREE.Scene {
         let block = new THREE.BoxGeometry(1, 1, 1);
         block.translate(this.chunk[i][j][z].x, this.chunk[i][j][z].y, this.chunk[i][j][z].z);
 
-        this.add(new THREE.Mesh(block, new THREE.MeshBasicMaterial({color: 0xff0000})))
+        this.add(new THREE.Mesh(block, new THREE.MeshPhongMaterial({color: 0xff0000})))
       }
     }
     }
 */
+
     this.chunkMinMax={min: {x: 0, z: 0},
     max: {x: this.DISTANCIA_RENDER-1, z: this.DISTANCIA_RENDER-1}};
 
-    this.prueba=[[]]
-  //this.prueba[3][5]="hola"
+    //this.prueba=[[]]
+    //this.prueba[3][5]="hola"
     //console.log(this.prueba)
-    this.prueba[3]=[]
+    //this.prueba[3]=[]
     //console.log(this.prueba[3][1])
     //console.log(this.prueba[3][5])
 
@@ -208,8 +216,8 @@ class MyScene extends THREE.Scene {
   //LA FORMULA ES: (X-X%TAM_CHUNK)/TAM_CHUNK DONDE X ES LA POSICION
   identificarChunk(x, z){
     let res={
-      x: (x/this.DISTANCIA_RENDER) | 0,
-      z: (z/this.DISTANCIA_RENDER) | 0
+      x: (x-(x%this.TAM_CHUNK))/this.TAM_CHUNK,
+      z: (z-(z%this.TAM_CHUNK))/this.TAM_CHUNK
     }
 
     return res;
@@ -428,108 +436,94 @@ class MyScene extends THREE.Scene {
 
     //console.log(this.mapTeclas);
     // Se actualiza el resto del modelo
-    let aux=this.identificarChunk(this.model.position.x, this.model.position.z);
-    //console.log(this.chunk[aux.x][aux.z]);
-    this.model.update(this.movt, this.chunkCollision/*this.chunk[aux.x][aux.z]*/, this.bloqueRaro, this.mapTeclas);
 
-    console.log(this.identificarChunk(this.model.position.x, this.model.position.z))
+    //console.log(this.identificarChunk(this.model.position.x, this.model.position.z))
 
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
+    let aux=this.identificarChunk(this.model.position.x, this.model.position.z);
 
-    //if(aux.z<this.chunkMinMax.z && aux.z>=0){
       //console.log("------------------------")
       //console.log(aux.z)
       //console.log(this.chunkMinMax.max.z)
       //console.log("________________________")
     if(aux.z>(this.chunkMinMax.min.z+this.chunkMinMax.max.z)/2){
-      //console.log("asdasdasd")
       console.log(this.chunkMinMax.min.z);
       console.log(this.chunkMinMax.max.z);
-      //this.remove(this.mesh);
+
+      //Movemos los limites
+      this.chunkMinMax.min.z++;
+      this.chunkMinMax.max.z++;
 
       this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK);
-      let k=0;
+      let l=0;
       let amplitud = 1 + (Math.random() *45);
       let inc = 0.02;
       let xoff = 0;
       let zoff = 0;
       let matrix = new THREE.Matrix4();
-           
-      for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
-        let bloques=[];
-      //  for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
-  
-      
-          for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
-            for (let z = this.chunkMinMax.max.z*this.TAM_CHUNK; z < (this.chunkMinMax.max.z * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
-              xoff = inc*x;
-              zoff= inc*z;
+
+      //Alternativa
+      for(let i=this.chunkMinMax.min.x; i<=this.chunkMinMax.max.x; i++){
+      //for(let i=aux.x-(this.DISTANCIA_RENDER)/2; i<=aux.x+(this.DISTANCIA_RENDER)/2; i++){
+        if(this.chunk[i]!=undefined && this.chunk[i][this.chunkMinMax.z]!=undefined){
+          for(let j=0; j<this.chunk[i][this.chunkMinMax.z].length; j++){
+            console.log("genera los chunks existentes");
+          }
+        }
+        else{
+          if(this.chunk[i]==undefined)
+            this.chunk[i]=[];
+            //console.log("crear chunk")
+          //Genera el chunk que no existia
+          let bloques=[];
+          for(let j=this.chunkMinMax.max.z*this.TAM_CHUNK; j<this.chunkMinMax.max.z*this.TAM_CHUNK+this.TAM_CHUNK; j++){
+            for(let k=i*this.TAM_CHUNK; k<i*this.TAM_CHUNK+this.TAM_CHUNK; k++){
+              xoff = inc*k;
+              zoff= inc*j;
               
               let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
               //console.log(v);
-              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
-              this.mesh.setMatrixAt(k, matrix);
+              matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, j* 16 / PM.PIXELES_ESTANDAR); 
+              this.mesh.setMatrixAt(l, matrix);
   
-  
-              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
-              k++;
-           
+              
+              bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: j* 16 / PM.PIXELES_ESTANDAR});
+              console.log("position steve")
+              console.log(this.model.position);
+              console.log("fin position steve")
+              console.log(bloques[bloques.length-1]);
+              console.log("fin posicion cubo")
+              l++;   
+              let asd=new THREE.BoxGeometry(1, 1, 1);
+              asd.translate(bloques[bloques.length-1].x, bloques[bloques.length-1].y, bloques[bloques.length-1].z)
+              this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({color: 0xff0000})))
             }
           }
-          this.chunkCollision.push(bloques);
-          if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined){
-            this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
-          }
-          else if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]==undefined){
-            this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=[...bloques];
-          }
-      //  }
-      }  
-      
-     /*
-      for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
-        let bloques=[];
-        for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
-          
-          for (let x = i*this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
-            for (let z = j*this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK ; z++) {
-              if(this.chunk[] == undefined){
-              xoff = inc*x;
-              zoff= inc*z;
-              let v = Math.round(noise.perlin2(xoff,  zoff) * amplitud / 1) * 1;
-              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR); 
-              this.mesh.setMatrixAt(k, matrix);
-              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
-            }
-            else{
-                        
-            }
-              //console.log(v);
 
-  
-  
-              k++;
-
-            }
-          }
           this.chunkCollision.push(bloques);
           //console.log(bloques)
           //console.log(bloques[bloques.length-1]);
-          if(this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0]==undefined)
-          this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0]=[];
+          let chunkIndex=this.identificarChunk(bloques[0].x, bloques[0].z);
+          //ASI NO SE INDEXAN LOS CHUNKS
+          /*
+          if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined)
+          this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
           
-          this.chunk[(bloques[bloques.length-1].x/this.TAM_CHUNK) | 0][(bloques[bloques.length-1].z/this.TAM_CHUNK) | 0]=bloques;
+          this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=bloques;
+          */
+  
+          if(this.chunk[chunkIndex.x]==undefined)
+          this.chunk[chunkIndex.x]=[];
+          
+          this.chunk[chunkIndex.x][chunkIndex.z]=bloques;                  
         }
-      }
 
-      this.chunkMinMax.min.z++;
-      this.chunkMinMax.max.z++;
-      this.add(this.mesh);
-      */
+      }
     }
 
 
+    this.model.update(this.movt, this.chunkCollision, this.bloqueRaro, this.mapTeclas);
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
