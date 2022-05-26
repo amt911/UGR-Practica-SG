@@ -97,9 +97,10 @@ class MyScene extends THREE.Scene {
 
     this.chunkCollision = [];   //Almacena chunks
     this.chunk=[];
-    //this.bloques = [];  //BORRAR
-    this.TAM_CHUNK = 4;
-    this.DISTANCIA_RENDER = 11;
+    this.TAM_CHUNK = 12;
+    this.DISTANCIA_RENDER = 7;
+    //this.TAM_CHUNK = 3;
+    //this.DISTANCIA_RENDER = 3;    
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
@@ -429,8 +430,8 @@ class MyScene extends THREE.Scene {
       //console.log("________________________")
     let renderChunksAgain=false;
     if(aux.z>(this.chunkMinMax.min.z+this.chunkMinMax.max.z)/2){
-      console.log(this.chunkMinMax.min.z);
-      console.log(this.chunkMinMax.max.z);
+      //console.log(this.chunkMinMax.min.z);
+      //console.log(this.chunkMinMax.max.z);
 
       //Movemos los limites
       this.chunkMinMax.min.z++;
@@ -447,8 +448,8 @@ class MyScene extends THREE.Scene {
 
     //Parte para las x
     if(aux.x>(this.chunkMinMax.min.x+this.chunkMinMax.max.x)/2){
-      console.log(this.chunkMinMax.min.z);
-      console.log(this.chunkMinMax.max.z);
+      //console.log(this.chunkMinMax.min.z);
+      //console.log(this.chunkMinMax.max.z);
 
       //Movemos los limites
       this.chunkMinMax.min.x++;
@@ -475,12 +476,14 @@ class MyScene extends THREE.Scene {
       //Alternativa
       for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
-          //if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
-          //  //for (let j = 0; j < this.chunk[i][this.chunkMinMax.z].length; j++) {
-          //    console.log("genera los chunks existentes");
-          //  //}
-          //}
-          //else {
+          if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
+            for (let j = 0; j < this.chunk[i][a].length ; j++) {
+                matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
+                this.mesh.setMatrixAt(l, matrix);              
+                l++;  
+            }
+          }
+          else {
             if (this.chunk[i] == undefined)
               this.chunk[i] = [];
             //Genera el chunk que no existia
@@ -495,17 +498,8 @@ class MyScene extends THREE.Scene {
                 matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
                 this.mesh.setMatrixAt(l, matrix);
 
-
                 bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR });
-/*                 console.log("position steve")
-                console.log(this.model.position);
-                console.log("fin position steve")
-                console.log(bloques[bloques.length - 1]);
-                console.log("fin posicion cubo") */
                 l++;
-                //let asd = new THREE.BoxGeometry(1, 1, 1);
-                //asd.translate(bloques[bloques.length - 1].x, bloques[bloques.length - 1].y, bloques[bloques.length - 1].z)
-                //this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({ color: 0xff0000 })))
               }
             }
 
@@ -516,7 +510,7 @@ class MyScene extends THREE.Scene {
               this.chunk[chunkIndex.x] = [];
 
             this.chunk[chunkIndex.x][chunkIndex.z] = bloques;
-          //}
+          }
 
         }
       }
