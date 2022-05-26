@@ -99,7 +99,7 @@ class MyScene extends THREE.Scene {
     this.chunk=[];
     //this.bloques = [];  //BORRAR
     this.TAM_CHUNK = 4;
-    this.DISTANCIA_RENDER = 5;
+    this.DISTANCIA_RENDER = 11;
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
@@ -130,30 +130,10 @@ class MyScene extends THREE.Scene {
 
             bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR});
             k++;
-            //bloques.push()
-/*          RETOCAR, SIRVE PARA RELLENAR
-            for(let y = v-1; y >= -6; y--){
-              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y -8 / PM.PIXELES_ESTANDAR, z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR); 
-              mesh.setMatrixAt(k, matrix);
-  
-  
-              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR, y: y -8 / PM.PIXELES_ESTANDAR, z: z* 16 / PM.PIXELES_ESTANDAR + 8 / PM.PIXELES_ESTANDAR });
-              k++;
-            }
-            */
           }
         }
         this.chunkCollision.push(bloques);
-        //console.log(bloques)
-        //console.log(bloques[bloques.length-1]);
         let chunkIndex=this.identificarChunk(bloques[0].x, bloques[0].z);
-        //ASI NO SE INDEXAN LOS CHUNKS
-        /*
-        if(this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]==undefined)
-        this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0]=[];
-        
-        this.chunk[(bloques[bloques.length-1].x/this.DISTANCIA_RENDER) | 0][(bloques[bloques.length-1].z/this.DISTANCIA_RENDER) | 0]=bloques;
-        */
 
         if(this.chunk[chunkIndex.x]==undefined)
         this.chunk[chunkIndex.x]=[];
@@ -483,7 +463,8 @@ class MyScene extends THREE.Scene {
     }
 
     if (renderChunksAgain) {
-      this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK * this.TAM_CHUNK);
+      this.remove(this.mesh);
+      this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK*this.TAM_CHUNK*this.DISTANCIA_RENDER*this.DISTANCIA_RENDER);
       let l = 0;
       //let amplitud = 1 + (Math.random() *45);
       let inc = 0.02;
@@ -516,15 +497,15 @@ class MyScene extends THREE.Scene {
 
 
                 bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR });
-                console.log("position steve")
+/*                 console.log("position steve")
                 console.log(this.model.position);
                 console.log("fin position steve")
                 console.log(bloques[bloques.length - 1]);
-                console.log("fin posicion cubo")
+                console.log("fin posicion cubo") */
                 l++;
-                let asd = new THREE.BoxGeometry(1, 1, 1);
-                asd.translate(bloques[bloques.length - 1].x, bloques[bloques.length - 1].y, bloques[bloques.length - 1].z)
-                this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({ color: 0xff0000 })))
+                //let asd = new THREE.BoxGeometry(1, 1, 1);
+                //asd.translate(bloques[bloques.length - 1].x, bloques[bloques.length - 1].y, bloques[bloques.length - 1].z)
+                //this.add(new THREE.Mesh(asd, new THREE.MeshPhongMaterial({ color: 0xff0000 })))
               }
             }
 
@@ -539,6 +520,8 @@ class MyScene extends THREE.Scene {
 
         }
       }
+
+      this.add(this.mesh)
     }
 
 
