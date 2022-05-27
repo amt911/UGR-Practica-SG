@@ -41,6 +41,9 @@ class MyScene extends THREE.Scene {
       " ": false
     };
 
+    console.log((3.6|0)+0.5);
+    console.log(Math.round(3.6))
+
     this.myCanvasName = myCanvas;
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
     this.renderer = this.createRenderer(myCanvas);
@@ -371,8 +374,109 @@ class MyScene extends THREE.Scene {
   }
 
 
+  //PONER BLOQUES: ARREGLAR QUE NO SE PUEDAN PONER BLOQUES CUANDO EL PERSONAJE COLISIONE CON EL NUEVO
   onDocumentMouseDown(event) {
     if (event.which == 3) {
+      let mouse = new THREE.Vector2();
+      //mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      //mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+
+      mouse.x = (0.5) * 2 - 1;
+      mouse.y = 1 - 2 * (0.5);
+
+      let raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, this.camera);
+
+      //let prueba=[this.model.brazoLeftW1, this.model.brazoRightW1, this.model.cabezaW1]
+      let objetos = raycaster.intersectObject(this.mesh, true);
+
+      console.log("------------------------");
+      console.log(objetos[0]);
+
+      if (objetos[0] != undefined && objetos.length > 0 && objetos[0].distance <= 20) {
+        let index = objetos[0].face.materialIndex;
+        let posicion = objetos[0].point;
+        let coord = { x: 0, y: 0, z: 0 };
+
+        //IMPORTANTE REVISAR 0 Y 5 (LOS INCREMENTOS)
+        switch (index) {
+          case 0: //derecha (x pos)
+            coord = {
+              x: posicion.x + 0.5,
+              //y: Math.round(posicion.y) + 0.5,
+              y: (posicion.y | 0) + 0.5,// + 0.5,
+              z: Math.round(posicion.z)
+            }
+            break;
+          case 1: //izquierda (x neg)
+            coord = {
+              x: posicion.x - 0.5,
+              //y: Math.round(posicion.y) + 0.5,
+              y: (posicion.y|0) + 0.5,
+              z: Math.round(posicion.z)
+            }
+            break;
+          case 2: //arriba (y pos)
+            coord = {
+              x: Math.round(posicion.x),
+              y: (posicion.y|0) + 0.5,
+              z: Math.round(posicion.z)
+            }
+            break;
+          case 3: //abajo (y neg)
+            coord = {
+              x: Math.round(posicion.x),
+              y: (posicion.y|0) - 0.5,
+              z: Math.round(posicion.z)
+            }
+            break;
+          case 4: //frente (z pos)
+            coord = {
+              x: Math.round(posicion.x),
+              //y: Math.round(posicion.y) + 0.5,// + 0.5,
+              y: (posicion.y|0) + 0.5,// + 0.5,
+              z: posicion.z + 0.5
+            }
+            break;
+          case 5: //detras (z neg)
+            coord = {
+              x: Math.round(posicion.x),
+              //y: Math.round(posicion.y) + 0.5,
+              y: (posicion.y|0) + 0.5,
+              z: posicion.z - 0.5
+            }
+            break;
+        }
+        if(posicion.y<0){
+          coord.y=Math.floor(posicion.y)+0.5;
+        }
+
+        console.log(posicion)
+        console.log(coord);
+        console.log("________________________")
+
+        let aux = this.identificarChunk(coord.x, coord.z);
+        this.chunk[aux.x][aux.z].push(coord);
+        this.remove(this.mesh);
+
+        let matrix = new THREE.Matrix4();
+
+        let l = 0;
+        this.mesh = new THREE.InstancedMesh(this.h.geometria, this.h.material, this.TAM_CHUNK * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER);
+        for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
+          for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
+            for (let j = 0; j < this.chunk[i][a].length; j++) {
+              matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
+              this.mesh.setMatrixAt(l, matrix);
+              l++;
+            }
+          }
+        }
+        this.add(this.mesh);
+      }
+    }
+
+    else if (event.which == 1) {
       let mouse = new THREE.Vector2();
       //mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       //mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
@@ -400,51 +504,69 @@ class MyScene extends THREE.Scene {
         switch (index) {
           case 0: //derecha (x pos)
             coord = {
-              x: posicion.x + 0.5,
-              y: Math.round(posicion.y) + 0.5,
+              x: posicion.x - 0.5,
+              //y: Math.round(posicion.y)+0.5,
+              y: (posicion.y|0)+0.5,
               z: Math.round(posicion.z)
             }
             break;
           case 1: //izquierda (x neg)
             coord = {
-              x: posicion.x - 0.5,
-              y: Math.round(posicion.y) + 0.5,
+              x: posicion.x + 0.5,
+              //y: Math.round(posicion.y)+0.5,
+              y: (posicion.y|0)+0.5,
               z: Math.round(posicion.z)
             }
             break;
-          case 2: //arriba (y pos)
-            coord = {
-              x: Math.round(posicion.x),
-              y: posicion.y + 0.5,
-              z: Math.round(posicion.z)
-            }
-            break;
-          case 3: //abajo (y neg)
+          case 2: //arriba (y pos) ok
             coord = {
               x: Math.round(posicion.x),
               y: posicion.y - 0.5,
               z: Math.round(posicion.z)
             }
             break;
+          case 3: //abajo (y neg)
+            coord = {
+              x: Math.round(posicion.x),
+              y: posicion.y + 0.5,
+              z: Math.round(posicion.z)
+            }
+            break;
           case 4: //frente (z pos)
             coord = {
               x: Math.round(posicion.x),
-              y: Math.round(posicion.y) + 0.5,
-              z: posicion.z + 0.5
+              //y: Math.round(posicion.y)+0.5,
+              y: (posicion.y|0)+0.5,
+              z: posicion.z - 0.5
             }
             break;
           case 5: //detras (z neg)
             coord = {
               x: Math.round(posicion.x),
-              y: Math.round(posicion.y) + 0.5,
-              z: posicion.z - 0.5
+              //y: Math.round(posicion.y)+0.5,
+              y: (posicion.y|0)+0.5,
+              z: posicion.z + 0.5
             }
             break;
         }
 
+        if(posicion.y<0 && index!=3 && index!=2){
+          coord.y=Math.floor(posicion.y)+0.5;
+        }
+
+        let redondeo=Math.round(coord.y);
+
+        coord.y=(redondeo>coord.y)?redondeo-0.5: redondeo+0.5;
+
+        console.log(coord);
         let aux = this.identificarChunk(coord.x, coord.z);
-        this.chunk[aux.x][aux.z].push(coord);
+        //this.chunk[aux.x][aux.z].push(coord);
         this.remove(this.mesh);
+
+        let indice=this.chunk[aux.x][aux.z].findIndex(i=>i.x==coord.x && i.y==coord.y && i.z==coord.z);
+
+        if(indice!=-1)
+          this.chunk[aux.x][aux.z].splice(indice, 1);
 
         let matrix = new THREE.Matrix4();
 
@@ -461,7 +583,8 @@ class MyScene extends THREE.Scene {
         }
         this.add(this.mesh);
       }
-    }
+    }    
+
   }
 
   detectCollisionCharacterWorld() {

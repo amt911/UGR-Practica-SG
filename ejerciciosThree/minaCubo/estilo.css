@@ -41,3 +41,12 @@ html, body {
       height: 32px;
     }
   }
+
+  #cursor{
+    position:absolute;
+    top: calc( 50% - 5px);
+    margin: auto;
+    left: calc( 50% - 5px);
+    width: 10px;
+    height: 10px;
+  }

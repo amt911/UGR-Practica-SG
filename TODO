@@ -13,6 +13,30 @@ ARREGLAR QUE CUANDO SE SALTAN DOS BLOQUES, SE PEGA EL PERSONAJE AL MISMO
 SI SE MUEVE EN EL PRIMER BLOQUE HACIA LA L INVERTIDA (SIN SALTAR) SE METE DENTRO DEL CUBO
 
 
+//MUCHA IMPORTANCIA
+- Arreglar colisiones y físicas (mas o menos, lo mas importante)
+- Más modelos jerárquicos (con sus movimientos)
+- Varios bloques en la generación
+- Revisar animacion Steve porque a veces no se reinicia
+- Hacer animaciones y fisicas independientes del ordenador
+- Arreglar controles raton
+
+
+
+//MEDIA IMPORTANCIA
+- Árboles y estructura (solo si se puede hacer varios bloques en la generación)
+- Mejoras de iluminación
+- Hacer que el cursor se capture y no haga falta pulsar los botones
+
+
+//POCA IMPORTANCIA
+- Ciclo día noche
+- Animación al poner y quitar bloques
+- Pantalla de inicio?
+
+//POQUISIMA IMPORTANCIA
+- Cámara en primera persona
+
 
 
 
