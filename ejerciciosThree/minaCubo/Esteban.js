@@ -472,6 +472,7 @@ class Esteban extends THREE.Object3D {
           console.log(this.detectCollisionCharacterWorld(bloqueRaro));
           console.log(this.position.y)
           console.log(this.boundingBox.position.y)
+          //if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
           if(this.detectCollisionCharacterWorld(bloqueRaro)){
             this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
 
