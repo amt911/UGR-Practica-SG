@@ -17,13 +17,18 @@ SI SE MUEVE EN EL PRIMER BLOQUE HACIA LA L INVERTIDA (SIN SALTAR) SE METE DENTRO
 - Hacer un selector de tipo de material (ahora mismo se pone el mismo que el que se hace picking)
 
 //MUCHA IMPORTANCIA
-- Arreglar colisiones y físicas (mas o menos, lo mas importante) <-----
-- Más modelos jerárquicos (con sus movimientos)
+- Más modelos jerárquicos (con sus movimientos) -> SERGIO
 DONE - Varios bloques en la generación
 DONE - Ver bloque seleccionado
-- Revisar animacion Steve porque a veces no se reinicia
-- Hacer animaciones y fisicas independientes del ordenador <-----
+- Revisar animacion Steve porque a veces no se reinicia -> ANDRES
+- Hacer animaciones y fisicas independientes del ordenador -> ANDRES
 DONE - Arreglar controles raton
+
+
+
+/*Hoy*/
+- Arreglar colisiones y físicas (mas o menos, lo mas importante) <-----
+- Elegir bloque para poner [HIERBA] [TIERRA] [PIEDRA] [ROCA] [MADERAROBLE] [HIERBAROBLE] [CRISTAL] [PIEDRABASE] [GLOWSTONE] -> LOS DOS
 
 
 //MEDIA IMPORTANCIA

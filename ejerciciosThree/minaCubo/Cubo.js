@@ -11,13 +11,6 @@ class Cubo extends THREE.Object3D {
       this.material = new THREE.MeshPhongMaterial({color: 0xCF0000});
   }
 
-  createGUI (gui,titleGui) {
-
-  }
-
-  update (movimiento) {
-
-  }
 }
 
 class Hierba extends Cubo {
@@ -40,13 +33,6 @@ class Hierba extends Cubo {
 
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 class Tierra extends Cubo {
@@ -67,13 +53,6 @@ class Tierra extends Cubo {
 
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 
@@ -95,13 +74,6 @@ class MaderaRoble extends Cubo {
 
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 
@@ -127,13 +99,6 @@ class HojaRoble extends Cubo {
     this.add(this.figura);
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 class Piedra extends Cubo {
@@ -154,13 +119,6 @@ class Piedra extends Cubo {
 
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 
@@ -183,13 +141,6 @@ class Roca extends Cubo {
 
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
 class PiedraBase extends Cubo {
@@ -209,12 +160,23 @@ class PiedraBase extends Cubo {
     this.material = textura;
 
   }
+}
 
-  createGUI(gui, titleGui) {
+class PiedraLuminosa extends Cubo {
+  constructor() {
+    super();
+    const loader = new THREE.TextureLoader();
 
-  }
-
-  update(movimiento) {
+    const textura = [
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+        new THREE.MeshBasicMaterial({map: loader.load("./texturas/glowstone.png")}),
+    ];
+ 
+    this.material = textura;
 
   }
 }
@@ -240,13 +202,6 @@ class Cristal extends Cubo {
     this.add(this.figura);
   }
 
-  createGUI(gui, titleGui) {
-
-  }
-
-  update(movimiento) {
-
-  }
 }
 
-export {Hierba, Tierra, Roca, Piedra, HojaRoble, MaderaRoble, PiedraBase, Cristal};
+export {Hierba, Tierra, Roca, Piedra, HojaRoble, MaderaRoble, PiedraBase, Cristal, PiedraLuminosa};
