@@ -147,13 +147,13 @@ class MyScene extends THREE.Scene {
     this.sizeIMesh = {
       "Hierba": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
       "Tierra": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "Roca": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
+      "Roca": 0,
       "Piedra": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "MaderaRoble": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "PiedraBase": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "Cristal": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "PiedraLuminosa": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
-      "HojasRoble": 5 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER
+      "MaderaRoble": 1 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
+      "PiedraBase": 1 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER,
+      "Cristal": 1,
+      "PiedraLuminosa": 1,
+      "HojasRoble": 1 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER
     }
 
     this.mesh={
@@ -229,7 +229,8 @@ class MyScene extends THREE.Scene {
       max: { x: this.DISTANCIA_RENDER - 1, z: this.DISTANCIA_RENDER - 1 }
     };
 
-    this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
+    //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
+    this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
     this.add(this.bloqueRaro);
 
     let cristal = new cubos.Cristal();
@@ -352,7 +353,7 @@ class MyScene extends THREE.Scene {
       // En el contexto de una función   this   alude a la función
       lightIntensity: 0.5,
       axisOnOff: true,
-      activarWireframe: true
+      activarWireframe: false
     }
 
     // Se crea una sección para los controles de esta clase
@@ -514,7 +515,12 @@ class MyScene extends THREE.Scene {
               break;
           }
           if(posicion.y<0){
+            //console.log("-----------------------")
             coord.y=Math.floor(posicion.y)+0.5;
+            //console.log(coord.y);
+            //console.log(Math.floor((posicion.y)|0)+0.5)
+            //console.log("_______________________")
+            //coord.y=Math.floor((posicion.y)|0)+0.5;
           }
 
           objetosIntersecados.push({tipo: tipo, coordenada: coord, distancia: objetos[0].distance});
@@ -542,6 +548,7 @@ class MyScene extends THREE.Scene {
 
       console.log(this.bloqueSeleccionado[this.objeto])
       this.mesh[this.bloqueSeleccionado[this.objeto]] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[this.bloqueSeleccionado[this.objeto]], ++this.sizeIMesh[this.bloqueSeleccionado[this.objeto]]);
+      console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
       for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
           for (let j = 0; j < this.chunk[i][a].length; j++) {
@@ -557,7 +564,7 @@ class MyScene extends THREE.Scene {
       
       //console.log(objetosIntersecados[0].tipo);
       //console.log(this.mesh[objetosIntersecados[0].tipo]);
-      this.add(this.mesh[objetosIntersecados[0].tipo]);
+      this.add(this.mesh[this.bloqueSeleccionado[this.objeto]]);
     }
 
     else if (event.which == 1) {
@@ -881,7 +888,11 @@ class MyScene extends THREE.Scene {
           "Tierra": 0,
           "Piedra": 0,
           "MaderaRoble": 0,
-          "HojasRoble": 0
+          "HojasRoble": 0,
+          "Roca": 0,
+          "PiedraBase": 0,
+          "PiedraLuminosa": 0,
+          "Cristal": 0
         };
 
         let inc = 0.02;

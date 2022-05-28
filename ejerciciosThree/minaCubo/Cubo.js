@@ -1,7 +1,6 @@
 import * as THREE from '../libs/three.module.js'
 //import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import * as PM from './ParametrosMundo.js'
-import * as SceneUtils from '../../libs/SceneUtils.js'
 
 
 class Cubo extends THREE.Object3D {
@@ -84,19 +83,16 @@ class HojaRoble extends Cubo {
     super();
     const loader = new THREE.TextureLoader();
 
-      var matExt = new THREE.MeshPhongMaterial({alphaMap: loader.load("./texturas/hojaroble/hoja.png"), color: 0x009d0c});
-   //   matExt.alphaMap = loader.load("./texturas/hojaroble/hoja.png");
-  //  matExt.color = 0xa2ff6e;
-    matExt.transparent = true;
-    matExt.side = THREE.FrontSide;
-
-    var matInt = matExt.clone();
-    matInt.side = THREE.BackSide;
-   // matInt.color =  0xa2ff6e;
-
-    
-    this.figura = SceneUtils.createMultiMaterialObject(this.geometria,  [matInt, matExt]);
-    this.add(this.figura);
+    const textura = [
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/hojaroble/hoja.png"), transparent: true, color: 0x345345}),
+      
+  ];
+  this.material = textura; 
   }
 
 }
@@ -187,19 +183,16 @@ class Cristal extends Cubo {
     super();
     const loader = new THREE.TextureLoader();
 
-      var matExt = new THREE.MeshPhongMaterial({alphaMap: loader.load("./texturas/cristal.png")});
-   //   matExt.alphaMap = loader.load("./texturas/hojaroble/hoja.png");
-  //  matExt.color = 0xa2ff6e;
-    matExt.transparent = true;
-    matExt.side = THREE.FrontSide;
+    const textura = [
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+      new THREE.MeshBasicMaterial({map: loader.load("./texturas/cristal.png"), transparent: true}),
+  ]; 
 
-    var matInt = matExt.clone();
-    matInt.side = THREE.BackSide;
-   // matInt.color =  0xa2ff6e;
-
-    
-    this.figura = SceneUtils.createMultiMaterialObject(this.geometria,  [matInt, matExt]);
-    this.add(this.figura);
+  this.material = textura;
   }
 
 }

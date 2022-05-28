@@ -1,10 +1,5 @@
 import * as THREE from '../libs/three.module.js'
-//import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import * as PM from './ParametrosMundo.js'
-
-function getCurrentDate(){
-
-}
 
 
 //IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
@@ -22,14 +17,11 @@ class Esteban extends THREE.Object3D {
     this.caidaVel = -0.01;
     this.caidaAcc = -0.01;
 
-    //this.caidaVel=0;
-    //this.caidaAcc=0;
-
     this.clock = new THREE.Clock();
     this.clockAnim=new THREE.Clock();
     this.cambiarAnimacion = false;
     this.maxMovimientoExt = this.degToRad(60);
-    //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
     // Se crea la parte de la interfaz que corresponde a la caja
     // Se crea primero porque otros métodos usan las letiables que se definen para la interfaz
     this.createGUI(gui, titleGui);
@@ -316,15 +308,24 @@ class Esteban extends THREE.Object3D {
     this.wrapperFinal.rotation.y = 0;
   }
 
-  //NO FUNCIONA XD
+  //NO FUNCIONA XDD
+  //Porque boundingBox siempre se mantiene en el (0,0,0)
   detectCollisionCharacterWorld(box) {
-    this.boundingBox.geometry.computeBoundingBox();
+    let bBoxClone=this.boundingBox.clone();
+    bBoxClone.position.copy(this.position);
+    console.log(bBoxClone.position);
+    //this.boundingBox.geometry.computeBoundingBox();
+    bBoxClone.geometry.computeBoundingBox();
+
     box.geometry.computeBoundingBox();
-    this.boundingBox.updateMatrixWorld();
+    //this.boundingBox.updateMatrixWorld();
+    bBoxClone.updateMatrixWorld();
     box.updateMatrixWorld();
 
-    let a = this.boundingBox.geometry.boundingBox.clone();
-    a.applyMatrix4(this.boundingBox.matrixWorld);
+    //let a = this.boundingBox.geometry.boundingBox.clone();
+    let a = bBoxClone.geometry.boundingBox.clone();
+    //a.applyMatrix4(this.boundingBox.matrixWorld);
+    a.applyMatrix4(bBoxClone.matrixWorld);
 
     let b = box.geometry.boundingBox.clone();
     b.applyMatrix4(box.matrixWorld);
@@ -459,17 +460,21 @@ class Esteban extends THREE.Object3D {
     this.position.y += this.caidaVel;
     this.caidaVel += this.caidaAcc;
 
+    //console.log(this.position.y)
     for(let i=0; i<bloques.length; i++){
       for (let j = 0; j < bloques[i].length;j++) {
         let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
         let eV = new THREE.Vector2(this.position.x, this.position.z);
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-          
-          if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
+          //bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
+          bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
+          console.log(this.detectCollisionCharacterWorld(bloqueRaro));
+          console.log(this.position.y)
+          console.log(this.boundingBox.position.y)
+          if(this.detectCollisionCharacterWorld(bloqueRaro)){
             this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
-            
+
             this.caidaVel = 0;
             this.puedeSaltar=true;
             break;
