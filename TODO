@@ -1,6 +1,6 @@
 //LINKS IMPORTANTES
 
-three js orbitcontrols follow target
+rthree js orbitcontrols follow target
 
 ARREGLAR PARPADEO AL IR ATRAS
 
@@ -12,22 +12,26 @@ ARREGLAR QUE CUANDO SE SALTAN DOS BLOQUES, SE PEGA EL PERSONAJE AL MISMO
 
 SI SE MUEVE EN EL PRIMER BLOQUE HACIA LA L INVERTIDA (SIN SALTAR) SE METE DENTRO DEL CUBO
 
+//PRIORIDAD MAXIMA
+- Arreglar para que los chunks se reserven dinamicamente y no como lo estamos haciendo, que es siempre el mismo valor
+- Hacer un selector de tipo de material (ahora mismo se pone el mismo que el que se hace picking)
 
 //MUCHA IMPORTANCIA
-- Arreglar colisiones y físicas (mas o menos, lo mas importante)
+- Arreglar colisiones y físicas (mas o menos, lo mas importante) <-----
 - Más modelos jerárquicos (con sus movimientos)
-- Varios bloques en la generación
+DONE - Varios bloques en la generación
+DONE - Ver bloque seleccionado
 - Revisar animacion Steve porque a veces no se reinicia
-- Hacer animaciones y fisicas independientes del ordenador
-- Arreglar controles raton
-
+- Hacer animaciones y fisicas independientes del ordenador <-----
+DONE - Arreglar controles raton
 
 
 //MEDIA IMPORTANCIA
 - Árboles y estructura (solo si se puede hacer varios bloques en la generación)
 - Mejoras de iluminación
 - Hacer que el cursor se capture y no haga falta pulsar los botones
-
+DONE - Correr
+- Niebla estilo Silent Hill
 
 //POCA IMPORTANCIA
 - Ciclo día noche
@@ -36,8 +40,6 @@ SI SE MUEVE EN EL PRIMER BLOQUE HACIA LA L INVERTIDA (SIN SALTAR) SE METE DENTRO
 
 //POQUISIMA IMPORTANCIA
 - Cámara en primera persona
-
-
 
 
 

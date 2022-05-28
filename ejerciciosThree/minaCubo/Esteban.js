@@ -443,11 +443,12 @@ class Esteban extends THREE.Object3D {
       }
     }
 
-    this.translateOnAxis(vectorDir.normalize(), velocidad);
+    let velocidadFinal=(teclasPulsadas["SHIFT"])? velocidad*2 : velocidad;
+    this.translateOnAxis(vectorDir.normalize(), velocidadFinal);
     this.checkCollision(bloques, vectorDir, velocidad);
     
     if(moviendose)
-      this.animacion(esForward, velocidad);
+      this.animacion(esForward, velocidadFinal);
 
     if(this.puedeSaltar && teclasPulsadas[" "]){
       this.caidaVel = 0.15;
