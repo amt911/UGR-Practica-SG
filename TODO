@@ -32,7 +32,7 @@ DONE - Arreglar controles raton
 
 
 //MEDIA IMPORTANCIA
-- Árboles y estructura (solo si se puede hacer varios bloques en la generación)
+DONE - Árboles (solo si se puede hacer varios bloques en la generación)
 - Mejoras de iluminación
 - Hacer que el cursor se capture y no haga falta pulsar los botones
 DONE - Correr
@@ -40,6 +40,7 @@ DONE - Correr
 - Arreglar que al poner los bloques muy rapidos mientras se salta, a veces se mete dentro del suelo
 
 //POCA IMPORTANCIA
+- Estructuras
 - Ciclo día noche
 - Animación al poner y quitar bloques
 - Pantalla de inicio?

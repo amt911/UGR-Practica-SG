@@ -24,6 +24,15 @@ import * as PM from './ParametrosMundo.js'
  * Usaremos una clase derivada de la clase Scene de Three.js para llelet el control de la escena y de todo lo que ocurre en ella.
  */
 
+function estaColindando(posx, posz, lista){
+//detecta si posx, posy esta colindando con alguno de los elementos de la lista
+  for(let i = 0; i < lista.length; i++){
+    if(Math.abs(posx - lista[i].x) <= 2 && Math.abs(posz - lista[i].z) <= 2){
+      return true;
+    }
+  }  
+  return false;
+}
 class MyScene extends THREE.Scene {
   getCanvas() {
     return $(this.myCanvasName);
@@ -77,7 +86,7 @@ class MyScene extends THREE.Scene {
     this.createCamera();
 
     this.ghost = new Esteban(this.gui, " de la Caja");
-
+/*
     let path = "texturas/cielo/";
     let format = '.png';
 
@@ -90,8 +99,8 @@ class MyScene extends THREE.Scene {
     ]
 
     let textureCube = new THREE.CubeTextureLoader().load(urls);
-
     this.background = textureCube;
+*/
     //this.add(this.ghost)
     this.add(this.model);
 
@@ -117,22 +126,23 @@ class MyScene extends THREE.Scene {
     this.t = new cubos.Tierra();
 
     this.model.position.x = (this.DISTANCIA_RENDER * this.TAM_CHUNK) / 2
-
     this.model.position.z = (this.DISTANCIA_RENDER * this.TAM_CHUNK) / 2
+    this.model.boundingBox.position.x = (this.DISTANCIA_RENDER * this.TAM_CHUNK) / 2;
+    this.model.boundingBox.position.z = (this.DISTANCIA_RENDER * this.TAM_CHUNK) / 2;
+    this.model.boundingBox.position.y = this.model.position.y + 16 / PM.PIXELES_ESTANDAR;
+    this.objeto = 0;
+    this.bloqueSeleccionado = [
+      "Hierba",
+      "Tierra",
+      "Roca",
+      "Piedra",
+      "MaderaRoble",
+      "PiedraBase",
+      "Cristal",
+      "PiedraLuminosa",
+      "HojasRoble"];
 
-    this.objeto=0;
-    this.bloqueSeleccionado=[
-    "Hierba",
-    "Tierra",
-    "Roca",
-    "Piedra",
-    "MaderaRoble",
-    "PiedraBase",
-    "Cristal",
-    "PiedraLuminosa",
-    "HojasRoble"];
-
-    this.materialesText={
+    this.materialesText = {
       "Hierba": new cubos.Hierba().material,
       "Tierra": new cubos.Tierra().material,
       "Roca": new cubos.Roca().material,
@@ -156,7 +166,7 @@ class MyScene extends THREE.Scene {
       "HojasRoble": 1 * this.TAM_CHUNK * this.TAM_CHUNK * this.DISTANCIA_RENDER * this.DISTANCIA_RENDER
     }
 
-    this.mesh={
+    this.mesh = {
       "Hierba": new THREE.InstancedMesh(this.h.geometria, this.materialesText["Hierba"], this.sizeIMesh["Hierba"]),
       "Tierra": new THREE.InstancedMesh(this.t.geometria, this.materialesText["Tierra"], this.sizeIMesh["Tierra"]),
       "Roca": new THREE.InstancedMesh(this.p.geometria, this.materialesText["Roca"], this.sizeIMesh["Roca"]),
@@ -174,12 +184,27 @@ class MyScene extends THREE.Scene {
     let contador2 = 0;
     let contador3 = 0;
     let contador4 = 0;
-    let c = 0;
 
     for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
         let bloques = [];
+        var n_arboles = Math.floor(Math.random() * this.TAM_CHUNK/5);
+        var list_arboles = [];
 
+        for (let m = 0; m < n_arboles; m++) {
+          let posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+          let posz = Math.floor(Math.random() * this.TAM_CHUNK);
+          while(estaColindando(posx,posz,list_arboles)){
+           posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+           posz = Math.floor(Math.random() * this.TAM_CHUNK);
+          }
+          list_arboles.push({ x: posx, y: 10, z: posz });
+          // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
+
+        }
+        /*     
+    
+     */
         for (let x = i * this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j * this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK; z++) {
             //contador=contador2=0;
@@ -192,41 +217,50 @@ class MyScene extends THREE.Scene {
             this.mesh["Hierba"].setMatrixAt(k, matrix);
 
 
-            bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Hierba"});
-            k++; 
-            let arbol = new estructuras.ArbolRoble();
-            for(let r = 0; r < arbol.bloqueshojas.length; r++){
-              matrix.setPosition(c + arbol.bloqueshojas[r].x, v + arbol.bloqueshojas[r].y, c + arbol.bloqueshojas[r].z);
-              this.mesh["HojasRoble"].setMatrixAt(contador3, matrix);
-              bloques.push({x: c + arbol.bloqueshojas[r].x, y: v + arbol.bloqueshojas[r].y, z:  c + arbol.bloqueshojas[r].z, material: "HojasRoble"});
-              contador3++;
+            bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Hierba" });
+            k++;
+            for (let indice_arbol = 0; indice_arbol < list_arboles.length; indice_arbol++) {
+              if (list_arboles[indice_arbol].x + i * this.TAM_CHUNK == x && list_arboles[indice_arbol].z + j * this.TAM_CHUNK == z) {
+                list_arboles[indice_arbol].y = v + 0.5;
+                list_arboles[indice_arbol].x = list_arboles[indice_arbol].x + i * this.TAM_CHUNK;
+                list_arboles[indice_arbol].z = list_arboles[indice_arbol].z + j * this.TAM_CHUNK;
+              }
             }
-
-            for(let r = 0; r < arbol.bloquesmadera.length; r++){
-              matrix.setPosition( c + arbol.bloquesmadera[r].x, v+ arbol.bloquesmadera[r].y, c + arbol.bloquesmadera[r].z);
-              this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
-              bloques.push({x: c + arbol.bloquesmadera[r].x, y: v + arbol.bloquesmadera[r].y, z: c + arbol.bloquesmadera[r].z, material: "MaderaRoble"});
-              contador4++;
-            }
-
-            c++;
-            for(let s = 0; s < 3; s++){
-              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - s -1, z * 16 / PM.PIXELES_ESTANDAR);
+            for (let s = 0; s < 3; s++) {
+              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - s - 1, z * 16 / PM.PIXELES_ESTANDAR);
               this.mesh["Tierra"].setMatrixAt(contador, matrix);
-              
-              
-              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - s -1, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Tierra" });
+
+
+              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - s - 1, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Tierra" });
               contador++;
             }
-           /* */
-            for(let r = 3; r < 8; r++){
-              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - r - 1 , z * 16 / PM.PIXELES_ESTANDAR);
+            /* */
+            for (let r = 3; r < 8; r++) {
+              matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - r - 1, z * 16 / PM.PIXELES_ESTANDAR);
               this.mesh["Piedra"].setMatrixAt(contador2, matrix);
-  
-              
-              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - r -1, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Piedra" });
+
+
+              bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - r - 1, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Piedra" });
               contador2++;
             }
+          }
+        }
+        for (let indice_arbol = 0; indice_arbol < list_arboles.length; indice_arbol++) {
+          let arbol = new estructuras.ArbolRoble();
+
+          for (let r = 0; r < arbol.bloqueshojas.length; r++) {
+            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y, list_arboles[indice_arbol].z + arbol.bloqueshojas[r].z);
+            this.mesh["HojasRoble"].setMatrixAt(contador3, matrix);
+            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, y: list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y, z: list_arboles[indice_arbol].z  + arbol.bloqueshojas[r].z, material: "HojasRoble" });
+            contador3++;
+          }
+
+          for (let r = 0; r < arbol.bloquesmadera.length; r++) {
+            // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
+            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
+            this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
+            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y , z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
+            contador4++;
           }
         }
         this.chunkCollision.push(bloques);
@@ -239,7 +273,7 @@ class MyScene extends THREE.Scene {
       }
     }
 
-    for(let aux in this.mesh){
+    for (let aux in this.mesh) {
       this.add(this.mesh[aux]);
     }
 
@@ -249,9 +283,9 @@ class MyScene extends THREE.Scene {
       max: { x: this.DISTANCIA_RENDER - 1, z: this.DISTANCIA_RENDER - 1 }
     };
 
-/*     //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
     this.add(this.bloqueRaro);
+    /*     //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
 
     let cristal = new cubos.Cristal();
     cristal.position.set(-5 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16 / PM.PIXELES_ESTANDAR)
@@ -267,12 +301,12 @@ class MyScene extends THREE.Scene {
     this.add(mesh); */
 
 
-    
+
     this.cerdo = new Cerdo(this.gui, "Cerdo");
     this.add(this.cerdo);
 
-    let cajaSeleccionada=new THREE.BoxGeometry(1,1,1);
-    this.cajaSeleccionada=new THREE.Mesh(cajaSeleccionada);
+    let cajaSeleccionada = new THREE.BoxGeometry(1, 1, 1);
+    this.cajaSeleccionada = new THREE.Mesh(cajaSeleccionada);
 
     this.add(this.cajaSeleccionada);
 
@@ -280,6 +314,15 @@ class MyScene extends THREE.Scene {
     this.cajaSeleccionada.material.wireframeLinewidth = 3;
     this.cajaSeleccionada.material.color.set(0x333333);
     this.cajaSeleccionada.visible = false;
+
+    console.log(this.model.boundingBox)
+    this.add(this.model.boundingBox);
+
+    this.initSkybox()
+  }
+
+  initSkybox(){
+    //let estrellas=new THREEx.DayNight.StarField();
   }
 
   //ASI TAMPOCO SE INDEXAN
@@ -326,10 +369,10 @@ class MyScene extends THREE.Scene {
     this.cameraControl.enablePan = false;
     this.cameraControl.enableZoom = false;
     this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.mouseButtons={
+    this.cameraControl.mouseButtons = {
       LEFT: THREE.MOUSE.DOLLY,
       MIDDLE: THREE.MOUSE.ROTATE,
-      RIGHT: THREE.MOUSE.PAN      
+      RIGHT: THREE.MOUSE.PAN
     }
 
     this.model.addCamara(this.cameraControl);
@@ -460,7 +503,7 @@ class MyScene extends THREE.Scene {
 
   //PONER BLOQUES: ARREGLAR QUE NO SE PUEDAN PONER BLOQUES CUANDO EL PERSONAJE COLISIONE CON EL NUEVO
   onDocumentMouseDown(event) {
-    
+
     if (event.which == 3) {
       let mouse = new THREE.Vector2();
 
@@ -470,8 +513,8 @@ class MyScene extends THREE.Scene {
       let raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouse, this.camera);
 
-      let objetosIntersecados=[];
-      for(let tipo in this.mesh){
+      let objetosIntersecados = [];
+      for (let tipo in this.mesh) {
         let objetos = raycaster.intersectObject(this.mesh[tipo], true);
 
         if (objetos[0] != undefined && objetos.length > 0 && objetos[0].distance <= 20) {
@@ -493,21 +536,21 @@ class MyScene extends THREE.Scene {
               coord = {
                 x: posicion.x - 0.5,
                 //y: Math.round(posicion.y) + 0.5,
-                y: (posicion.y|0) + 0.5,
+                y: (posicion.y | 0) + 0.5,
                 z: Math.round(posicion.z)
               }
               break;
             case 2: //arriba (y pos)
               coord = {
                 x: Math.round(posicion.x),
-                y: (posicion.y|0) + 0.5,
+                y: (posicion.y | 0) + 0.5,
                 z: Math.round(posicion.z)
               }
               break;
             case 3: //abajo (y neg)
               coord = {
                 x: Math.round(posicion.x),
-                y: (posicion.y|0) - 0.5,
+                y: (posicion.y | 0) - 0.5,
                 z: Math.round(posicion.z)
               }
               break;
@@ -515,7 +558,7 @@ class MyScene extends THREE.Scene {
               coord = {
                 x: Math.round(posicion.x),
                 //y: Math.round(posicion.y) + 0.5,// + 0.5,
-                y: (posicion.y|0) + 0.5,// + 0.5,
+                y: (posicion.y | 0) + 0.5,// + 0.5,
                 z: posicion.z + 0.5
               }
               break;
@@ -523,50 +566,50 @@ class MyScene extends THREE.Scene {
               coord = {
                 x: Math.round(posicion.x),
                 //y: Math.round(posicion.y) + 0.5,
-                y: (posicion.y|0) + 0.5,
+                y: (posicion.y | 0) + 0.5,
                 z: posicion.z - 0.5
               }
               break;
           }
-          if(posicion.y<0){
+          if (posicion.y < 0) {
             //console.log("-----------------------")
-            coord.y=Math.floor(posicion.y)+0.5;
+            coord.y = Math.floor(posicion.y) + 0.5;
             //console.log(coord.y);
             //console.log(Math.floor((posicion.y)|0)+0.5)
             //console.log("_______________________")
             //coord.y=Math.floor((posicion.y)|0)+0.5;
           }
 
-          objetosIntersecados.push({tipo: tipo, coordenada: coord, distancia: objetos[0].distance});
+          objetosIntersecados.push({ tipo: tipo, coordenada: coord, distancia: objetos[0].distance });
 
         }
 
       }
 
       //ordena objetos intersecados segun distancia
-      objetosIntersecados.sort(function(a, b){
+      objetosIntersecados.sort(function (a, b) {
         return a.distancia - b.distancia;
       });
-      
+
       //console.log(objetosIntersecados);
 
 
       //let aux = this.identificarChunk(coord.x, coord.z);      
       let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
-      this.chunk[aux.x][aux.z].push( {material: this.bloqueSeleccionado[this.objeto], x: objetosIntersecados[0].coordenada.x, y: objetosIntersecados[0].coordenada.y, z: objetosIntersecados[0].coordenada.z} );
+      this.chunk[aux.x][aux.z].push({ material: this.bloqueSeleccionado[this.objeto], x: objetosIntersecados[0].coordenada.x, y: objetosIntersecados[0].coordenada.y, z: objetosIntersecados[0].coordenada.z });
       this.remove(this.mesh[this.bloqueSeleccionado[this.objeto]]);
 
-      
+
       let matrix = new THREE.Matrix4();
       let l = 0;
 
-      console.log(this.bloqueSeleccionado[this.objeto])
+      //console.log(this.bloqueSeleccionado[this.objeto])
       this.mesh[this.bloqueSeleccionado[this.objeto]] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[this.bloqueSeleccionado[this.objeto]], ++this.sizeIMesh[this.bloqueSeleccionado[this.objeto]]);
-      console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
+      //console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
       for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
           for (let j = 0; j < this.chunk[i][a].length; j++) {
-            if(this.chunk[i][a][j].material == this.bloqueSeleccionado[this.objeto]){//objetosIntersecados[0].tipo){
+            if (this.chunk[i][a][j].material == this.bloqueSeleccionado[this.objeto]) {//objetosIntersecados[0].tipo){
               matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
               this.mesh[this.bloqueSeleccionado[this.objeto]].setMatrixAt(l, matrix);
               l++;
@@ -575,7 +618,7 @@ class MyScene extends THREE.Scene {
         }
       }
 
-      
+
       //console.log(objetosIntersecados[0].tipo);
       //console.log(this.mesh[objetosIntersecados[0].tipo]);
       this.add(this.mesh[this.bloqueSeleccionado[this.objeto]]);
@@ -673,10 +716,10 @@ class MyScene extends THREE.Scene {
       }
 
       //ordena objetos intersecados segun distancia
-      objetosIntersecados.sort(function(a, b){
+      objetosIntersecados.sort(function (a, b) {
         return a.distancia - b.distancia;
       });
-      
+
       let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
       this.remove(this.mesh[objetosIntersecados[0].tipo]);
 
@@ -694,7 +737,7 @@ class MyScene extends THREE.Scene {
       for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
           for (let j = 0; j < this.chunk[i][a].length; j++) {
-            if(this.chunk[i][a][j].material == objetosIntersecados[0].tipo){
+            if (this.chunk[i][a][j].material == objetosIntersecados[0].tipo) {
               matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
               this.mesh[objetosIntersecados[0].tipo].setMatrixAt(l, matrix);
               l++;
@@ -724,7 +767,7 @@ class MyScene extends THREE.Scene {
     return a.intersectsBox(b);
   }
 
-  actualizarFeedback(){
+  actualizarFeedback() {
     let mouse = new THREE.Vector2();
 
     mouse.x = (0.5) * 2 - 1;
@@ -732,23 +775,23 @@ class MyScene extends THREE.Scene {
 
     let raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, this.camera);
-    let objetosSeleccionados=[];
+    let objetosSeleccionados = [];
 
-    for(let aux in this.mesh){
+    for (let aux in this.mesh) {
       let objetos = raycaster.intersectObject(this.mesh[aux], true);
 
       if (objetos[0] != undefined && objetos.length > 0 && objetos[0].distance <= 20) {
         let index = objetos[0].face.materialIndex;
         let posicion = objetos[0].point;
         let coord = { x: 0, y: 0, z: 0 };
-  
+
         //IMPORTANTE REVISAR 0 Y 5 (LOS INCREMENTOS)
         switch (index) {
           case 0: //derecha (x pos)
             coord = {
               x: posicion.x - 0.5,
               //y: Math.round(posicion.y)+0.5,
-              y: (posicion.y|0)+0.5,
+              y: (posicion.y | 0) + 0.5,
               z: Math.round(posicion.z)
             }
             break;
@@ -756,7 +799,7 @@ class MyScene extends THREE.Scene {
             coord = {
               x: posicion.x + 0.5,
               //y: Math.round(posicion.y)+0.5,
-              y: (posicion.y|0)+0.5,
+              y: (posicion.y | 0) + 0.5,
               z: Math.round(posicion.z)
             }
             break;
@@ -778,7 +821,7 @@ class MyScene extends THREE.Scene {
             coord = {
               x: Math.round(posicion.x),
               //y: Math.round(posicion.y)+0.5,
-              y: (posicion.y|0)+0.5,
+              y: (posicion.y | 0) + 0.5,
               z: posicion.z - 0.5
             }
             break;
@@ -786,18 +829,18 @@ class MyScene extends THREE.Scene {
             coord = {
               x: Math.round(posicion.x),
               //y: Math.round(posicion.y)+0.5,
-              y: (posicion.y|0)+0.5,
+              y: (posicion.y | 0) + 0.5,
               z: posicion.z + 0.5
             }
             break;
         }
-  
-        if(posicion.y<0 && index!=3 && index!=2){
-          coord.y=Math.floor(posicion.y)+0.5;
+
+        if (posicion.y < 0 && index != 3 && index != 2) {
+          coord.y = Math.floor(posicion.y) + 0.5;
         }
 
-        objetosSeleccionados.push({objeto: objetos[0], coordenadas: coord});
-      }      
+        objetosSeleccionados.push({ objeto: objetos[0], coordenadas: coord });
+      }
     }
 
     //console.log("------------------------");
@@ -813,12 +856,12 @@ class MyScene extends THREE.Scene {
 
     if (objetosSeleccionados.length > 0) {
       this.cajaSeleccionada.position.set(objetosSeleccionados[0].coordenadas.x, objetosSeleccionados[0].coordenadas.y, objetosSeleccionados[0].coordenadas.z);
-      this.cajaSeleccionada.visible=true;
+      this.cajaSeleccionada.visible = true;
     }
-    else{
+    else {
       //Pone la caja seleccionada invisible
-      this.cajaSeleccionada.visible=false;
-    }    
+      this.cajaSeleccionada.visible = false;
+    }
   }
 
   update() {
@@ -853,7 +896,7 @@ class MyScene extends THREE.Scene {
       //console.log(this.chunkMinMax.min.z);
       //console.log(this.chunkMinMax.max.z);
 
-     // console.log("entra1")
+      // console.log("entra1")
       //Movemos los limites
       this.chunkMinMax.min.z++;
       this.chunkMinMax.max.z++;
@@ -891,83 +934,83 @@ class MyScene extends THREE.Scene {
     //console.log(this.chunkMinMax.max);
 
     if (renderChunksAgain) {
-      for(let tipo in this.mesh){      
+      for (let tipo in this.mesh) {
         this.remove(this.mesh[tipo]);
         this.mesh[tipo] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[tipo], this.sizeIMesh[tipo]);
       }
-      
 
-        let l = {
-          "Hierba": 0,
-          "Tierra": 0,
-          "Piedra": 0,
-          "MaderaRoble": 0,
-          "HojasRoble": 0,
-          "Roca": 0,
-          "PiedraBase": 0,
-          "PiedraLuminosa": 0,
-          "Cristal": 0
-        };
 
-        let inc = 0.02;
-        let xoff = 0;
-        let zoff = 0;
-        let matrix = new THREE.Matrix4();
+      let l = {
+        "Hierba": 0,
+        "Tierra": 0,
+        "Piedra": 0,
+        "MaderaRoble": 0,
+        "HojasRoble": 0,
+        "Roca": 0,
+        "PiedraBase": 0,
+        "PiedraLuminosa": 0,
+        "Cristal": 0
+      };
 
-        //Alternativa
-        for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
-          for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
-            if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
-              for (let j = 0; j < this.chunk[i][a].length; j++) {
-                //console.log(this.chunk[i][a][j].material);
-                matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
-                this.mesh[this.chunk[i][a][j].material].setMatrixAt(l[this.chunk[i][a][j].material], matrix);
-                l[this.chunk[i][a][j].material]++;
-              }
+      let inc = 0.02;
+      let xoff = 0;
+      let zoff = 0;
+      let matrix = new THREE.Matrix4();
+
+      //Alternativa
+      for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
+        for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
+          if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
+            for (let j = 0; j < this.chunk[i][a].length; j++) {
+              //console.log(this.chunk[i][a][j].material);
+              matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
+              this.mesh[this.chunk[i][a][j].material].setMatrixAt(l[this.chunk[i][a][j].material], matrix);
+              l[this.chunk[i][a][j].material]++;
             }
-            else {
-              if (this.chunk[i] == undefined)
-                this.chunk[i] = [];
-              //Genera el chunk que no existia
-              let bloques = [];
-              for (let j = a * this.TAM_CHUNK; j < a * this.TAM_CHUNK + this.TAM_CHUNK; j++) {
-                for (let k = i * this.TAM_CHUNK; k < i * this.TAM_CHUNK + this.TAM_CHUNK; k++) {
-                  xoff = inc * k;
-                  zoff = inc * j;
-
-                  let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
-                  matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
-                  this.mesh["Hierba"].setMatrixAt(l["Hierba"], matrix);
-
-                  bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR, material: "Hierba" });
-                  l["Hierba"]++;
-                }
-              }
-
-              this.chunkCollision.push(bloques);
-              let chunkIndex = this.identificarChunk(bloques[0].x, bloques[0].z);
-
-              if (this.chunk[chunkIndex.x] == undefined)
-                this.chunk[chunkIndex.x] = [];
-
-              this.chunk[chunkIndex.x][chunkIndex.z] = bloques;
-            }
-
           }
-        }
+          else {
+            if (this.chunk[i] == undefined)
+              this.chunk[i] = [];
+            //Genera el chunk que no existia
+            let bloques = [];
+            for (let j = a * this.TAM_CHUNK; j < a * this.TAM_CHUNK + this.TAM_CHUNK; j++) {
+              for (let k = i * this.TAM_CHUNK; k < i * this.TAM_CHUNK + this.TAM_CHUNK; k++) {
+                xoff = inc * k;
+                zoff = inc * j;
 
-        for(let tipo in this.mesh){
-          this.add(this.mesh[tipo])
+                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+                matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
+                this.mesh["Hierba"].setMatrixAt(l["Hierba"], matrix);
+
+                bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR, material: "Hierba" });
+                l["Hierba"]++;
+              }
+            }
+
+            this.chunkCollision.push(bloques);
+            let chunkIndex = this.identificarChunk(bloques[0].x, bloques[0].z);
+
+            if (this.chunk[chunkIndex.x] == undefined)
+              this.chunk[chunkIndex.x] = [];
+
+            this.chunk[chunkIndex.x][chunkIndex.z] = bloques;
+          }
+
         }
-      
+      }
+
+      for (let tipo in this.mesh) {
+        this.add(this.mesh[tipo])
+      }
+
     }
 
 
     //Lanza Raycaster para poner el cubo wireframe en el lugar correcto
-    if(this.guiControls.activarWireframe){
+    if (this.guiControls.activarWireframe) {
       this.actualizarFeedback();
     }
-    else{
+    else {
       //Se pone el cubo no visible
       this.cajaSeleccionada.visible = false;
     }
@@ -981,21 +1024,21 @@ class MyScene extends THREE.Scene {
   }
 
   onDocumentWheel(event) {
-    let tiles=document.getElementsByClassName("tile");
+    let tiles = document.getElementsByClassName("tile");
 
-    tiles[this.objeto].style.border="";
+    tiles[this.objeto].style.border = "";
 
-    if(event.deltaY>0){
-      this.objeto=(this.objeto+1)%tiles.length;
+    if (event.deltaY > 0) {
+      this.objeto = (this.objeto + 1) % tiles.length;
     }
-    else{
-      if(this.objeto==0)
-        this.objeto=tiles.length-1;
+    else {
+      if (this.objeto == 0)
+        this.objeto = tiles.length - 1;
       else
         this.objeto--;
     }
 
-    tiles[this.objeto].style.border="3px solid black";
+    tiles[this.objeto].style.border = "3px solid black";
   }
 }
 

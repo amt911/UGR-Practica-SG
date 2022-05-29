@@ -243,7 +243,7 @@ class Esteban extends THREE.Object3D {
     this.boundingBox = new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
     this.boundingBox.position.y += 16 / PM.PIXELES_ESTANDAR
 
-    this.add(this.boundingBox);
+    //this.add(this.boundingBox);
 
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
     //this.add(this.bloqueRaro);
@@ -251,6 +251,11 @@ class Esteban extends THREE.Object3D {
     this.position.y += 10;
 
     this.puedeSaltar=true;
+
+    this.previo={
+      fil: -1,
+      col: -1,
+    };
   }
 
   addCamara(camara) {
@@ -307,31 +312,6 @@ class Esteban extends THREE.Object3D {
     this.brazoRight.rotation.x = 0;
     this.wrapperFinal.rotation.y = 0;
   }
-/* 
-  //NO FUNCIONA XDD
-  //Porque boundingBox siempre se mantiene en el (0,0,0)
-  detectCollisionCharacterWorld(box) {
-    let bBoxClone=this.boundingBox.clone();
-    bBoxClone.position.copy(this.position);
-    console.log(bBoxClone.position);
-    //this.boundingBox.geometry.computeBoundingBox();
-    bBoxClone.geometry.computeBoundingBox();
-
-    box.geometry.computeBoundingBox();
-    //this.boundingBox.updateMatrixWorld();
-    bBoxClone.updateMatrixWorld();
-    box.updateMatrixWorld();
-
-    //let a = this.boundingBox.geometry.boundingBox.clone();
-    let a = bBoxClone.geometry.boundingBox.clone();
-    //a.applyMatrix4(this.boundingBox.matrixWorld);
-    a.applyMatrix4(bBoxClone.matrixWorld);
-
-    let b = box.geometry.boundingBox.clone();
-    b.applyMatrix4(box.matrixWorld);
-
-    return a.intersectsBox(b);
-  } */
 
 
   //NO FUNCIONA XD
@@ -380,7 +360,7 @@ class Esteban extends THREE.Object3D {
   }
 
 
-  checkCollision(bloques, vector, velocidad){
+  checkCollision(bloques, vector, velocidad, bloqueRaro){
     for(let i=0; i<bloques.length; i++){
       for (let j = 0; j < bloques[i].length; j++) {
         let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
@@ -388,8 +368,16 @@ class Esteban extends THREE.Object3D {
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
           if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
+            //console.log("asdkjsdlkdjlsdkjf")
+            //console.log(Math.abs(this.position.y - bloques[i][j].y))
+            //bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
+          //if(this.detectCollisionCharacterWorld(bloqueRaro) && this.previo.fil!=i && this.previo.col!=j){
             let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
             this.translateOnAxis(aux.normalize(), velocidad);
+            
+            this.boundingBox.translateOnAxis(aux, velocidad);
+
+            //break;
           }
         }
       }    
@@ -400,6 +388,7 @@ class Esteban extends THREE.Object3D {
     let velocidad = this.clock.getDelta() * 4.317;
     this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
+    this.boundingBox.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
 
     let vectorDir=new THREE.Vector3(0, 0, 0);
 
@@ -463,8 +452,13 @@ class Esteban extends THREE.Object3D {
     }
 
     let velocidadFinal=(teclasPulsadas["SHIFT"])? velocidad*2 : velocidad;
+    //console.log("---------------------")
+    //console.log(vectorDir);
     this.translateOnAxis(vectorDir.normalize(), velocidadFinal);
-    this.checkCollision(bloques, vectorDir, velocidad);
+    //console.log(vectorDir);
+    //console.log("=======================")
+    this.boundingBox.translateOnAxis(vectorDir, velocidadFinal);
+    this.checkCollision(bloques, vectorDir, velocidad, bloqueRaro);
     
     if(moviendose)
       this.animacion(esForward, velocidadFinal);
@@ -476,26 +470,25 @@ class Esteban extends THREE.Object3D {
 
     //Deteccion de caidas
     this.position.y += this.caidaVel;
+    this.boundingBox.position.y+=this.caidaVel;
     this.caidaVel += this.caidaAcc;
 
-    //console.log(this.position.y)
+    
     for(let i=0; i<bloques.length; i++){
       for (let j = 0; j < bloques[i].length;j++) {
         let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
         let eV = new THREE.Vector2(this.position.x, this.position.z);
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          //bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
           //bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          //console.log(this.detectCollisionCharacterWorld(bloqueRaro));
-          // console.log(this.position.y)
-          // console.log(this.boundingBox.position.y)
           if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
-         // if(this.detectCollisionCharacterWorld(bloqueRaro)){
+          //if(this.detectCollisionCharacterWorld(bloqueRaro)){
             this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
+            this.boundingBox.position.y = this.position.y+16/PM.PIXELES_ESTANDAR;
 
             this.caidaVel = 0;
             this.puedeSaltar=true;
+
             break;
           }
         }
