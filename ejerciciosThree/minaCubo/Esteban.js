@@ -307,7 +307,7 @@ class Esteban extends THREE.Object3D {
     this.brazoRight.rotation.x = 0;
     this.wrapperFinal.rotation.y = 0;
   }
-
+/* 
   //NO FUNCIONA XDD
   //Porque boundingBox siempre se mantiene en el (0,0,0)
   detectCollisionCharacterWorld(box) {
@@ -331,7 +331,25 @@ class Esteban extends THREE.Object3D {
     b.applyMatrix4(box.matrixWorld);
 
     return a.intersectsBox(b);
+  } */
+
+
+  //NO FUNCIONA XD
+  detectCollisionCharacterWorld(box) {
+    this.boundingBox.geometry.computeBoundingBox();
+    box.geometry.computeBoundingBox();
+    this.boundingBox.updateMatrixWorld();
+    box.updateMatrixWorld();
+
+    let a = this.boundingBox.geometry.boundingBox.clone();
+    a.applyMatrix4(this.boundingBox.matrixWorld);
+
+    let b = box.geometry.boundingBox.clone();
+    b.applyMatrix4(box.matrixWorld);
+
+    return a.intersectsBox(b);
   }
+
 
   animacion(esForward, velocidad){
     //let velocidad = clock.getDelta() * 4.317;
@@ -468,12 +486,12 @@ class Esteban extends THREE.Object3D {
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
           //bloqueRaro.position.set(this.position.x, this.position.y - 0.25, this.position.z);
-          bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          console.log(this.detectCollisionCharacterWorld(bloqueRaro));
-          console.log(this.position.y)
-          console.log(this.boundingBox.position.y)
-          //if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
-          if(this.detectCollisionCharacterWorld(bloqueRaro)){
+          //bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
+          //console.log(this.detectCollisionCharacterWorld(bloqueRaro));
+          // console.log(this.position.y)
+          // console.log(this.boundingBox.position.y)
+          if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
+         // if(this.detectCollisionCharacterWorld(bloqueRaro)){
             this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
 
             this.caidaVel = 0;

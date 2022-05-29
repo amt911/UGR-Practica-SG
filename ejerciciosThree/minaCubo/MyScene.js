@@ -172,6 +172,10 @@ class MyScene extends THREE.Scene {
     //Arreglar esto
     let contador = 0;
     let contador2 = 0;
+    let contador3 = 0;
+    let contador4 = 0;
+    let c = 0;
+
     for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
         let bloques = [];
@@ -189,7 +193,23 @@ class MyScene extends THREE.Scene {
 
 
             bloques.push({ x: x * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: z * 16 / PM.PIXELES_ESTANDAR, material: "Hierba"});
-            k++;            
+            k++; 
+            let arbol = new estructuras.ArbolRoble();
+            for(let r = 0; r < arbol.bloqueshojas.length; r++){
+              matrix.setPosition(c + arbol.bloqueshojas[r].x, v + arbol.bloqueshojas[r].y, c + arbol.bloqueshojas[r].z);
+              this.mesh["HojasRoble"].setMatrixAt(contador3, matrix);
+              bloques.push({x: c + arbol.bloqueshojas[r].x, y: v + arbol.bloqueshojas[r].y, z:  c + arbol.bloqueshojas[r].z, material: "HojasRoble"});
+              contador3++;
+            }
+
+            for(let r = 0; r < arbol.bloquesmadera.length; r++){
+              matrix.setPosition( c + arbol.bloquesmadera[r].x, v+ arbol.bloquesmadera[r].y, c + arbol.bloquesmadera[r].z);
+              this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
+              bloques.push({x: c + arbol.bloquesmadera[r].x, y: v + arbol.bloquesmadera[r].y, z: c + arbol.bloquesmadera[r].z, material: "MaderaRoble"});
+              contador4++;
+            }
+
+            c++;
             for(let s = 0; s < 3; s++){
               matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - s -1, z * 16 / PM.PIXELES_ESTANDAR);
               this.mesh["Tierra"].setMatrixAt(contador, matrix);
@@ -229,7 +249,7 @@ class MyScene extends THREE.Scene {
       max: { x: this.DISTANCIA_RENDER - 1, z: this.DISTANCIA_RENDER - 1 }
     };
 
-    //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
+/*     //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
     this.add(this.bloqueRaro);
 
@@ -244,16 +264,10 @@ class MyScene extends THREE.Scene {
     let mesh = new THREE.Mesh(glowstone.geometria, glowstone.material);
     mesh.position.set(-7, 0.5, -2);
 
-    this.add(mesh);
+    this.add(mesh); */
 
 
     
-
-
-
-    this.arbol = new estructuras.ArbolRoble();
-    this.add(this.arbol);
-
     this.cerdo = new Cerdo(this.gui, "Cerdo");
     this.add(this.cerdo);
 
