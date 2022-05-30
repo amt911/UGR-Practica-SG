@@ -249,17 +249,17 @@ class MyScene extends THREE.Scene {
           let arbol = new estructuras.ArbolRoble();
 
           for (let r = 0; r < arbol.bloqueshojas.length; r++) {
-            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y, list_arboles[indice_arbol].z + arbol.bloqueshojas[r].z);
+            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y - 0.5, list_arboles[indice_arbol].z + arbol.bloqueshojas[r].z);
             this.mesh["HojasRoble"].setMatrixAt(contador3, matrix);
-            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, y: list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y, z: list_arboles[indice_arbol].z  + arbol.bloqueshojas[r].z, material: "HojasRoble" });
+            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, y: list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y -0.5, z: list_arboles[indice_arbol].z  + arbol.bloqueshojas[r].z, material: "HojasRoble" });
             contador3++;
           }
 
           for (let r = 0; r < arbol.bloquesmadera.length; r++) {
             // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
-            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
+            matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
             this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
-            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y , z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
+            bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
             contador4++;
           }
         }

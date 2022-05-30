@@ -21,7 +21,7 @@ class ArbolRoble {
     for (var i = -1; i <= 1; i++) {
       for (var j = -1; j <= 1; j++) {
         for (var k = 2; k < altura + 1; k++) {
-          if (i != 3 || j != 5 || k > altura - 1) {
+          if (i != 0 || j != 0 || k > altura - 1) {
             let coords = { x: i, y: 8 / PM.PIXELES_ESTANDAR + k, z: j };
             this.bloqueshojas.push(coords);
           }
