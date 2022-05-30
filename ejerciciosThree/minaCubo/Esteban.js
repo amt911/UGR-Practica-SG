@@ -28,22 +28,22 @@ class Esteban extends THREE.Object3D {
 
     const textureLoader = new THREE.TextureLoader();
     const texturaCabeza = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezaxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezaxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezaypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezayneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezazpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cabezazneg.png"),
       }),
     ];
@@ -65,44 +65,44 @@ class Esteban extends THREE.Object3D {
     //BRAZOS Y PIERNAS
 
     const texturabrazoR = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoyneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazozpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazozneg.png"),
       }),
     ];
 
 
     const texturabrazoL = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoyneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazozposR.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/brazoznegR.png"),
       }),
 
@@ -140,43 +140,43 @@ class Esteban extends THREE.Object3D {
     //Piernas
 
     const texturaPiernaR = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernayneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernazpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernazneg.png"),
       }),
     ];
 
     const texturaPiernaL = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernaypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernayneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernazpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/piernazneg.png"),
       }),
     ];
@@ -200,22 +200,22 @@ class Esteban extends THREE.Object3D {
     //this.add(this.piernaRW1);
 
     const texturaCuerpo = [
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpoxpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpoxneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpoypos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpoyneg.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpozpos.png"),
       }),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpozneg.png"),
       }),
     ];
@@ -367,17 +367,52 @@ class Esteban extends THREE.Object3D {
         let eV = new THREE.Vector2(this.position.x, this.position.z);
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
-            //console.log("asdkjsdlkdjlsdkjf")
-            //console.log(Math.abs(this.position.y - bloques[i][j].y))
-            //bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          //if(this.detectCollisionCharacterWorld(bloqueRaro) && this.previo.fil!=i && this.previo.col!=j){
-            let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
-            this.translateOnAxis(aux.normalize(), velocidad);
-            
-            this.boundingBox.translateOnAxis(aux, velocidad);
+          //if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
+            bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
+          if(this.detectCollisionCharacterWorld(bloqueRaro) && Math.abs(this.boundingBox.position.y - bloques[i][j].y) <= 0.5){
+              let choqueX=this.boundingBox.position.x - bloques[i][j].x;
+              let choqueZ=this.boundingBox.position.z - bloques[i][j].z;
 
-            //break;
+              //console.log(Math.abs(choqueX)>Math.abs(choqueZ))
+              //console.log((choqueZ))
+              console.log((choqueX))
+              if(Math.abs(choqueX)>Math.abs(choqueZ)){
+                //let valor=0.5;    //Salto automatico
+                //let valor=0.8
+                let valor=0.8
+                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
+                //console.log(Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8)
+                //if(choqueX<valor && choqueX>0){
+                //}
+                /*else*/ if(choqueX>-valor && (choqueX>=valor || choqueX<=0)){
+                  //valor=-0.8;
+                  valor=-valor;
+                  //valor=Math.cos(this.boundingBox.rotation.y%(Math.PI))*0.8;
+                }
+                this.position.x = bloques[i][j].x + valor;
+                this.boundingBox.position.x = bloques[i][j].x + valor;
+              }
+              else{
+                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
+                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
+                let valor=0.8;
+                if(choqueZ<0.8 && choqueZ>0){
+                  this.position.z = bloques[i][j].z + valor//0.8;
+                  this.boundingBox.position.z = bloques[i][j].z + valor//0.8;
+                  //console.log(choqueX);
+                }
+                else if(choqueZ>-0.8){
+                  this.position.z = bloques[i][j].z - valor//0.8;
+                  this.boundingBox.position.z = bloques[i][j].z - valor//0.8;
+                  //console.log(choqueX);
+                }
+              }
+
+              let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
+              this.translateOnAxis(aux.normalize(), velocidad);
+              
+              this.boundingBox.translateOnAxis(aux, velocidad);
+            
           }
         }
       }    
@@ -389,6 +424,7 @@ class Esteban extends THREE.Object3D {
     this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
     this.boundingBox.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
+
 
     let vectorDir=new THREE.Vector3(0, 0, 0);
 
@@ -480,9 +516,10 @@ class Esteban extends THREE.Object3D {
         let eV = new THREE.Vector2(this.position.x, this.position.z);
 
         if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          //bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
-          //if(this.detectCollisionCharacterWorld(bloqueRaro)){
+          bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
+          //if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
+          if(this.detectCollisionCharacterWorld(bloqueRaro)){
+            //console.log("true suelo")
             this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
             this.boundingBox.position.y = this.position.y+16/PM.PIXELES_ESTANDAR;
 

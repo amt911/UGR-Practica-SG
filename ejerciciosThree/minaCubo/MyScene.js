@@ -105,15 +105,17 @@ class MyScene extends THREE.Scene {
     this.add(this.model);
 
     this.zombie = new Zombie(this.gui, "Zombie");
-    this.zombie.position.set(-3, 0, 0);
+    //this.zombie.position.set(16, 2, 16);
+    this.zombie.position.y+=10;
+    this.zombie.boundingBox.position.y+=10;
     this.add(this.zombie);
 
     this.chunkCollision = [];   //Almacena chunks
     this.chunk = [];
     this.TAM_CHUNK = 12;
     this.DISTANCIA_RENDER = 7;
-    //this.TAM_CHUNK = 5;
-    //this.DISTANCIA_RENDER = 7;    
+    // this.TAM_CHUNK = 5;
+    // this.DISTANCIA_RENDER = 7;    
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
@@ -184,7 +186,9 @@ class MyScene extends THREE.Scene {
     let contador2 = 0;
     let contador3 = 0;
     let contador4 = 0;
-
+    let zombiex = 0;
+    let zombiey = 0;
+    let zombiez = 0;  
     for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
         let bloques = [];
@@ -202,9 +206,16 @@ class MyScene extends THREE.Scene {
           // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
 
         }
+
+        if(i == 0 && j == 0){
+        zombiex = Math.floor(Math.random() * this.TAM_CHUNK);
+        zombiez = Math.floor(Math.random()* this.TAM_CHUNK);
+        }
+        
         /*     
     
      */
+
         for (let x = i * this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j * this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK; z++) {
             //contador=contador2=0;
@@ -212,6 +223,12 @@ class MyScene extends THREE.Scene {
             zoff = inc * z;
 
             let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+            if(i == 0 && j == 0){
+
+              if(zombiex + i*this.TAM_CHUNK == x && zombiez + j*this.TAM_CHUNK == z){
+                zombiey = v;
+              }
+              }
             //console.log(v);
             matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, z * 16 / PM.PIXELES_ESTANDAR);
             this.mesh["Hierba"].setMatrixAt(k, matrix);
@@ -285,21 +302,9 @@ class MyScene extends THREE.Scene {
 
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
     this.add(this.bloqueRaro);
-    /*     //this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5));
 
-    let cristal = new cubos.Cristal();
-    cristal.position.set(-5 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16 / PM.PIXELES_ESTANDAR)
-    let cristal2 = new cubos.Cristal();
-    cristal2.position.set(-6 * 16 / PM.PIXELES_ESTANDAR, 8 / PM.PIXELES_ESTANDAR, -2 * 16 / PM.PIXELES_ESTANDAR)
-    this.add(cristal2);
-    this.add(cristal);
-
-    let glowstone = new cubos.PiedraLuminosa();
-    let mesh = new THREE.Mesh(glowstone.geometria, glowstone.material);
-    mesh.position.set(-7, 0.5, -2);
-
-    this.add(mesh); */
-
+    //this.zombie.position.set(20, 20, 20);
+    //this.zombie.position.set(zombiex, zombiey+0.1, zombiez);
 
 
     this.cerdo = new Cerdo(this.gui, "Cerdo");
@@ -317,6 +322,7 @@ class MyScene extends THREE.Scene {
 
     console.log(this.model.boundingBox)
     this.add(this.model.boundingBox);
+    this.add(this.zombie.boundingBox);
 
     this.initSkybox()
   }
@@ -445,7 +451,8 @@ class MyScene extends THREE.Scene {
     // La luz focal, además tiene una posición, y un punto de mira
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
+    //this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
+    this.spotLight = new THREE.HemisphereLight(0xffffff, this.guiControls.lightIntensity, 1)
     this.spotLight.position.set(60, 60, 40);
     this.add(this.spotLight);
   }
@@ -593,35 +600,35 @@ class MyScene extends THREE.Scene {
 
       //console.log(objetosIntersecados);
 
+      if(objetosIntersecados[0]!=undefined){  
+        let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
+        this.chunk[aux.x][aux.z].push({ material: this.bloqueSeleccionado[this.objeto], x: objetosIntersecados[0].coordenada.x, y: objetosIntersecados[0].coordenada.y, z: objetosIntersecados[0].coordenada.z });
+        this.remove(this.mesh[this.bloqueSeleccionado[this.objeto]]);
 
-      //let aux = this.identificarChunk(coord.x, coord.z);      
-      let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
-      this.chunk[aux.x][aux.z].push({ material: this.bloqueSeleccionado[this.objeto], x: objetosIntersecados[0].coordenada.x, y: objetosIntersecados[0].coordenada.y, z: objetosIntersecados[0].coordenada.z });
-      this.remove(this.mesh[this.bloqueSeleccionado[this.objeto]]);
 
+        let matrix = new THREE.Matrix4();
+        let l = 0;
 
-      let matrix = new THREE.Matrix4();
-      let l = 0;
-
-      //console.log(this.bloqueSeleccionado[this.objeto])
-      this.mesh[this.bloqueSeleccionado[this.objeto]] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[this.bloqueSeleccionado[this.objeto]], ++this.sizeIMesh[this.bloqueSeleccionado[this.objeto]]);
-      //console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
-      for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
-        for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
-          for (let j = 0; j < this.chunk[i][a].length; j++) {
-            if (this.chunk[i][a][j].material == this.bloqueSeleccionado[this.objeto]) {//objetosIntersecados[0].tipo){
-              matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
-              this.mesh[this.bloqueSeleccionado[this.objeto]].setMatrixAt(l, matrix);
-              l++;
+        //console.log(this.bloqueSeleccionado[this.objeto])
+        this.mesh[this.bloqueSeleccionado[this.objeto]] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[this.bloqueSeleccionado[this.objeto]], ++this.sizeIMesh[this.bloqueSeleccionado[this.objeto]]);
+        //console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
+        for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
+          for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
+            for (let j = 0; j < this.chunk[i][a].length; j++) {
+              if (this.chunk[i][a][j].material == this.bloqueSeleccionado[this.objeto]) {//objetosIntersecados[0].tipo){
+                matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
+                this.mesh[this.bloqueSeleccionado[this.objeto]].setMatrixAt(l, matrix);
+                l++;
+              }
             }
           }
         }
+
+
+        //console.log(objetosIntersecados[0].tipo);
+        //console.log(this.mesh[objetosIntersecados[0].tipo]);
+        this.add(this.mesh[this.bloqueSeleccionado[this.objeto]]);
       }
-
-
-      //console.log(objetosIntersecados[0].tipo);
-      //console.log(this.mesh[objetosIntersecados[0].tipo]);
-      this.add(this.mesh[this.bloqueSeleccionado[this.objeto]]);
     }
 
     else if (event.which == 1) {
@@ -720,34 +727,36 @@ class MyScene extends THREE.Scene {
         return a.distancia - b.distancia;
       });
 
-      let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
-      this.remove(this.mesh[objetosIntersecados[0].tipo]);
+      if(objetosIntersecados[0]!=undefined){
+        let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
+        this.remove(this.mesh[objetosIntersecados[0].tipo]);
 
-      let indice = this.chunk[aux.x][aux.z].findIndex(i => i.x == objetosIntersecados[0].coordenada.x && i.y == objetosIntersecados[0].coordenada.y && i.z == objetosIntersecados[0].coordenada.z);   //SUponemos que no puede haber dos bloques en la misma posicion
+        let indice = this.chunk[aux.x][aux.z].findIndex(i => i.x == objetosIntersecados[0].coordenada.x && i.y == objetosIntersecados[0].coordenada.y && i.z == objetosIntersecados[0].coordenada.z);   //SUponemos que no puede haber dos bloques en la misma posicion
 
-      if (indice != -1)
-        this.chunk[aux.x][aux.z].splice(indice, 1);
+        if (indice != -1)
+          this.chunk[aux.x][aux.z].splice(indice, 1);
 
-      let matrix = new THREE.Matrix4();
+        let matrix = new THREE.Matrix4();
 
-      let l = 0;
-      this.mesh[objetosIntersecados[0].tipo] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[objetosIntersecados[0].tipo], --this.sizeIMesh[objetosIntersecados[0].tipo]);
+        let l = 0;
+        this.mesh[objetosIntersecados[0].tipo] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[objetosIntersecados[0].tipo], --this.sizeIMesh[objetosIntersecados[0].tipo]);
 
 
-      for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
-        for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
-          for (let j = 0; j < this.chunk[i][a].length; j++) {
-            if (this.chunk[i][a][j].material == objetosIntersecados[0].tipo) {
-              matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
-              this.mesh[objetosIntersecados[0].tipo].setMatrixAt(l, matrix);
-              l++;
+        for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
+          for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
+            for (let j = 0; j < this.chunk[i][a].length; j++) {
+              if (this.chunk[i][a][j].material == objetosIntersecados[0].tipo) {
+                matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
+                this.mesh[objetosIntersecados[0].tipo].setMatrixAt(l, matrix);
+                l++;
+              }
             }
           }
         }
-      }
 
-      //console.log(objetosIntersecados[0].tipo);
-      this.add(this.mesh[objetosIntersecados[0].tipo]);
+        //console.log(objetosIntersecados[0].tipo);
+        this.add(this.mesh[objetosIntersecados[0].tipo]);
+    }
     }
 
   }
@@ -1017,6 +1026,23 @@ class MyScene extends THREE.Scene {
 
 
     this.model.update(this.movt, this.chunkCollision, this.bloqueRaro, this.mapTeclas);
+    console.log(this.zombie.position.x, this.zombie.position.y, this.zombie.position.z);
+    this.zombie.cabezaW1.lookAt(this.model.position.x, this.model.position.y,this.model.position.z);
+    this.zombie.lookAt(this.model.position.x, this.zombie.position.y,this.model.position.z);
+    this.zombie.boundingBox.lookAt(this.model.position.x, this.zombie.boundingBox.position.y,this.model.position.z)
+
+    this.zombie.update(this.movt, this.chunkCollision, this.bloqueRaro);
+
+    
+/*     vectorMovimiento.x = 0;
+    vectorMovimiento.z = 0;
+    this.zombie.rotateOnAxis(vectorMovimiento.normalize(), 0.03 ); */
+/*    vectorMovimiento = v;
+     this.zombie.translateOnAxis(vectorMovimiento.normalize(), 0.03);
+*/
+     //  console.log(this.zombie.position.x);
+   // this.zombie.translateOnAxis();
+    
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.

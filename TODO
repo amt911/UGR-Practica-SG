@@ -18,7 +18,6 @@ DONE- Hacer un selector de tipo de material (ahora mismo se pone el mismo que el
 
 
 //MUCHA IMPORTANCIA
-- Más modelos jerárquicos (con sus movimientos) -> SERGIO
 DONE - Varios bloques en la generación
 DONE - Ver bloque seleccionado
 - Revisar animacion Steve porque a veces no se reinicia -> ANDRES
@@ -28,7 +27,8 @@ DONE - Arreglar controles raton
 
 
 /*Hoy*/
-- Arreglar colisiones y físicas (mas o menos, lo mas importante) <-----
+MEDIODONE - Arreglar colisiones y físicas (mas o menos, lo mas importante) <-----
+MEDIODONE - Más modelos jerárquicos (con sus movimientos) -> SERGIO 
 
 
 //MEDIA IMPORTANCIA
