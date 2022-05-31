@@ -2,11 +2,9 @@
 // Clases de la biblioteca
 
 import * as THREE from '../libs/three.module.js'
-//import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import { GUI } from '../libs/dat.gui.module.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { Stats } from '../libs/stats.module.js'
-import { VoxelWorld } from './todo.js'
 //import { Math } from '../libs/three.module.js'
 // Clases de mi proyecto
 
@@ -211,10 +209,6 @@ class MyScene extends THREE.Scene {
         zombiex = Math.floor(Math.random() * this.TAM_CHUNK);
         zombiez = Math.floor(Math.random()* this.TAM_CHUNK);
         }
-        
-        /*     
-    
-     */
 
         for (let x = i * this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j * this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK; z++) {
@@ -965,8 +959,8 @@ class MyScene extends THREE.Scene {
       let xoff = 0;
       let zoff = 0;
       let matrix = new THREE.Matrix4();
+      let contador=0, contador2=0, contador3=0, contador4=0;
 
-      //Alternativa
       for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
           if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
@@ -981,21 +975,79 @@ class MyScene extends THREE.Scene {
             if (this.chunk[i] == undefined)
               this.chunk[i] = [];
             //Genera el chunk que no existia
-            let bloques = [];
-            for (let j = a * this.TAM_CHUNK; j < a * this.TAM_CHUNK + this.TAM_CHUNK; j++) {
-              for (let k = i * this.TAM_CHUNK; k < i * this.TAM_CHUNK + this.TAM_CHUNK; k++) {
-                xoff = inc * k;
-                zoff = inc * j;
-
-                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
-                matrix.setPosition(k * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, j * 16 / PM.PIXELES_ESTANDAR);
-                this.mesh["Hierba"].setMatrixAt(l["Hierba"], matrix);
-
-                bloques.push({ x: k * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: j * 16 / PM.PIXELES_ESTANDAR, material: "Hierba" });
-                l["Hierba"]++;
+            var n_arboles = Math.floor(Math.random() * this.TAM_CHUNK/5);
+            var list_arboles = [];
+    
+            for (let m = 0; m < n_arboles; m++) {
+              let posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+              let posz = Math.floor(Math.random() * this.TAM_CHUNK);
+              while(estaColindando(posx,posz,list_arboles)){
+               posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+               posz = Math.floor(Math.random() * this.TAM_CHUNK);
               }
+              list_arboles.push({ x: posx, y: 10, z: posz });
+              // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
+    
             }
 
+            let bloques = [];
+            for (let x = a * this.TAM_CHUNK; x < a * this.TAM_CHUNK + this.TAM_CHUNK; x++) {
+              for (let z = i * this.TAM_CHUNK; z < i * this.TAM_CHUNK + this.TAM_CHUNK; z++) {
+                xoff = inc * z;
+                zoff = inc * x;
+
+                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+                matrix.setPosition(z * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, x * 16 / PM.PIXELES_ESTANDAR);
+                this.mesh["Hierba"].setMatrixAt(l["Hierba"], matrix);
+
+                bloques.push({ x: z * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR, z: x * 16 / PM.PIXELES_ESTANDAR, material: "Hierba" });
+                l["Hierba"]++;
+
+                for (let indice_arbol = 0; indice_arbol < list_arboles.length; indice_arbol++) {
+                  if (list_arboles[indice_arbol].x + i * this.TAM_CHUNK == x && list_arboles[indice_arbol].z + x * this.TAM_CHUNK == z) {
+                    list_arboles[indice_arbol].y = v + 0.5;
+                    list_arboles[indice_arbol].x = list_arboles[indice_arbol].x + a * this.TAM_CHUNK;
+                    list_arboles[indice_arbol].z = list_arboles[indice_arbol].z + i * this.TAM_CHUNK;
+                  }
+                }
+                for (let s = 0; s < 3; s++) {
+                  matrix.setPosition(z * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - s - 1, x * 16 / PM.PIXELES_ESTANDAR);
+                  this.mesh["Tierra"].setMatrixAt(contador, matrix);
+    
+    
+                  bloques.push({ x: z * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - s - 1, z: x * 16 / PM.PIXELES_ESTANDAR, material: "Tierra" });
+                  contador++;
+                  
+                }
+                /* */
+                for (let r = 3; r < 8; r++) {
+                  matrix.setPosition(z * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - r - 1, x * 16 / PM.PIXELES_ESTANDAR);
+                  this.mesh["Piedra"].setMatrixAt(contador2, matrix);
+    
+    
+                  bloques.push({ x: z * 16 / PM.PIXELES_ESTANDAR, y: v - 8 / PM.PIXELES_ESTANDAR - r - 1, z: x * 16 / PM.PIXELES_ESTANDAR, material: "Piedra" });
+                  contador2++;
+                }
+              }
+            }
+            for (let indice_arbol = 0; indice_arbol < list_arboles.length; indice_arbol++) {
+              let arbol = new estructuras.ArbolRoble();
+    
+              for (let r = 0; r < arbol.bloqueshojas.length; r++) {
+                matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y - 0.5, list_arboles[indice_arbol].z + arbol.bloqueshojas[r].z);
+                this.mesh["HojasRoble"].setMatrixAt(contador3, matrix);
+                bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloqueshojas[r].x, y: list_arboles[indice_arbol].y + arbol.bloqueshojas[r].y -0.5, z: list_arboles[indice_arbol].z  + arbol.bloqueshojas[r].z, material: "HojasRoble" });
+                contador3++;
+              }
+    
+              for (let r = 0; r < arbol.bloquesmadera.length; r++) {
+                // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
+                matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
+                this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
+                bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
+                contador4++;
+              }
+            }
             this.chunkCollision.push(bloques);
             let chunkIndex = this.identificarChunk(bloques[0].x, bloques[0].z);
 
