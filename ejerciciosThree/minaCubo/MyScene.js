@@ -1004,10 +1004,10 @@ class MyScene extends THREE.Scene {
                 l["Hierba"]++;
 
                 for (let indice_arbol = 0; indice_arbol < list_arboles.length; indice_arbol++) {
-                  if (list_arboles[indice_arbol].x + i * this.TAM_CHUNK == x && list_arboles[indice_arbol].z + x * this.TAM_CHUNK == z) {
+                  if (list_arboles[indice_arbol].x + i * this.TAM_CHUNK == z && list_arboles[indice_arbol].z + a * this.TAM_CHUNK == x) {
                     list_arboles[indice_arbol].y = v + 0.5;
-                    list_arboles[indice_arbol].x = list_arboles[indice_arbol].x + a * this.TAM_CHUNK;
-                    list_arboles[indice_arbol].z = list_arboles[indice_arbol].z + i * this.TAM_CHUNK;
+                    list_arboles[indice_arbol].x = list_arboles[indice_arbol].x + i * this.TAM_CHUNK;
+                    list_arboles[indice_arbol].z = list_arboles[indice_arbol].z + a * this.TAM_CHUNK;
                   }
                 }
                 for (let s = 0; s < 3; s++) {
@@ -1078,7 +1078,6 @@ class MyScene extends THREE.Scene {
 
 
     this.model.update(this.movt, this.chunkCollision, this.bloqueRaro, this.mapTeclas);
-    console.log(this.zombie.position.x, this.zombie.position.y, this.zombie.position.z);
     this.zombie.cabezaW1.lookAt(this.model.position.x, this.model.position.y,this.model.position.z);
     this.zombie.lookAt(this.model.position.x, this.zombie.position.y,this.model.position.z);
     this.zombie.boundingBox.lookAt(this.model.position.x, this.zombie.boundingBox.position.y,this.model.position.z)
