@@ -1,6 +1,6 @@
 import * as THREE from '../libs/three.module.js'
-//import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
 import * as PM from './ParametrosMundo.js'
+import * as C from './colisiones.js'
 
 
 
@@ -12,8 +12,11 @@ class Zombie extends THREE.Object3D {
   constructor(gui,titleGui) {
     super();
 
-    this.caidaVel = -0.01;
-    this.caidaAcc = -0.01;
+    //this.caidaVel = -0.01;
+    //this.caidaAcc = -0.01;
+
+    //this.caidaVel = -1;
+    //this.caidaAcc = -42;    
 
     this.clock=new THREE.Clock();
     this.cambiarAnimacion=false;
@@ -251,8 +254,9 @@ class Zombie extends THREE.Object3D {
 
     this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
 
-    this.position.y+=10;
+    this.colision=new C.Colisiones(true, 0.8);
 
+    this.altura=32;
   }
 
 
@@ -325,83 +329,17 @@ class Zombie extends THREE.Object3D {
       return a.intersectsBox(b);
     }
 
-    
-
-    checkCollision(bloques, vector, velocidad, bloqueRaro){
-      for(let i=0; i<bloques.length; i++){
-        for (let j = 0; j < bloques[i].length; j++) {
-          let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
-          let eV = new THREE.Vector2(this.position.x, this.position.z);
-  
-          if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-            //if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
-              //console.log("asdkjsdlkdjlsdkjf")
-              //console.log(Math.abs(this.position.y - bloques[i][j].y))
-              bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-            if(this.detectCollisionCharacterWorld(bloqueRaro) && Math.abs(this.boundingBox.position.y - bloques[i][j].y) <= 0.5){
-              let choqueX=this.boundingBox.position.x - bloques[i][j].x;
-              let choqueZ=this.boundingBox.position.z - bloques[i][j].z;
-  
-              //console.log(Math.abs(choqueX)>Math.abs(choqueZ))
-              //console.log((choqueZ))
-              //console.log((choqueX))
-              if(Math.abs(choqueX)>Math.abs(choqueZ)){
-                //let valor=0.5;    //Salto automatico
-                //let valor=0.8
-                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                //console.log(Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8)
-                if(choqueX<0.8 && choqueX>0){
-                  //this.position.x = bloques[i][j].x + 0.8;
-                  //this.boundingBox.position.x = bloques[i][j].x + 0.8;
-                  //valor=0.8;
-                  //console.log(choqueX);
-                  //console.log("entra x");
-                }
-                else if(choqueX>-0.8){
-                  //valor=-0.8;
-                  valor=-valor;
-                  //valor=Math.cos(this.boundingBox.rotation.y%(Math.PI))*0.8;
-                }
-                this.position.x = bloques[i][j].x + valor;
-                this.boundingBox.position.x = bloques[i][j].x + valor;
-              }
-              else{
-                let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                if(choqueZ<0.8 && choqueZ>0){
-                  this.position.z = bloques[i][j].z + valor//0.8;
-                  this.boundingBox.position.z = bloques[i][j].z + valor//0.8;
-                  //console.log(choqueX);
-                }
-                else if(choqueZ>-0.8){
-                  this.position.z = bloques[i][j].z - valor//0.8;
-                  this.boundingBox.position.z = bloques[i][j].z - valor//0.8;
-                  //console.log(choqueX);
-                }
-              }
-  
-              let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
-              this.translateOnAxis(aux.normalize(), velocidad);
-              
-              this.boundingBox.translateOnAxis(aux, velocidad);
-  
-              //break;
-            }
-          }
-        }    
-      }
-    }
-  
-
 
     update(movimiento, bloques, bloqueRaro){
           this.animacion(true, 0.1);
     //Nuevo vector de 3
     let velocidad;
-    velocidad = this.clock.getDelta() * 4.317;
+    let delta=this.clock.getDelta();
+
+    velocidad = delta * 4.317;
+    let vectorMovimiento = new THREE.Vector3(0, 0, 1);
     if(this.guiControls.moviendose){
 
-    let vectorMovimiento = new THREE.Vector3(0, 0, 1);
     //vectormovimiento es el vector entre el modelo y el zombie
     this.translateOnAxis(vectorMovimiento.normalize(), velocidad);
 
@@ -409,16 +347,20 @@ class Zombie extends THREE.Object3D {
     //this.checkCollision(bloques, vectorMovimiento, velocidad, bloqueRaro);
   }
 
+  this.colision.update(bloques, this, this.boundingBox, null, vectorMovimiento, velocidad);
+
+
 /*
     if(this.puedeSaltar){
       this.caidaVel = 0.15;
       this.puedeSaltar=false;
     }
 */
+/*
     //Deteccion de caidas
-    this.position.y += this.caidaVel;
-    this.boundingBox.position.y+=this.caidaVel;
-    this.caidaVel += this.caidaAcc;
+    this.position.y += this.caidaVel*delta;
+    this.boundingBox.position.y+=this.caidaVel*delta;
+    this.caidaVel += this.caidaAcc*delta;
 
     
     for(let i=0; i<bloques.length; i++){
@@ -441,7 +383,7 @@ class Zombie extends THREE.Object3D {
           }
         }
       }
-    }
+    }*/
   }
 }
 

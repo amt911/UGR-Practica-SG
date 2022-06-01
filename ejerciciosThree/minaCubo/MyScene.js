@@ -31,13 +31,26 @@ function estaColindando(posx, posz, lista){
   }  
   return false;
 }
+
+function estaEnArbol(posx, posz, lista){
+  //detecta si posx, posy esta colindando con alguno de los elementos de la lista
+    for(let i = 0; i < lista.length; i++){
+      if(posx == lista[i].x && posz == lista[i].z){
+        return true;
+      }
+    }  
+    return false;
+  }
 class MyScene extends THREE.Scene {
   getCanvas() {
     return $(this.myCanvasName);
   }
 
+  
   constructor(myCanvas) {
     super();
+    
+    //this.fog= new THREE.Fog(0xffffff, 0.1, 100);
 
     this.movt = "parado";
     this.mapTeclas = {
@@ -75,7 +88,7 @@ class MyScene extends THREE.Scene {
     // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
     this.axis = new THREE.AxesHelper(55);
     this.add(this.axis);
-
+    this.poscerdo = 0;
 
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a
@@ -106,7 +119,6 @@ class MyScene extends THREE.Scene {
     //this.zombie.position.set(16, 2, 16);
     this.zombie.position.y+=10;
     this.zombie.boundingBox.position.y+=10;
-    this.add(this.zombie);
 
     this.chunkCollision = [];   //Almacena chunks
     this.chunk = [];
@@ -121,6 +133,10 @@ class MyScene extends THREE.Scene {
     let inc = 0.02;
     let xoff = 0;
     let zoff = 0;
+
+
+    this.puntoscerdos = [];
+
 
     this.p = new cubos.Piedra();
     this.t = new cubos.Tierra();
@@ -190,7 +206,8 @@ class MyScene extends THREE.Scene {
     for (let i = 0; i < this.DISTANCIA_RENDER; i++) {   //PLANO XZ DE CHUNKS
       for (let j = 0; j < this.DISTANCIA_RENDER; j++) {
         let bloques = [];
-        var n_arboles = Math.floor(Math.random() * this.TAM_CHUNK/5);
+        var n_arboles = Math.floor(Math.random() * this.TAM_CHUNK/5)+1;
+        var n_puntoscerdo = Math.floor(Math.random() * this.TAM_CHUNK/4)+2;
         var list_arboles = [];
 
         for (let m = 0; m < n_arboles; m++) {
@@ -206,9 +223,21 @@ class MyScene extends THREE.Scene {
         }
 
         if(i == 0 && j == 0){
-        zombiex = Math.floor(Math.random() * this.TAM_CHUNK);
-        zombiez = Math.floor(Math.random()* this.TAM_CHUNK);
+          zombiex = Math.floor(Math.random() * this.TAM_CHUNK);
+          zombiez = Math.floor(Math.random()* this.TAM_CHUNK);
+          //Añadir n coordenadas x,y,z random a puntoscerdos
+          for(let m = 0; m < n_puntoscerdo; m++){
+            let posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+            let posz = Math.floor(Math.random() * this.TAM_CHUNK);
+            while(estaEnArbol(posx,posz,list_arboles)){
+             posx =  Math.floor(Math.random()* this.TAM_CHUNK);
+             posz = Math.floor(Math.random() * this.TAM_CHUNK);
+            }
+            this.puntoscerdos.push({ x: posx, y: 10, z: posz });
+            // console.log("LISTA PUNTOSCERDO " + m + ": " + puntoscerdos[m].x + " " +  puntoscerdos[m].y + " " +  puntoscerdos[m].z);
+          }       
         }
+
 
         for (let x = i * this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j * this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK; z++) {
@@ -237,6 +266,15 @@ class MyScene extends THREE.Scene {
                 list_arboles[indice_arbol].z = list_arboles[indice_arbol].z + j * this.TAM_CHUNK;
               }
             }
+            //si algun punto de puntoscerdo coincide con x y z, entonces asigno v a y
+            for (let indice_puntoscerdo = 0; indice_puntoscerdo < this.puntoscerdos.length; indice_puntoscerdo++) {
+              if (this.puntoscerdos[indice_puntoscerdo].x + i * this.TAM_CHUNK == x && this.puntoscerdos[indice_puntoscerdo].z + j * this.TAM_CHUNK == z) {
+                this.puntoscerdos[indice_puntoscerdo].y = v;
+                this.puntoscerdos[indice_puntoscerdo].x = this.puntoscerdos[indice_puntoscerdo].x + i * this.TAM_CHUNK;
+                this.puntoscerdos[indice_puntoscerdo].z = this.puntoscerdos[indice_puntoscerdo].z + j * this.TAM_CHUNK;
+              }
+            }
+
             for (let s = 0; s < 3; s++) {
               matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - s - 1, z * 16 / PM.PIXELES_ESTANDAR);
               this.mesh["Tierra"].setMatrixAt(contador, matrix);
@@ -298,11 +336,20 @@ class MyScene extends THREE.Scene {
     this.add(this.bloqueRaro);
 
     //this.zombie.position.set(20, 20, 20);
+    //console.log(zombiex + " " + zombiey + " " + zombiez)
     //this.zombie.position.set(zombiex, zombiey+0.1, zombiez);
+    //this.zombie.boundingBox.position.set(zombiex, zombiey+0.1, zombiez);
+    this.zombie.position.set(this.zombie.position.x+zombiex, this.zombie.position.y+zombiey+0.1, this.zombie.position.z+zombiez);
+    this.zombie.boundingBox.position.set(this.zombie.boundingBox.position.x+zombiex, this.zombie.boundingBox.position.y+zombiey+0.1, this.zombie.boundingBox.position.z+zombiez);    
+    this.add(this.zombie);
 
 
     this.cerdo = new Cerdo(this.gui, "Cerdo");
+    this.cerdo.position.set(this.cerdo.position.x+this.puntoscerdos[0].x, this.cerdo.position.y + this.puntoscerdos[0].y+0.1, this.cerdo.position.z + this.puntoscerdos[0].z);
+    this.cerdo.boundingBox.position.set(this.cerdo.boundingBox.position.x+this.puntoscerdos[0].x,this.cerdo.boundingBox.position.y+ this.puntoscerdos[0].y+0.1, this.cerdo.boundingBox.position.z + this.puntoscerdos[0].z);
     this.add(this.cerdo);
+
+
 
     let cajaSeleccionada = new THREE.BoxGeometry(1, 1, 1);
     this.cajaSeleccionada = new THREE.Mesh(cajaSeleccionada);
@@ -317,7 +364,10 @@ class MyScene extends THREE.Scene {
     console.log(this.model.boundingBox)
     this.add(this.model.boundingBox);
     this.add(this.zombie.boundingBox);
-
+    
+    this.add(this.cerdo.boundingBox);
+    this.cerdo.position.y+=10;
+    this.cerdo.boundingBox.position.y+=10;
     this.initSkybox()
   }
 
@@ -446,8 +496,8 @@ class MyScene extends THREE.Scene {
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
     //this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
-    this.spotLight = new THREE.HemisphereLight(0xffffff, this.guiControls.lightIntensity, 1)
-    this.spotLight.position.set(60, 60, 40);
+    this.spotLight = new THREE.HemisphereLight(/*0xffffff*/0xfdfbd3, this.guiControls.lightIntensity, 1)
+    this.spotLight.position.set(0, 60, 0);
     this.add(this.spotLight);
   }
 
@@ -788,7 +838,6 @@ class MyScene extends THREE.Scene {
         let posicion = objetos[0].point;
         let coord = { x: 0, y: 0, z: 0 };
 
-        //IMPORTANTE REVISAR 0 Y 5 (LOS INCREMENTOS)
         switch (index) {
           case 0: //derecha (x pos)
             coord = {
@@ -1084,7 +1133,20 @@ class MyScene extends THREE.Scene {
 
     this.zombie.update(this.movt, this.chunkCollision, this.bloqueRaro);
 
+
+    //el cerdo mira a la primera posicion de puntoscerdos
     
+    this.cerdo.lookAt(this.puntoscerdos[this.poscerdo].x, this.cerdo.position.y, this.puntoscerdos[this.poscerdo].z);
+    this.cerdo.boundingBox.lookAt(this.puntoscerdos[this.poscerdo].x, this.cerdo.boundingBox.position.y, this.puntoscerdos[this.poscerdo].z);
+   if(Math.abs(this.cerdo.position.x - this.puntoscerdos[this.poscerdo].x) <= 1 && Math.abs(this.cerdo.position.z - this.puntoscerdos[this.poscerdo].z) <= 1){
+      this.poscerdo = (this.poscerdo + 1) % this.puntoscerdos.length;
+    }
+
+    this.cerdo.update(this.movt, this.chunkCollision, this.bloqueRaro);
+    
+    
+
+
 /*     vectorMovimiento.x = 0;
     vectorMovimiento.z = 0;
     this.zombie.rotateOnAxis(vectorMovimiento.normalize(), 0.03 ); */
@@ -1126,6 +1188,8 @@ $(function () {
   let scene = new MyScene("#WebGL-output");
   const canvas = scene.renderer.domElement
 
+  //scene.fog= new THREE.Fog(0x87CEEB, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2)-4, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2));
+  scene.background= new THREE.Color(0x87CEEB);
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener("resize", () => scene.onWindowResize());
 

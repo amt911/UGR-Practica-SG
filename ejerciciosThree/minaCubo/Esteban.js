@@ -1,6 +1,6 @@
 import * as THREE from '../libs/three.module.js'
 import * as PM from './ParametrosMundo.js'
-
+import * as C from './colisiones.js'
 
 //IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
 class Esteban extends THREE.Object3D {
@@ -14,11 +14,14 @@ class Esteban extends THREE.Object3D {
   constructor(gui, titleGui) {
     super();
 
-    this.caidaVel = -0.01;
-    this.caidaAcc = -0.01;
+    //this.caidaVel = -0.01;
+    //this.caidaAcc = -0.01;
+
+    //this.caidaVel = -1;
+    //this.caidaAcc = -42;
 
     this.clock = new THREE.Clock();
-    this.clockAnim=new THREE.Clock();
+    //this.clockAnim=new THREE.Clock();
     this.cambiarAnimacion = false;
     this.maxMovimientoExt = this.degToRad(60);
 
@@ -224,8 +227,6 @@ class Esteban extends THREE.Object3D {
 
     let torso = new THREE.Mesh(geometriaTorso, texturaCuerpo);
     torso.position.y = 18 / PM.PIXELES_ESTANDAR;
-    //this.add(torso);
-
 
     //ESTO ES NECESARIO PARA QUE FUNCIONE LA ANIMACION DE STRAFE
     this.wrapperFinal = new THREE.Object3D();
@@ -245,9 +246,6 @@ class Esteban extends THREE.Object3D {
 
     //this.add(this.boundingBox);
 
-    this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
-    //this.add(this.bloqueRaro);
-
     this.position.y += 10;
 
     this.puedeSaltar=true;
@@ -256,6 +254,10 @@ class Esteban extends THREE.Object3D {
       fil: -1,
       col: -1,
     };
+
+
+    this.colisiones=new C.Colisiones(false, 0.8);
+    this.altura=32;
   }
 
   addCamara(camara) {
@@ -420,7 +422,8 @@ class Esteban extends THREE.Object3D {
   }
 
   update(movimiento, bloques, bloqueRaro, teclasPulsadas) {
-    let velocidad = this.clock.getDelta() * 4.317;
+    let delta= this.clock.getDelta();
+    let velocidad = delta * 4.317;
     this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
     this.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
     this.boundingBox.rotation.y = - Math.PI + this.cameraControls.getAzimuthalAngle();
@@ -451,22 +454,22 @@ class Esteban extends THREE.Object3D {
 
     if((teclasPulsadas.A && teclasPulsadas.W) || (teclasPulsadas.D && teclasPulsadas.S)){
       if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
-        this.wrapperFinal.rotation.y += 0.08;
+        this.wrapperFinal.rotation.y += 8*delta;
       }      
     }
     else if((teclasPulsadas.A && teclasPulsadas.S) || (teclasPulsadas.D && teclasPulsadas.W)){
       if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
-        this.wrapperFinal.rotation.y -= 0.08;
+        this.wrapperFinal.rotation.y -= 8*delta;
       }            
     }
     else if(teclasPulsadas.A){
       if (this.wrapperFinal.rotation.y < this.degToRad(45)) {
-        this.wrapperFinal.rotation.y += 0.08;
+        this.wrapperFinal.rotation.y += 8*delta;
       }      
     }
     else if(teclasPulsadas.D){
       if (this.wrapperFinal.rotation.y > this.degToRad(-45)) {
-        this.wrapperFinal.rotation.y -= 0.08;
+        this.wrapperFinal.rotation.y -= 8*delta;
       }
     }
     else if(teclasPulsadas.W){
@@ -474,13 +477,13 @@ class Esteban extends THREE.Object3D {
     }
     else if(teclasPulsadas.S){
       if (this.wrapperFinal.rotation.y < 0) {
-        this.wrapperFinal.rotation.y += 0.08;
+        this.wrapperFinal.rotation.y += 8*delta;
 
         if (this.wrapperFinal.rotation.y > 0)
           this.wrapperFinal.rotation.y = 0;
       }
       else if (this.wrapperFinal.rotation.y > 0) {
-        this.wrapperFinal.rotation.y -= 0.08;
+        this.wrapperFinal.rotation.y -= 8*delta;
 
         if (this.wrapperFinal.rotation.y < 0)
           this.wrapperFinal.rotation.y = 0;
@@ -488,28 +491,33 @@ class Esteban extends THREE.Object3D {
     }
 
     let velocidadFinal=(teclasPulsadas["SHIFT"])? velocidad*2 : velocidad;
+    //velocidadFinal*=delta;
     //console.log("---------------------")
     //console.log(vectorDir);
     this.translateOnAxis(vectorDir.normalize(), velocidadFinal);
     //console.log(vectorDir);
     //console.log("=======================")
     this.boundingBox.translateOnAxis(vectorDir, velocidadFinal);
-    this.checkCollision(bloques, vectorDir, velocidad, bloqueRaro);
     
     if(moviendose)
       this.animacion(esForward, velocidadFinal);
+    
+    this.colisiones.update(bloques, this, this.boundingBox, teclasPulsadas, vectorDir, velocidad);
 
+    /*
     if(this.puedeSaltar && teclasPulsadas[" "]){
-      this.caidaVel = 0.15;
+      this.caidaVel = 10;
       this.puedeSaltar=false;
     }
+    
 
     //Deteccion de caidas
-    this.position.y += this.caidaVel;
-    this.boundingBox.position.y+=this.caidaVel;
-    this.caidaVel += this.caidaAcc;
-
+    this.position.y += this.caidaVel*delta;
+    this.boundingBox.position.y+=this.caidaVel*delta;
+    this.caidaVel += this.caidaAcc*delta;
     
+    
+    this.checkCollision(bloques, vectorDir, velocidad, bloqueRaro);
     for(let i=0; i<bloques.length; i++){
       for (let j = 0; j < bloques[i].length;j++) {
         let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
@@ -530,7 +538,7 @@ class Esteban extends THREE.Object3D {
           }
         }
       }
-    }
+    }*/
   }
 }
 
