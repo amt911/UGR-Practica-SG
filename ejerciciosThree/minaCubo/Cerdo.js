@@ -320,7 +320,7 @@ class Cerdo extends THREE.Object3D {
     //console.log(vectorMovimiento);
     //console.log(velocidad);
      this.colision.update(bloques, this, this.boundingBox, null, vectorMovimiento, velocidad);
-    console.log(this.boundingBox.position.y)
+    //console.log(this.boundingBox.position.y)
   }
 }
 

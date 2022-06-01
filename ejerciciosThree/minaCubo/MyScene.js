@@ -5,6 +5,7 @@ import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { Stats } from '../libs/stats.module.js'
+import * as TWEEN from "../libs/tween.esm.js"
 //import { Math } from '../libs/three.module.js'
 // Clases de mi proyecto
 
@@ -51,7 +52,6 @@ class MyScene extends THREE.Scene {
     super();
     
     //this.fog= new THREE.Fog(0xffffff, 0.1, 100);
-
     this.movt = "parado";
     this.mapTeclas = {
       "W": false,
@@ -365,15 +365,36 @@ class MyScene extends THREE.Scene {
     // this.add(this.zombie.boundingBox);
     // this.add(this.cerdo.boundingBox);
 
-    this.initSkybox()
+    this.fog= new THREE.Fog(0x87CEEB, this.TAM_CHUNK*(this.DISTANCIA_RENDER/2)-4, this.TAM_CHUNK*(this.DISTANCIA_RENDER/2));
+    this.background= new THREE.Color(0x87CEEB);
+
+    let colorInicial=new THREE.Color(0x87CEEB);
+    let colorFinal=new THREE.Color(0x000000);
+
+    let rgbInicial={r: colorInicial.r, g: colorInicial.g, b: colorInicial.b, intensidad: 1}
+    let rgbFinal={r: colorFinal.r, g: colorFinal.g, b: colorFinal.b, intensidad: 0};
+
+    this.anim=new TWEEN.Tween(rgbInicial).to(rgbFinal,60000);
+    this.anim.onUpdate(()=>{
+      //console.log(colorInicial);
+      this.fog.color.r=rgbInicial.r;
+      this.fog.color.g=rgbInicial.g;
+      this.fog.color.b=rgbInicial.b;
+
+      /*
+      this.background.color.r=rgbInicial.r;
+      this.background.color.g=rgbInicial.g;
+      this.background.color.b=rgbInicial.b;
+      */
+
+      this.background=new THREE.Color(rgbInicial.r,rgbInicial.g,rgbInicial.b);
+
+      this.spotLight.intensity=rgbInicial.intensidad;
+
+    }).yoyo(true).repeat(Infinity).start();
   }
 
-  initSkybox(){
-    //let estrellas=new THREEx.DayNight.StarField();
-  }
 
-  //ASI TAMPOCO SE INDEXAN
-  //LA FORMULA ES: (X-X%TAM_CHUNK)/TAM_CHUNK DONDE X ES LA POSICION
   identificarChunk(x, z) {
     let res = {
       x: Math.round((x - (x % this.TAM_CHUNK)) / this.TAM_CHUNK),
@@ -485,6 +506,7 @@ class MyScene extends THREE.Scene {
     // Se declara como   let   y va a ser una letiable local a este método
     //    se hace así puesto que no va a ser accedida desde otros métodos
     let ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
+    //let ambientLight = new THREE.AmbientLight(0x000000, 0.35);
     // La añadimos a la escena
     this.add(ambientLight);
 
@@ -493,7 +515,7 @@ class MyScene extends THREE.Scene {
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
     //this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
-    this.spotLight = new THREE.HemisphereLight(/*0xffffff*/0xfdfbd3, this.guiControls.lightIntensity, 1)
+    this.spotLight = new THREE.HemisphereLight(0xfdfbd3, 0xfdfbd3, this.guiControls.lightIntensity)
     this.spotLight.position.set(0, 60, 0);
     this.add(this.spotLight);
   }
@@ -916,6 +938,8 @@ class MyScene extends THREE.Scene {
   update() {
     if (this.stats) this.stats.update();
 
+    TWEEN.update();
+
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la posición de la cámara según su controlador    
     this.vector.subVectors(this.camera.position, this.cameraControl.target)
@@ -926,26 +950,12 @@ class MyScene extends THREE.Scene {
 
     this.cameraControl.update();
 
-    //console.log(this.mapTeclas);
-    // Se actualiza el resto del modelo
-
-    //console.log(this.identificarChunk(this.model.position.x, this.model.position.z))
-
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render(this, this.getCamera());
     let aux = this.identificarChunk(this.model.position.x, this.model.position.z);
 
-    //console.log("chunk: " + aux.x + " " + aux.z);
-    //console.log("------------------------")
-    //console.log(aux.z)
-    //console.log(this.chunkMinMax.max.z)
-    //console.log("________________________")
     let renderChunksAgain = false;
     if (aux.z > (this.chunkMinMax.min.z + this.chunkMinMax.max.z) / 2) {
-      //console.log(this.chunkMinMax.min.z);
-      //console.log(this.chunkMinMax.max.z);
-
-      // console.log("entra1")
       //Movemos los limites
       this.chunkMinMax.min.z++;
       this.chunkMinMax.max.z++;
@@ -954,7 +964,6 @@ class MyScene extends THREE.Scene {
 
     //Revisar el >=0
     if (aux.z < (this.chunkMinMax.min.z + this.chunkMinMax.max.z) / 2 && aux.z >= 0) {
-      //console.log("entra2")
       this.chunkMinMax.min.z--;
       this.chunkMinMax.max.z--;
       renderChunksAgain = true;
@@ -962,10 +971,6 @@ class MyScene extends THREE.Scene {
 
     //Parte para las x
     if (aux.x > (this.chunkMinMax.min.x + this.chunkMinMax.max.x) / 2) {
-      //console.log(this.chunkMinMax.min.z);
-      //console.log(this.chunkMinMax.max.z);
-
-      //console.log("entra3")
       //Movemos los limites
       this.chunkMinMax.min.x++;
       this.chunkMinMax.max.x++;
@@ -1186,7 +1191,7 @@ $(function () {
   const canvas = scene.renderer.domElement
 
   //scene.fog= new THREE.Fog(0x87CEEB, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2)-4, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2));
-  scene.background= new THREE.Color(0x87CEEB);
+  //scene.background= new THREE.Color(0x87CEEB);
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener("resize", () => scene.onWindowResize());
 
