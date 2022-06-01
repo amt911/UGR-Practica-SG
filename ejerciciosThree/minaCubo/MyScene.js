@@ -6,7 +6,6 @@ import { GUI } from '../libs/dat.gui.module.js'
 import { OrbitControls } from '../libs/OrbitControls.js'
 import { Stats } from '../libs/stats.module.js'
 import * as TWEEN from "../libs/tween.esm.js"
-//import { Math } from '../libs/three.module.js'
 // Clases de mi proyecto
 
 import { Esteban } from './Esteban.js'
@@ -43,14 +42,13 @@ function estaEnArbol(posx, posz, lista){
     return false;
   }
 class MyScene extends THREE.Scene {
-  getCanvas() {
-    return $(this.myCanvasName);
-  }
-
-  
   constructor(myCanvas) {
     super();
-    
+
+    this.clock=new THREE.Clock();
+
+    this.tiempoCerdo = 200;
+
     //this.fog= new THREE.Fog(0xffffff, 0.1, 100);
     this.movt = "parado";
     this.mapTeclas = {
@@ -61,9 +59,6 @@ class MyScene extends THREE.Scene {
       " ": false,
       "SHIFT": false
     };
-
-    //console.log((3.6|0)+0.5);
-    //console.log(Math.round(3.6))
 
     this.myCanvasName = myCanvas;
     // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
@@ -80,10 +75,6 @@ class MyScene extends THREE.Scene {
     // Tras crear cada elemento se añadirá a la escena con   this.add(letiable)
     this.createLights();
 
-    // Tendremos una cámara con un control de movimiento con el ratón
-
-    // Un suelo
-    //this.createGround ();
 
     // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
     this.axis = new THREE.AxesHelper(55);
@@ -93,39 +84,24 @@ class MyScene extends THREE.Scene {
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    this.model = new Esteban(this.gui, "Controles de la Caja");
+    this.model = new Esteban(this.gui, "Esteban");
     this.createCamera();
 
-    this.ghost = new Esteban(this.gui, " de la Caja");
-/*
-    let path = "texturas/cielo/";
-    let format = '.png';
 
-    let urls = [
-      path + 'px' + format, path + 'nx' + format,
-      path + 'py' + format, path + 'ny' + format,
-      path + 'pz' + format, path + 'nz' + format
-      //  path + 'py' + format, path + 'ny' + format,
-      //  path + 'pz' + format, path + 'nz' + format
-    ]
-
-    let textureCube = new THREE.CubeTextureLoader().load(urls);
-    this.background = textureCube;
-*/
-    //this.add(this.ghost)
     this.add(this.model);
 
     this.zombie = new Zombie(this.gui, "Zombie");
-    //this.zombie.position.set(16, 2, 16);
+
     this.zombie.position.y+=10;
     this.zombie.boundingBox.position.y+=10;
 
     this.chunkCollision = [];   //Almacena chunks
     this.chunk = [];
+
     this.TAM_CHUNK = 12;
     this.DISTANCIA_RENDER = 7;
-    // this.TAM_CHUNK = 5;
-    // this.DISTANCIA_RENDER = 7;    
+    //this.TAM_CHUNK = 2;
+    //this.DISTANCIA_RENDER = 5;    
     this.h = new cubos.Hierba();
     let matrix = new THREE.Matrix4();
     noise.seed(Math.random());
@@ -135,7 +111,9 @@ class MyScene extends THREE.Scene {
     let zoff = 0;
 
 
-    this.puntoscerdos = [];
+    //this.puntoscerdos = [[]];
+this.puntoscerdos = [];
+    
 
 
     this.p = new cubos.Piedra();
@@ -195,7 +173,7 @@ class MyScene extends THREE.Scene {
     }
 
     let k = 0;
-    //Arreglar esto
+
     let contador = 0;
     let contador2 = 0;
     let contador3 = 0;
@@ -218,8 +196,6 @@ class MyScene extends THREE.Scene {
            posz = Math.floor(Math.random() * this.TAM_CHUNK);
           }
           list_arboles.push({ x: posx, y: 10, z: posz });
-          // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
-
         }
 
         if(i == 0 && j == 0){
@@ -234,25 +210,22 @@ class MyScene extends THREE.Scene {
              posz = Math.floor(Math.random() * this.TAM_CHUNK);
             }
             this.puntoscerdos.push({ x: posx, y: 10, z: posz });
-            // console.log("LISTA PUNTOSCERDO " + m + ": " + puntoscerdos[m].x + " " +  puntoscerdos[m].y + " " +  puntoscerdos[m].z);
-          }       
+          }        
+  
         }
 
 
         for (let x = i * this.TAM_CHUNK; x < (i * this.TAM_CHUNK) + this.TAM_CHUNK; x++) {   //PARA GENERAR LOS BLOQUES DE UN CHUNK
           for (let z = j * this.TAM_CHUNK; z < (j * this.TAM_CHUNK) + this.TAM_CHUNK; z++) {
-            //contador=contador2=0;
             xoff = inc * x;
             zoff = inc * z;
 
-            let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+            let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud);
             if(i == 0 && j == 0){
-
               if(zombiex + i*this.TAM_CHUNK == x && zombiez + j*this.TAM_CHUNK == z){
                 zombiey = v;
               }
               }
-            //console.log(v);
             matrix.setPosition(x * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, z * 16 / PM.PIXELES_ESTANDAR);
             this.mesh["Hierba"].setMatrixAt(k, matrix);
 
@@ -305,7 +278,6 @@ class MyScene extends THREE.Scene {
           }
 
           for (let r = 0; r < arbol.bloquesmadera.length; r++) {
-            // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
             matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
             this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
             bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
@@ -326,31 +298,23 @@ class MyScene extends THREE.Scene {
       this.add(this.mesh[aux]);
     }
 
-
     this.chunkMinMax = {
       min: { x: 0, z: 0 },
       max: { x: this.DISTANCIA_RENDER - 1, z: this.DISTANCIA_RENDER - 1 }
     };
 
-    this.bloqueRaro = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1));
-    this.add(this.bloqueRaro);
-
-    //this.zombie.position.set(20, 20, 20);
-    //console.log(zombiex + " " + zombiey + " " + zombiez)
-    //this.zombie.position.set(zombiex, zombiey+0.1, zombiez);
-    //this.zombie.boundingBox.position.set(zombiex, zombiey+0.1, zombiez);
     this.zombie.position.set(this.zombie.position.x+zombiex, this.zombie.position.y+zombiey+0.1, this.zombie.position.z+zombiez);
     this.zombie.boundingBox.position.set(this.zombie.boundingBox.position.x+zombiex, this.zombie.boundingBox.position.y+zombiey+0.1, this.zombie.boundingBox.position.z+zombiez);    
     this.add(this.zombie);
 
 
+    //Creacion del cerdo
     this.cerdo = new Cerdo(this.gui, "Cerdo");
     this.cerdo.position.set(this.cerdo.position.x+this.puntoscerdos[0].x, this.cerdo.position.y + this.puntoscerdos[0].y+0.1, this.cerdo.position.z + this.puntoscerdos[0].z);
     this.cerdo.boundingBox.position.set(this.cerdo.boundingBox.position.x+this.puntoscerdos[0].x,this.cerdo.boundingBox.position.y+ this.puntoscerdos[0].y+0.1, this.cerdo.boundingBox.position.z + this.puntoscerdos[0].z);
     this.add(this.cerdo);
 
-
-
+    //Creacion del feedback
     let cajaSeleccionada = new THREE.BoxGeometry(1, 1, 1);
     this.cajaSeleccionada = new THREE.Mesh(cajaSeleccionada);
 
@@ -361,10 +325,7 @@ class MyScene extends THREE.Scene {
     this.cajaSeleccionada.material.color.set(0x333333);
     this.cajaSeleccionada.visible = false;
 
-    // this.add(this.model.boundingBox);
-    // this.add(this.zombie.boundingBox);
-    // this.add(this.cerdo.boundingBox);
-
+    //Creacion del fog, el cielo y su animacion
     this.fog= new THREE.Fog(0x87CEEB, this.TAM_CHUNK*(this.DISTANCIA_RENDER/2)-4, this.TAM_CHUNK*(this.DISTANCIA_RENDER/2));
     this.background= new THREE.Color(0x87CEEB);
 
@@ -376,16 +337,9 @@ class MyScene extends THREE.Scene {
 
     this.anim=new TWEEN.Tween(rgbInicial).to(rgbFinal,60000);
     this.anim.onUpdate(()=>{
-      //console.log(colorInicial);
       this.fog.color.r=rgbInicial.r;
       this.fog.color.g=rgbInicial.g;
       this.fog.color.b=rgbInicial.b;
-
-      /*
-      this.background.color.r=rgbInicial.r;
-      this.background.color.g=rgbInicial.g;
-      this.background.color.b=rgbInicial.b;
-      */
 
       this.background=new THREE.Color(rgbInicial.r,rgbInicial.g,rgbInicial.b);
 
@@ -393,7 +347,6 @@ class MyScene extends THREE.Scene {
 
     }).yoyo(true).repeat(Infinity).start();
   }
-
 
   identificarChunk(x, z) {
     let res = {
@@ -422,15 +375,9 @@ class MyScene extends THREE.Scene {
   }
 
   createCamera() {
-    // Para crear una cámara le indicamos
-    //   El ángulo del campo de visión en grados sexagesimales
-    //   La razón de aspecto ancho/alto
-    //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    // También se indica dónde se coloca
     this.camera.position.set(this.model.position.x, this.model.position.y + 10, this.model.position.z - 10);
 
-    // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
     this.vector = new THREE.Vector3();
     this.cameraControl = new OrbitControls(this.camera, this.renderer.domElement);
     this.cameraControl.target.set(this.model.position.x, this.model.position.y, this.model.position.z)
@@ -446,50 +393,18 @@ class MyScene extends THREE.Scene {
     this.model.addCamara(this.cameraControl);
   }
 
-  createGround() {
-    // El suelo es un Mesh, necesita una geometría y un material.
-
-    // La geometría es una caja con muy poca altura
-    let geometryGround = new THREE.BoxGeometry(50, 0.2, 50);
-
-    // El material se hará con una textura de madera
-    let texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
-    let materialGround = new THREE.MeshPhongMaterial({ map: texture });
-
-    // Ya se puede construir el Mesh
-    let ground = new THREE.Mesh(geometryGround, materialGround);
-
-    // Todas las figuras se crean centradas en el origen.
-    // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
-    ground.position.y = -0.1;
-
-    // Que no se nos olvide añadirlo a la escena, que en este caso es  this
-    this.add(ground);
-  }
-
   createGUI() {
-    // Se crea la interfaz gráfica de usuario
     let gui = new GUI();
 
-    // La escena le va a añadir sus propios controles.
-    // Se definen mediante un objeto de control
-    // En este caso la intensidad de la luz y si se muestran o no los ejes
     this.guiControls = {
       // En el contexto de una función   this   alude a la función
-      lightIntensity: 0.5,
       axisOnOff: true,
       activarWireframe: false
     }
 
-    // Se crea una sección para los controles de esta clase
-    let folder = gui.addFolder('Luz y Ejes');
+    let folder = gui.addFolder('Ayudas');
 
-    // Se le añade un control para la intensidad de la luz
-    folder.add(this.guiControls, 'lightIntensity', 0, 1, 0.1)
-      .name('Intensidad de la Luz : ')
-      .onChange((value) => this.setLightIntensity(value));
 
-    // Y otro para mostrar u ocultar los ejes
     folder.add(this.guiControls, 'axisOnOff')
       .name('Mostrar ejes : ')
       .onChange((value) => this.setAxisVisible(value));
@@ -501,20 +416,9 @@ class MyScene extends THREE.Scene {
   }
 
   createLights() {
-    // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
-    // La luz ambiental solo tiene un color y una intensidad
-    // Se declara como   let   y va a ser una letiable local a este método
-    //    se hace así puesto que no va a ser accedida desde otros métodos
     let ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
-    //let ambientLight = new THREE.AmbientLight(0x000000, 0.35);
-    // La añadimos a la escena
     this.add(ambientLight);
 
-    // Se crea una luz focal que va a ser la luz principal de la escena
-    // La luz focal, además tiene una posición, y un punto de mira
-    // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
-    // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    //this.spotLight = new THREE.SpotLight(0xffffff, this.guiControls.lightIntensity);
     this.spotLight = new THREE.HemisphereLight(0xfdfbd3, 0xfdfbd3, this.guiControls.lightIntensity)
     this.spotLight.position.set(0, 60, 0);
     this.add(this.spotLight);
@@ -541,7 +445,6 @@ class MyScene extends THREE.Scene {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     // La visualización se muestra en el lienzo recibido
-    //console.log("tipo renderer: "+(typeof renderer.domElement))
     $(myCanvas).append(renderer.domElement);
 
     return renderer;
@@ -570,8 +473,6 @@ class MyScene extends THREE.Scene {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-
-  //PONER BLOQUES: ARREGLAR QUE NO SE PUEDAN PONER BLOQUES CUANDO EL PERSONAJE COLISIONE CON EL NUEVO
   onDocumentMouseDown(event) {
 
     if (event.which == 3) {
@@ -592,12 +493,10 @@ class MyScene extends THREE.Scene {
           let posicion = objetos[0].point;
           let coord = { x: 0, y: 0, z: 0 };
 
-          //IMPORTANTE REVISAR 0 Y 5 (LOS INCREMENTOS)
           switch (index) {
             case 0: //derecha (x pos)
               coord = {
                 x: posicion.x + 0.5,
-                //y: Math.round(posicion.y) + 0.5,
                 y: (posicion.y | 0) + 0.5,// + 0.5,
                 z: Math.round(posicion.z)
               }
@@ -605,7 +504,6 @@ class MyScene extends THREE.Scene {
             case 1: //izquierda (x neg)
               coord = {
                 x: posicion.x - 0.5,
-                //y: Math.round(posicion.y) + 0.5,
                 y: (posicion.y | 0) + 0.5,
                 z: Math.round(posicion.z)
               }
@@ -627,7 +525,6 @@ class MyScene extends THREE.Scene {
             case 4: //frente (z pos)
               coord = {
                 x: Math.round(posicion.x),
-                //y: Math.round(posicion.y) + 0.5,// + 0.5,
                 y: (posicion.y | 0) + 0.5,// + 0.5,
                 z: posicion.z + 0.5
               }
@@ -635,19 +532,13 @@ class MyScene extends THREE.Scene {
             case 5: //detras (z neg)
               coord = {
                 x: Math.round(posicion.x),
-                //y: Math.round(posicion.y) + 0.5,
                 y: (posicion.y | 0) + 0.5,
                 z: posicion.z - 0.5
               }
               break;
           }
           if (posicion.y < 0) {
-            //console.log("-----------------------")
             coord.y = Math.floor(posicion.y) + 0.5;
-            //console.log(coord.y);
-            //console.log(Math.floor((posicion.y)|0)+0.5)
-            //console.log("_______________________")
-            //coord.y=Math.floor((posicion.y)|0)+0.5;
           }
 
           objetosIntersecados.push({ tipo: tipo, coordenada: coord, distancia: objetos[0].distance });
@@ -661,20 +552,17 @@ class MyScene extends THREE.Scene {
         return a.distancia - b.distancia;
       });
 
-      //console.log(objetosIntersecados);
 
       if(objetosIntersecados[0]!=undefined){  
         let aux = this.identificarChunk(objetosIntersecados[0].coordenada.x, objetosIntersecados[0].coordenada.z);
         this.chunk[aux.x][aux.z].push({ material: this.bloqueSeleccionado[this.objeto], x: objetosIntersecados[0].coordenada.x, y: objetosIntersecados[0].coordenada.y, z: objetosIntersecados[0].coordenada.z });
         this.remove(this.mesh[this.bloqueSeleccionado[this.objeto]]);
 
-
         let matrix = new THREE.Matrix4();
         let l = 0;
 
-        //console.log(this.bloqueSeleccionado[this.objeto])
         this.mesh[this.bloqueSeleccionado[this.objeto]] = new THREE.InstancedMesh(this.h.geometria, this.materialesText[this.bloqueSeleccionado[this.objeto]], ++this.sizeIMesh[this.bloqueSeleccionado[this.objeto]]);
-        //console.log(this.sizeIMesh[this.bloqueSeleccionado[this.objeto]])
+
         for (let a = this.chunkMinMax.min.z; a <= this.chunkMinMax.max.z; a++) {
           for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
             for (let j = 0; j < this.chunk[i][a].length; j++) {
@@ -687,17 +575,12 @@ class MyScene extends THREE.Scene {
           }
         }
 
-
-        //console.log(objetosIntersecados[0].tipo);
-        //console.log(this.mesh[objetosIntersecados[0].tipo]);
         this.add(this.mesh[this.bloqueSeleccionado[this.objeto]]);
       }
     }
 
     else if (event.which == 1) {
       let mouse = new THREE.Vector2();
-      //mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      //mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
 
       mouse.x = (0.5) * 2 - 1;
       mouse.y = 1 - 2 * (0.5);
@@ -709,11 +592,6 @@ class MyScene extends THREE.Scene {
       for (let tipo in this.mesh) {
         let objetos = raycaster.intersectObject(this.mesh[tipo], true);
 
-        //console.log("------------------------");
-        //console.log(objetos[0].face.materialIndex);
-        //console.log(objetos[0]);
-        //console.log(this.model.position)
-        //console.log("________________________")
         if (objetos[0] != undefined && objetos.length > 0 && objetos[0].distance <= 20) {
           let index = objetos[0].face.materialIndex;
           let posicion = objetos[0].point;
@@ -817,26 +695,10 @@ class MyScene extends THREE.Scene {
           }
         }
 
-        //console.log(objetosIntersecados[0].tipo);
         this.add(this.mesh[objetosIntersecados[0].tipo]);
     }
     }
 
-  }
-
-  detectCollisionCharacterWorld() {
-    this.model.boundingBox.geometry.computeBoundingBox();
-    this.world.geometry.computeBoundingBox();
-    this.model.boundingBox.updateMatrixWorld();
-    this.world.mesh.updateMatrixWorld();
-
-    let a = this.model.boundingBox.geometry.boundingBox.clone();
-    a.applyMatrix4(this.model.boundingBox.matrixWorld);
-
-    let b = this.world.geometry.boundingBox.clone();
-    b.applyMatrix4(this.world.mesh.matrixWorld);
-
-    return a.intersectsBox(b);
   }
 
   actualizarFeedback() {
@@ -861,7 +723,6 @@ class MyScene extends THREE.Scene {
           case 0: //derecha (x pos)
             coord = {
               x: posicion.x - 0.5,
-              //y: Math.round(posicion.y)+0.5,
               y: (posicion.y | 0) + 0.5,
               z: Math.round(posicion.z)
             }
@@ -869,7 +730,6 @@ class MyScene extends THREE.Scene {
           case 1: //izquierda (x neg)
             coord = {
               x: posicion.x + 0.5,
-              //y: Math.round(posicion.y)+0.5,
               y: (posicion.y | 0) + 0.5,
               z: Math.round(posicion.z)
             }
@@ -891,7 +751,6 @@ class MyScene extends THREE.Scene {
           case 4: //frente (z pos)
             coord = {
               x: Math.round(posicion.x),
-              //y: Math.round(posicion.y)+0.5,
               y: (posicion.y | 0) + 0.5,
               z: posicion.z - 0.5
             }
@@ -899,7 +758,6 @@ class MyScene extends THREE.Scene {
           case 5: //detras (z neg)
             coord = {
               x: Math.round(posicion.x),
-              //y: Math.round(posicion.y)+0.5,
               y: (posicion.y | 0) + 0.5,
               z: posicion.z + 0.5
             }
@@ -913,12 +771,6 @@ class MyScene extends THREE.Scene {
         objetosSeleccionados.push({ objeto: objetos[0], coordenadas: coord });
       }
     }
-
-    //console.log("------------------------");
-    //console.log(objetos[0].face.materialIndex);
-    //console.log(objetos[0]);
-    //console.log(this.model.position)
-    //console.log("________________________")
 
     //Ordena objetosSeleccionados por distancia
     objetosSeleccionados.sort(function (a, b) {
@@ -937,6 +789,8 @@ class MyScene extends THREE.Scene {
 
   update() {
     if (this.stats) this.stats.update();
+
+    let delta=this.clock.getDelta();
 
     TWEEN.update();
 
@@ -978,14 +832,10 @@ class MyScene extends THREE.Scene {
     }
 
     if (aux.x < (this.chunkMinMax.min.x + this.chunkMinMax.max.x) / 2 && aux.x >= 0) {
-      //console.log("entra4")
       this.chunkMinMax.min.x--;
       this.chunkMinMax.max.x--;
       renderChunksAgain = true;
     }
-
-    //console.log(this.chunkMinMax.min);
-    //console.log(this.chunkMinMax.max);
 
     if (renderChunksAgain) {
       for (let tipo in this.mesh) {
@@ -1016,7 +866,6 @@ class MyScene extends THREE.Scene {
         for (let i = this.chunkMinMax.min.x; i <= this.chunkMinMax.max.x; i++) {
           if (this.chunk[i] != undefined && this.chunk[i][a] != undefined) {
             for (let j = 0; j < this.chunk[i][a].length; j++) {
-              //console.log(this.chunk[i][a][j].material);
               matrix.setPosition(this.chunk[i][a][j].x, this.chunk[i][a][j].y, this.chunk[i][a][j].z);
               this.mesh[this.chunk[i][a][j].material].setMatrixAt(l[this.chunk[i][a][j].material], matrix);
               l[this.chunk[i][a][j].material]++;
@@ -1037,8 +886,6 @@ class MyScene extends THREE.Scene {
                posz = Math.floor(Math.random() * this.TAM_CHUNK);
               }
               list_arboles.push({ x: posx, y: 10, z: posz });
-              // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
-    
             }
 
             let bloques = [];
@@ -1047,7 +894,7 @@ class MyScene extends THREE.Scene {
                 xoff = inc * z;
                 zoff = inc * x;
 
-                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud / 1) * 1;
+                let v = Math.round(noise.perlin2(xoff, zoff) * this.amplitud);
                 matrix.setPosition(z * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR, x * 16 / PM.PIXELES_ESTANDAR);
                 this.mesh["Hierba"].setMatrixAt(l["Hierba"], matrix);
 
@@ -1070,7 +917,7 @@ class MyScene extends THREE.Scene {
                   contador++;
                   
                 }
-                /* */
+
                 for (let r = 3; r < 8; r++) {
                   matrix.setPosition(z * 16 / PM.PIXELES_ESTANDAR, v - 8 / PM.PIXELES_ESTANDAR - r - 1, x * 16 / PM.PIXELES_ESTANDAR);
                   this.mesh["Piedra"].setMatrixAt(contador2, matrix);
@@ -1092,7 +939,6 @@ class MyScene extends THREE.Scene {
               }
     
               for (let r = 0; r < arbol.bloquesmadera.length; r++) {
-                // console.log("LISTA ARBOL " + m + ": " + list_arboles[m].x + " " +  list_arboles[m].y + " " +  list_arboles[m].z);
                 matrix.setPosition(list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z);
                 this.mesh["MaderaRoble"].setMatrixAt(contador4, matrix);
                 bloques.push({ x: list_arboles[indice_arbol].x + arbol.bloquesmadera[r].x, y: list_arboles[indice_arbol].y + arbol.bloquesmadera[r].y -0.5, z: list_arboles[indice_arbol].z + arbol.bloquesmadera[r].z, material: "MaderaRoble" });
@@ -1127,36 +973,71 @@ class MyScene extends THREE.Scene {
       this.cajaSeleccionada.visible = false;
     }
 
+    //Se eligen todos los bloques de la distancia de renderizado para el calculo de fisicas, solo para el personaje
+    let colisiones =[];
 
-    this.model.update(this.movt, this.chunkCollision, this.bloqueRaro, this.mapTeclas);
+    for(let i =this.chunkMinMax.min.x; i<this.chunkMinMax.max.x; i++){
+      for(let j =this.chunkMinMax.min.z; j<this.chunkMinMax.max.z; j++){
+        if(this.chunk[i]!=undefined && this.chunk[i][j]!=undefined){
+          colisiones = colisiones.concat(this.chunk[i][j]);
+        }
+      }
+    }
+
+    this.model.update(colisiones, this.mapTeclas);
+
+
     this.zombie.cabezaW1.lookAt(this.model.position.x, this.model.position.y,this.model.position.z);
     this.zombie.lookAt(this.model.position.x, this.zombie.position.y,this.model.position.z);
     this.zombie.boundingBox.lookAt(this.model.position.x, this.zombie.boundingBox.position.y,this.model.position.z)
 
-    this.zombie.update(this.movt, this.chunkCollision, this.bloqueRaro);
+    //Se escoge el chunk en el que esta el zombie
+    let zombieChunk = this.identificarChunk(this.zombie.position.x, this.zombie.position.z);
+
+    let zombieColisiones=[];
+    for(let i=(zombieChunk.x-this.DISTANCIA_RENDER/2)|0; i<=(zombieChunk.x+this.DISTANCIA_RENDER/2)|0; i++){
+      for(let j=(zombieChunk.z-this.DISTANCIA_RENDER/2)|0; j<=(zombieChunk.z+this.DISTANCIA_RENDER/2)|0; j++){
+        if(this.chunk[i]!=undefined && this.chunk[i][j]!=undefined){
+          zombieColisiones = zombieColisiones.concat(this.chunk[i][j]);
+        }
+      }
+    }
+
+    this.zombie.update(zombieColisiones);
 
 
     //el cerdo mira a la primera posicion de puntoscerdos
-    
     this.cerdo.lookAt(this.puntoscerdos[this.poscerdo].x, this.cerdo.position.y, this.puntoscerdos[this.poscerdo].z);
     this.cerdo.boundingBox.lookAt(this.puntoscerdos[this.poscerdo].x, this.cerdo.boundingBox.position.y, this.puntoscerdos[this.poscerdo].z);
-   if(Math.abs(this.cerdo.position.x - this.puntoscerdos[this.poscerdo].x) <= 1 && Math.abs(this.cerdo.position.z - this.puntoscerdos[this.poscerdo].z) <= 1){
-      this.poscerdo = (this.poscerdo + 1) % this.puntoscerdos.length;
+  
+
+    
+    //el cerdo para de moverse durante 2 segundos
+
+    if(this.tiempoCerdo<=0) {
+
+      if(Math.abs(this.cerdo.position.x - this.puntoscerdos[this.poscerdo].x) <= 1 && Math.abs(this.cerdo.position.z - this.puntoscerdos[this.poscerdo].z) <= 1){
+        this.poscerdo = (this.poscerdo + 1) % this.puntoscerdos.length;
+        this.tiempoCerdo = 200;
+      }
+
+          let cerdoChunk= this.identificarChunk(this.cerdo.position.x, this.cerdo.position.z);
+
+          let cerdoColisiones=[];
+          for(let i=(cerdoChunk.x-this.DISTANCIA_RENDER/2)|0; i<=(cerdoChunk.x+this.DISTANCIA_RENDER/2)|0; i++){
+            for(let j=(cerdoChunk.z-this.DISTANCIA_RENDER/2)|0; j<=(cerdoChunk.z+this.DISTANCIA_RENDER/2)|0; j++){
+              if(this.chunk[i]!=undefined && this.chunk[i][j]!=undefined){
+                cerdoColisiones = cerdoColisiones.concat(this.chunk[i][j]);
+              }
+            }
+          }          
+
+          this.cerdo.update(cerdoColisiones, delta);
+}
+    else{
+          this.tiempoCerdo -= 1;
+
     }
-
-    this.cerdo.update(this.movt, this.chunkCollision, this.bloqueRaro);
-    
-    
-
-
-/*     vectorMovimiento.x = 0;
-    vectorMovimiento.z = 0;
-    this.zombie.rotateOnAxis(vectorMovimiento.normalize(), 0.03 ); */
-/*    vectorMovimiento = v;
-     this.zombie.translateOnAxis(vectorMovimiento.normalize(), 0.03);
-*/
-     //  console.log(this.zombie.position.x);
-   // this.zombie.translateOnAxis();
     
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
@@ -1190,8 +1071,6 @@ $(function () {
   let scene = new MyScene("#WebGL-output");
   const canvas = scene.renderer.domElement
 
-  //scene.fog= new THREE.Fog(0x87CEEB, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2)-4, scene.TAM_CHUNK*(scene.DISTANCIA_RENDER/2));
-  //scene.background= new THREE.Color(0x87CEEB);
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener("resize", () => scene.onWindowResize());
 
@@ -1204,7 +1083,6 @@ $(function () {
 
   window.addEventListener("keyup", (event) => {
     scene.mapTeclas[event.key.toUpperCase()] = false;
-    //console.log(scene.mapTeclas);
 
     event.stopImmediatePropagation()
 
@@ -1217,17 +1095,12 @@ $(function () {
 
     if (allFalse) {
       scene.model.resetPosicion()
-      scene.movt = "parado"
     }
-    //else {
-    //  checkKeys(scene)
-    //}
   });
 
   //----------------------------------------------------------------------------------------
   window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));
   window.addEventListener("wheel", (event) => scene.onDocumentWheel(event));
-  //window.addEventListener("click", ()=>scene.cameraControl.lock());
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });

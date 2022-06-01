@@ -1,7 +1,7 @@
-import * as THREE from '../libs/three.module.js'
+import * as THREE from '../libs/three.module.js';
 //import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
-import * as PM from './ParametrosMundo.js'
-import * as C from './colisiones.js'
+import * as C from './colisiones.js';
+import * as PM from './ParametrosMundo.js';
 
 
 //IMPORTANTE: LA CAMARA SE CENTRA EN LA CABEZA Y PIVOTA ALREDEDOR DE LA MISMA
@@ -11,7 +11,7 @@ class Cerdo extends THREE.Object3D {
   }
   constructor(gui,titleGui) {
     super();
-    this.clock=new THREE.Clock();
+    //this.clock=new THREE.Clock();
     this.cambiarAnimacion=false;
     this.maxMovimientoExt=this.degToRad(45);
     //this.camara3rdPerson=new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -77,7 +77,7 @@ class Cerdo extends THREE.Object3D {
       }),
     ];
     
-    //CABESA
+    //CABEZA CERDO
     var geometriaCabeza = new THREE.BoxGeometry(8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR, 8/PM.PIXELES_ESTANDAR);
 
     var cabeza = new THREE.Mesh(geometriaCabeza,texturaCabeza);
@@ -139,35 +139,28 @@ class Cerdo extends THREE.Object3D {
     var geometriaExtremidad = new THREE.BoxGeometry(4/PM.PIXELES_ESTANDAR,6/PM.PIXELES_ESTANDAR,4/PM.PIXELES_ESTANDAR);
     var pataLD = new THREE.Mesh(geometriaExtremidad, texturaPataIzquierda);
 
-    //brazo izquierdo
     pataLD.position.y = -3/PM.PIXELES_ESTANDAR;
     var pataRD = pataLD.clone();
+
+
     pataRD.material = texturaPataDerecha;
 
     this.pataLeftDel = new THREE.Object3D();
     this.pataLeftDel.add(pataLD);
-    //this.brazoLeft.rotation.x = 0.3;
     this.pataLeftDel.position.y = 6/PM.PIXELES_ESTANDAR;
+    this.pataLeftDel.position.x = (2+1)/PM.PIXELES_ESTANDAR;
+    this.pataLeftDel.position.z = (2+3)/PM.PIXELES_ESTANDAR;
 
-    this.pataLeftDelW1 = new THREE.Object3D();
-    this.pataLeftDelW1.position.x = (2+1)/PM.PIXELES_ESTANDAR;
-    this.pataLeftDelW1.position.z = (2+3)/PM.PIXELES_ESTANDAR;
-
-    this.pataLeftDelW1.add(this.pataLeftDel);
 
     this.pataRightDel = new THREE.Object3D();
     this.pataRightDel.add(pataRD);
-    //this.brazoRight.rotation.x = -0.3;
     this.pataRightDel.position.y = 6/PM.PIXELES_ESTANDAR;
-
-    this.pataRightDelW1 = new THREE.Object3D();
-    this.pataRightDelW1.position.x = (-2-1)/PM.PIXELES_ESTANDAR;
-    this.pataRightDelW1.position.z = (2+3)/PM.PIXELES_ESTANDAR;
-    this.pataRightDelW1.add(this.pataRightDel);
+    this.pataRightDel.position.x = (-2-1)/PM.PIXELES_ESTANDAR;
+    this.pataRightDel.position.z = (2+3)/PM.PIXELES_ESTANDAR;
 
 
-    this.add(this.pataLeftDelW1);
-    this.add(this.pataRightDelW1);
+    this.add(this.pataLeftDel);
+    this.add(this.pataRightDel);
 
 
     //Izquierda
@@ -276,9 +269,6 @@ class Cerdo extends THREE.Object3D {
   }
 
   animacion(esForward, velocidad){
-    //let velocidad = clock.getDelta() * 4.317;
-    //console.log(this.radToDeg(this.piernaRW1.rotation.x))
-    //console.log(velocidad);
     let velFinal=(esForward)? velocidad : -velocidad;
 
     if (this.cambiarAnimacion) {
@@ -303,24 +293,17 @@ class Cerdo extends THREE.Object3D {
     }
   }
 
-  update (movimiento, bloques, bloqueRaro) {
-    let delta=this.clock.getDelta();
-    let velocidad =  delta * 4.317;
-    this.animacion(true, 0.1)
+  update (bloques, deltaMov) {
+    let velocidad =  deltaMov * 4.317;
+    this.animacion(true, velocidad)
 
     
     let vectorMovimiento = new THREE.Vector3(0, 0, 1);
     //vectormovimiento es el vector entre el modelo y el zombie
-    this.translateOnAxis(vectorMovimiento.normalize(), 0.1);
-    this.boundingBox.translateOnAxis(vectorMovimiento, 0.1);
+    this.translateOnAxis(vectorMovimiento.normalize(), velocidad);
+    this.boundingBox.translateOnAxis(vectorMovimiento, velocidad);
 
-
-    //console.log(bloques);
-    //console.log(this.boundingBox.position);
-    //console.log(vectorMovimiento);
-    //console.log(velocidad);
      this.colision.update(bloques, this, this.boundingBox, null, vectorMovimiento, velocidad);
-    //console.log(this.boundingBox.position.y)
   }
 }
 

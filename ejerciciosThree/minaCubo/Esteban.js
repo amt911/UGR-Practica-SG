@@ -14,14 +14,8 @@ class Esteban extends THREE.Object3D {
   constructor(gui, titleGui) {
     super();
 
-    //this.caidaVel = -0.01;
-    //this.caidaAcc = -0.01;
-
-    //this.caidaVel = -1;
-    //this.caidaAcc = -42;
-
     this.clock = new THREE.Clock();
-    //this.clockAnim=new THREE.Clock();
+
     this.cambiarAnimacion = false;
     this.maxMovimientoExt = this.degToRad(60);
 
@@ -120,7 +114,6 @@ class Esteban extends THREE.Object3D {
     brazoR.material = texturabrazoR;
     this.brazoLeft = new THREE.Object3D();
     this.brazoLeft.add(brazoL);
-    //this.brazoLeft.rotation.x = 0.3;
     this.brazoLeft.position.y = 22 / PM.PIXELES_ESTANDAR;
 
     this.brazoLeftW1 = new THREE.Object3D();
@@ -129,16 +122,11 @@ class Esteban extends THREE.Object3D {
 
     this.brazoRight = new THREE.Object3D();
     this.brazoRight.add(brazoR);
-    //this.brazoRight.rotation.x = -0.3;
     this.brazoRight.position.y = 22 / PM.PIXELES_ESTANDAR;
 
     this.brazoRightW1 = new THREE.Object3D();
     this.brazoRightW1.position.x = -6 / PM.PIXELES_ESTANDAR;
     this.brazoRightW1.add(this.brazoRight);
-
-
-    //this.add(this.brazoLeftW1);
-    //this.add(this.brazoRightW1);
 
     //Piernas
 
@@ -199,9 +187,6 @@ class Esteban extends THREE.Object3D {
     this.piernaLW1.position.set(2 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 0);
     this.piernaRW1.position.set(-2 / PM.PIXELES_ESTANDAR, 12 / PM.PIXELES_ESTANDAR, 0);
 
-    //this.add(this.piernaLW1);
-    //this.add(this.piernaRW1);
-
     const texturaCuerpo = [
       new THREE.MeshPhongMaterial({
         map: textureLoader.load("./texturas/esteban/cuerpoxpos.png"),
@@ -244,19 +229,10 @@ class Esteban extends THREE.Object3D {
     this.boundingBox = new THREE.Mesh(boundingBoxGeom, new THREE.MeshPhongMaterial());
     this.boundingBox.position.y += 16 / PM.PIXELES_ESTANDAR
 
-    //this.add(this.boundingBox);
-
     this.position.y += 10;
 
-    this.puedeSaltar=true;
-
-    this.previo={
-      fil: -1,
-      col: -1,
-    };
-
-
     this.colisiones=new C.Colisiones(false, 0.8);
+    this.puedeSaltar=true;
     this.altura=32;
   }
 
@@ -265,46 +241,7 @@ class Esteban extends THREE.Object3D {
   }
 
   createGUI(gui, titleGui) {
-    // Controles para el tamaño, la orientación y la posición de la caja
-    this.guiControls = {
-      cabezaX: 0,
-      cabezaY: 0,
-      piernaL: 0,
-      piernaR: 0,
-      giroY: 0,
-      brazoL: 0,
-      brazoR: 0,
 
-      // Un botón para dejarlo todo en su posición inicial
-      // Cuando se pulse se ejecutará esta función.
-      reset: () => {
-        this.guiControls.cabezaX = 0;
-        this.guiControls.cabezaY = 0;
-        this.guiControls.piernaL = 0;
-        this.guiControls.piernaR = 0;
-        this.guiControls.giroY = 0;
-        this.guiControls.brazoL = 0;
-        this.guiControls.brazoR = 0;
-      }
-    }
-
-    // Se crea una sección para los controles de la caja
-    let folder = gui.addFolder(titleGui);
-    // Estas lineas son las que añaden los componentes de la interfaz
-    // Las tres cifras indican un valor mínimo, un máximo y el incremento
-    // El método   listen()   permite que si se cambia el valor de la letiable en código, el deslizador de la interfaz se actualice
-    folder.add(this.guiControls, 'cabezaY', -Math.PI / 2, Math.PI / 2, 0.1).name('Cabeza Y : ').listen();
-    folder.add(this.guiControls, 'cabezaX', -Math.PI / 2, Math.PI / 2, 0.1).name('Cabeza X : ').listen();
-
-    folder.add(this.guiControls, 'piernaL', -Math.PI / 2, Math.PI / 2, 0.1).name('Pierna L : ').listen();
-    folder.add(this.guiControls, 'piernaR', -Math.PI / 2, Math.PI / 2, 0.1).name('Pierna R : ').listen();
-
-    folder.add(this.guiControls, 'brazoL', -Math.PI / 2, Math.PI / 2, 0.1).name('Brazo L : ').listen();
-    folder.add(this.guiControls, 'brazoR', -Math.PI / 2, Math.PI / 2, 0.1).name('Brazo R : ').listen();
-
-    folder.add(this.guiControls, 'giroY', -Math.PI / 2, Math.PI / 2, 0.1).name('Giro Esteban: ').listen();
-
-    folder.add(this.guiControls, 'reset').name('[ Reset ]');
   }
 
   resetPosicion() {
@@ -316,27 +253,7 @@ class Esteban extends THREE.Object3D {
   }
 
 
-  //NO FUNCIONA XD
-  detectCollisionCharacterWorld(box) {
-    this.boundingBox.geometry.computeBoundingBox();
-    box.geometry.computeBoundingBox();
-    this.boundingBox.updateMatrixWorld();
-    box.updateMatrixWorld();
-
-    let a = this.boundingBox.geometry.boundingBox.clone();
-    a.applyMatrix4(this.boundingBox.matrixWorld);
-
-    let b = box.geometry.boundingBox.clone();
-    b.applyMatrix4(box.matrixWorld);
-
-    return a.intersectsBox(b);
-  }
-
-
   animacion(esForward, velocidad){
-    //let velocidad = clock.getDelta() * 4.317;
-    //console.log(this.radToDeg(this.piernaRW1.rotation.x))
-    //console.log(velocidad);
     let velFinal=(esForward)? velocidad : -velocidad;
 
     if (this.cambiarAnimacion) {
@@ -361,67 +278,7 @@ class Esteban extends THREE.Object3D {
     }
   }
 
-
-  checkCollision(bloques, vector, velocidad, bloqueRaro){
-    for(let i=0; i<bloques.length; i++){
-      for (let j = 0; j < bloques[i].length; j++) {
-        let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
-        let eV = new THREE.Vector2(this.position.x, this.position.z);
-
-        if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          //if (this.position.y - (bloques[i][j].y - 0.5)== 0 || this.position.y - (bloques[i][j].y - 0.5)== -1){
-            bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          if(this.detectCollisionCharacterWorld(bloqueRaro) && Math.abs(this.boundingBox.position.y - bloques[i][j].y) <= 0.5){
-              let choqueX=this.boundingBox.position.x - bloques[i][j].x;
-              let choqueZ=this.boundingBox.position.z - bloques[i][j].z;
-
-              //console.log(Math.abs(choqueX)>Math.abs(choqueZ))
-              //console.log((choqueZ))
-              console.log((choqueX))
-              if(Math.abs(choqueX)>Math.abs(choqueZ)){
-                //let valor=0.5;    //Salto automatico
-                //let valor=0.8
-                let valor=0.8
-                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                //console.log(Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8)
-                //if(choqueX<valor && choqueX>0){
-                //}
-                /*else*/ if(choqueX>-valor && (choqueX>=valor || choqueX<=0)){
-                  //valor=-0.8;
-                  valor=-valor;
-                  //valor=Math.cos(this.boundingBox.rotation.y%(Math.PI))*0.8;
-                }
-                this.position.x = bloques[i][j].x + valor;
-                this.boundingBox.position.x = bloques[i][j].x + valor;
-              }
-              else{
-                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                //let valor=Math.cos(this.boundingBox.rotation.y%(Math.PI/4))*0.8;
-                let valor=0.8;
-                if(choqueZ<0.8 && choqueZ>0){
-                  this.position.z = bloques[i][j].z + valor//0.8;
-                  this.boundingBox.position.z = bloques[i][j].z + valor//0.8;
-                  //console.log(choqueX);
-                }
-                else if(choqueZ>-0.8){
-                  this.position.z = bloques[i][j].z - valor//0.8;
-                  this.boundingBox.position.z = bloques[i][j].z - valor//0.8;
-                  //console.log(choqueX);
-                }
-              }
-
-              let aux=new THREE.Vector3(-vector.x, -vector.y, -vector.z)
-              this.translateOnAxis(aux.normalize(), velocidad);
-              
-              this.boundingBox.translateOnAxis(aux, velocidad);
-            
-          }
-        }
-      }    
-    }
-  }
-
-  update(movimiento, bloques, bloqueRaro, teclasPulsadas) {
+  update(bloques, teclasPulsadas) {
     let delta= this.clock.getDelta();
     let velocidad = delta * 4.317;
     this.cabezaW1.rotation.x = Math.PI / 2 - this.cameraControls.getPolarAngle();
@@ -444,7 +301,7 @@ class Esteban extends THREE.Object3D {
       esForward=false;
     }
     if(teclasPulsadas.A){
-           vectorDir.x+=1;
+      vectorDir.x+=1;
       moviendose = true;
     }
     if(teclasPulsadas.D){
@@ -491,54 +348,15 @@ class Esteban extends THREE.Object3D {
     }
 
     let velocidadFinal=(teclasPulsadas["SHIFT"])? velocidad*2 : velocidad;
-    //velocidadFinal*=delta;
-    //console.log("---------------------")
-    //console.log(vectorDir);
+
     this.translateOnAxis(vectorDir.normalize(), velocidadFinal);
-    //console.log(vectorDir);
-    //console.log("=======================")
+
     this.boundingBox.translateOnAxis(vectorDir, velocidadFinal);
     
     if(moviendose)
       this.animacion(esForward, velocidadFinal);
     
     this.colisiones.update(bloques, this, this.boundingBox, teclasPulsadas, vectorDir, velocidad);
-
-    /*
-    if(this.puedeSaltar && teclasPulsadas[" "]){
-      this.caidaVel = 10;
-      this.puedeSaltar=false;
-    }
-    
-
-    //Deteccion de caidas
-    this.position.y += this.caidaVel*delta;
-    this.boundingBox.position.y+=this.caidaVel*delta;
-    this.caidaVel += this.caidaAcc*delta;
-    
-    
-    this.checkCollision(bloques, vectorDir, velocidad, bloqueRaro);
-    for(let i=0; i<bloques.length; i++){
-      for (let j = 0; j < bloques[i].length;j++) {
-        let bV = new THREE.Vector2(bloques[i][j].x, bloques[i][j].z);
-        let eV = new THREE.Vector2(this.position.x, this.position.z);
-
-        if (bV.distanceTo(eV) <= 0.8 && Math.abs((this.position.x) - (bloques[i][j].x)) >= 0 && Math.abs((this.position.z) - (bloques[i][j].z)) >= 0) {
-          bloqueRaro.position.set(bloques[i][j].x, bloques[i][j].y, bloques[i][j].z);
-          //if (this.position.y - (bloques[i][j].y + 0.5)<= 0 && this.position.y - (bloques[i][j].y + 0.5) > -0.4) {
-          if(this.detectCollisionCharacterWorld(bloqueRaro)){
-            //console.log("true suelo")
-            this.position.y = bloques[i][j].y + 32 / PM.PIXELES_ESTANDAR / 2 - 0.5;
-            this.boundingBox.position.y = this.position.y+16/PM.PIXELES_ESTANDAR;
-
-            this.caidaVel = 0;
-            this.puedeSaltar=true;
-
-            break;
-          }
-        }
-      }
-    }*/
   }
 }
 
