@@ -361,13 +361,10 @@ class MyScene extends THREE.Scene {
     this.cajaSeleccionada.material.color.set(0x333333);
     this.cajaSeleccionada.visible = false;
 
-    console.log(this.model.boundingBox)
-    this.add(this.model.boundingBox);
-    this.add(this.zombie.boundingBox);
-    
-    this.add(this.cerdo.boundingBox);
-    this.cerdo.position.y+=10;
-    this.cerdo.boundingBox.position.y+=10;
+    // this.add(this.model.boundingBox);
+    // this.add(this.zombie.boundingBox);
+    // this.add(this.cerdo.boundingBox);
+
     this.initSkybox()
   }
 
